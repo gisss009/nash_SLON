@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SLON.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:SLON"
+    Shell.FlyoutBehavior="Disabled"
+    Title="SLON">
+
+    <TabBar>
+        <ShellContent
+            Title="Favorites"
+            ContentTemplate="{DataTemplate local:Favorites}"
+            Route="Favorites" />
+        
+        <ShellContent
+            Title="Main"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
+
+        <ShellContent
+        Title="Profile"
+        ContentTemplate="{DataTemplate local:Profile}"
+        Route="Profile" />
+    </TabBar>
+</Shell>
