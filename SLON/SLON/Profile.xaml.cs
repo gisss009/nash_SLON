@@ -5,13 +5,24 @@ namespace SLON;
 
 public partial class Profile : ContentPage
 {
+    private bool _isEditing = false;
+
+    // Список доступных тегов
+    private readonly List<string> allTags = new()
+    {
+        "Tester", "System administrator", "Mobile developer", "Game developer",
+        "Frontend developer", "Backend developer", "Fullstack developer",
+        "Data Analyst", "Data Scientist"
+    };
+
+    // Список для хранения выбранных тегов
+    private readonly List<string> selectedTags = new();
+
     public Profile()
     {
         InitializeComponent();
         PopulateTagSelectionList();
     }
-
-    private bool _isEditing = false;
 
     /// <summary>
     /// Переключает режим редактирования для обновления состояние полей и видимости элементов интерфейса.
@@ -20,17 +31,13 @@ public partial class Profile : ContentPage
     {
         _isEditing = !_isEditing;
 
-        // Включаем/выключаем возможность редактирования полей.
-        NameInput.IsReadOnly = !_isEditing;
-        VocationInput.IsReadOnly = !_isEditing;
-        ResumeEditor.IsReadOnly = !_isEditing;
-
-        // Переключаем видимость элементов интерфейса.
-        AddTagIcon.IsVisible = _isEditing;
+        // Переключаем состояние редактирования элементов
+        NameInput.IsReadOnly = ResumeEditor.IsReadOnly = VocationInput.IsReadOnly = !_isEditing;
+        AddTagIcon.IsVisible = SaveIcon.IsVisible = _isEditing;
         EditIcon.IsVisible = !_isEditing;
-        SaveIcon.IsVisible = _isEditing;
 
-        EnableTagEditMode(_isEditing);
+        // Включаем/выключаем режим редактирования тегов
+        EnableTagEditMode();
 
         if (!_isEditing)
         {
@@ -43,10 +50,8 @@ public partial class Profile : ContentPage
     /// </summary>
     private async void OnAvatarButtonClicked(object sender, EventArgs e)
     {
-        if (!_isEditing)
-        {
-            return;
-        }
+        if (!_isEditing) return;
+
         try
         {
             var result = await FilePicker.Default.PickAsync(new PickOptions
@@ -69,14 +74,13 @@ public partial class Profile : ContentPage
     /// <summary>
     /// Включение/выключение режима редактирования тегов
     /// </summary>
-    private void EnableTagEditMode(bool isEditing)
+    private void EnableTagEditMode()
     {
-        foreach (var child in TagsContainer.Children)
+        foreach (var frame in TagsContainer.Children.OfType<Frame>())
         {
-            if (child is Frame frame && frame.Content is Grid grid &&
-                grid.Children.FirstOrDefault() is ImageButton deleteIcon)
+            if (frame.Content is Grid grid && grid.Children.FirstOrDefault() is ImageButton deleteIcon)
             {
-                deleteIcon.IsVisible = isEditing;
+                deleteIcon.IsVisible = _isEditing;
             }
         }
     }
@@ -87,6 +91,11 @@ public partial class Profile : ContentPage
     private void OnAddTagIconClicked(object sender, EventArgs e)
     {
         TagSelectionList.IsVisible = !TagSelectionList.IsVisible;
+
+        if (TagSelectionList.IsVisible)
+        {
+            PopulateTagSelectionList();
+        }
     }
 
     /// <summary>
@@ -94,7 +103,7 @@ public partial class Profile : ContentPage
     /// </summary>
     private void OnTagButtonClicked(object sender, EventArgs e)
     {
-        if (sender is Button tagButton && tagButton.Text != null)
+        if (sender is Button tagButton && !string.IsNullOrWhiteSpace(tagButton.Text))
         {
             AddTagToContainer(tagButton.Text);
             TagSelectionList.IsVisible = false;
@@ -118,6 +127,10 @@ public partial class Profile : ContentPage
     /// </summary>
     private void AddTagToContainer(string tagName)
     {
+        if (selectedTags.Contains(tagName)) return;
+
+        selectedTags.Add(tagName);
+
         var tagFrame = new Frame
         {
             BackgroundColor = Colors.Gray,
@@ -147,7 +160,12 @@ public partial class Profile : ContentPage
             VerticalOptions = LayoutOptions.Center
         };
 
-        deleteButton.Clicked += (s, e) => TagsContainer.Children.Remove(tagFrame);
+        deleteButton.Clicked += (s, e) =>
+        {
+            TagsContainer.Children.Remove(tagFrame);
+            selectedTags.Remove(tagName);
+            PopulateTagSelectionList();
+        };
 
         var tagLabel = new Label
         {
@@ -173,14 +191,8 @@ public partial class Profile : ContentPage
     /// </summary>
     private void PopulateTagSelectionList()
     {
-        var tags = new List<string>
-        {
-            "Tester", "System administrator", "Mobile developer", "Game developer",
-            "Frontend developer", "Backend developer", "Fullstack developer",
-            "Data Analyst", "Data Scientist"
-        };
-
-        TagSelectionList.ItemsSource = tags;
+        var availableTags = allTags.Except(selectedTags).ToList();
+        TagSelectionList.ItemsSource = availableTags;
     }
 
     private void SaveProfileChanges()
@@ -188,3 +200,5 @@ public partial class Profile : ContentPage
         DisplayAlert("Success", "Profile changes saved!", "OK");
     }
 }
+
+
