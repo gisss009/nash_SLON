@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:swipeCardView="clr-namespace:Plugin.Maui.SwipeCardView;assembly=Plugin.Maui.SwipeCardView"
+             x:Class="SLON.MainPage"
+             Padding="0" BackgroundColor="#3C3C3C">
+
+    <Shell.TitleView>
+        <Grid BackgroundColor="#1c1c1c" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <Label
+            Text="SLON"
+            Padding="10"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            TextColor="White"
+            FontSize="Title" />
+        </Grid>
+    </Shell.TitleView>
+
+    <!--<VerticalStackLayout Spacing="10" Padding="10" BackgroundColor="#000000">-->
+
+        <!--<Frame BackgroundColor="#1E1E1E" Padding="10" CornerRadius="5" HorizontalOptions="Center">
+            <Label Text="Слон" TextColor="White" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" />
+        </Frame>-->
+
+        <swipeCardView:SwipeCardView ItemsSource="{Binding Users}" Padding="15"
+                                 SupportedSwipeDirections="Left, Right"
+                                 HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <swipeCardView:SwipeCardView.ItemTemplate>
+            <DataTemplate>
+                <!--<Grid Background="Aqua">
+                    <Label Text="{Binding Name}" TextColor="Black"  FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Label Text="{Binding Id}" TextColor="Black"  FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Grid>-->
+                <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
+                    <Frame BackgroundColor="#1E1E1E" CornerRadius="15" Padding="20"
+                           Margin="0,40,0,80" InputTransparent="True">
+                        <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                            <!-- Аватар -->
+                            
+                            <Ellipse WidthRequest="80" HeightRequest="80" Fill="#3C3C3C"
+                                     HorizontalOptions="Center" VerticalOptions="Start">
+                                <Ellipse.Stroke>
+                                    <SolidColorBrush Color="White"/>
+                                </Ellipse.Stroke>
+                                <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
+                            </Ellipse>
+
+                            <!-- Заголовок -->
+                            <Label Text="Vocation" TextColor="White" FontSize="16" FontAttributes="Bold"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Name Surname" TextColor="White" FontSize="14"
+                                   HorizontalOptions="Center" />
+
+                            <!-- Теги -->
+                            <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
+                                <Label Text="Tags" TextColor="Black" FontSize="14" FontAttributes="Bold" />
+                            </Frame>
+                            <Label Text="Tag1   Tag2   Tag3" TextColor="White" FontSize="12" />
+
+                            <!-- Информация -->
+                            <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
+                                <Label Text="Info" TextColor="Black" FontSize="14" FontAttributes="Bold" />
+                            </Frame>
+                            <Label Text="Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text"
+                                   TextColor="White" FontSize="12" LineBreakMode="WordWrap" />
+
+                            <!-- Навыки -->
+                            <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
+                                <Label Text="Skills" TextColor="Black" FontSize="14" FontAttributes="Bold" />
+                            </Frame>
+                            <Label Text="Python   Pascal   C++   Java   Ruby" TextColor="White" FontSize="12" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+            </DataTemplate>
+        </swipeCardView:SwipeCardView.ItemTemplate>
+    </swipeCardView:SwipeCardView>
+    <!--</VerticalStackLayout>-->
+
+
+</ContentPage>
