@@ -5,7 +5,7 @@
              Title="Favorites">
     <VerticalStackLayout>
         <Label
-            Text="Это избранные"
+            Text="Это избранные111"
             Style="{StaticResource Headline}"
             SemanticProperties.HeadingLevel="Level1" />
     </VerticalStackLayout>

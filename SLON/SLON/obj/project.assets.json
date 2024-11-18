@@ -445,6 +445,23 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Xamarin.Android.Glide/4.15.1.2": {
         "type": "package",
         "dependencies": {
@@ -2650,6 +2667,23 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Xamarin.Android.Glide/4.15.1.2": {
@@ -4859,6 +4893,23 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Xamarin.Android.Glide/4.15.1.2": {
         "type": "package",
         "dependencies": {
@@ -7064,6 +7115,23 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Xamarin.Android.Glide/4.15.1.2": {
@@ -9273,6 +9341,23 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Xamarin.Android.Glide/4.15.1.2": {
         "type": "package",
         "dependencies": {
@@ -11478,6 +11563,23 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Xamarin.Android.Glide/4.15.1.2": {
@@ -13687,6 +13789,23 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Xamarin.Android.Glide/4.15.1.2": {
         "type": "package",
         "dependencies": {
@@ -15894,6 +16013,23 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Xamarin.Android.Glide/4.15.1.2": {
         "type": "package",
         "dependencies": {
@@ -18076,6 +18212,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-ios18.0/android-arm": {
@@ -18496,6 +18645,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -18918,6 +19080,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-ios18.0/android-x64": {
@@ -19338,6 +19513,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -19760,6 +19948,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-ios18.0/iossimulator-x64": {
@@ -20180,6 +20381,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -20602,6 +20816,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-ios18.0/win10-x64": {
@@ -21022,6 +21249,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -21444,6 +21684,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-maccatalyst18.0/android-arm": {
@@ -21864,6 +22117,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -22286,6 +22552,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-maccatalyst18.0/android-x64": {
@@ -22706,6 +22985,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -23128,6 +23420,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-maccatalyst18.0/iossimulator-x64": {
@@ -23548,6 +23853,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -23970,6 +24288,19 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-maccatalyst18.0/win10-x64": {
@@ -24390,6 +24721,19 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -24981,6 +25325,19 @@
             "rid": "win10-x86"
           }
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-windows10.0.19041/android-arm": {
@@ -25530,6 +25887,19 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -26081,6 +26451,19 @@
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-windows10.0.19041/android-x64": {
@@ -26630,6 +27013,19 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -27181,6 +27577,19 @@
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-windows10.0.19041/iossimulator-x64": {
@@ -27731,6 +28140,19 @@
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
         }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        }
       }
     },
     "net8.0-windows10.0.19041/maccatalyst-x64": {
@@ -28280,6 +28702,19 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     },
@@ -28836,6 +29271,19 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Controls": "8.0.61",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.61"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll": {}
         }
       }
     }
@@ -30985,6 +31433,25 @@
         "tools/x86/GenXbf.dll"
       ]
     },
+    "Plugin.Maui.SwipeCardView/1.0.0-preview1": {
+      "sha512": "AsxhMfoiUPlsA8GsHI8ti/z93U9mczagYiI3OfZGUTq0BlXTZYPUy81h1y4J/+VMHGMPwBj4giYvRNMoIQP2kw==",
+      "type": "package",
+      "path": "plugin.maui.swipecardview/1.0.0-preview1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.dll",
+        "lib/net8.0-android34.0/Plugin.Maui.SwipeCardView.xml",
+        "lib/net8.0-ios17.2/Plugin.Maui.SwipeCardView.dll",
+        "lib/net8.0-maccatalyst17.2/Plugin.Maui.SwipeCardView.dll",
+        "lib/net8.0-windows10.0.19041/Plugin.Maui.SwipeCardView.dll",
+        "lib/net8.0/Plugin.Maui.SwipeCardView.dll",
+        "plugin.maui.swipecardview.1.0.0-preview1.nupkg.sha512",
+        "plugin.maui.swipecardview.nuspec"
+      ]
+    },
     "Xamarin.Android.Glide/4.15.1.2": {
       "sha512": "DcekP+BXm4jFMV7zjHEltj01uiXcItq1kjGa79pj/Vx1rk3Ac2VXdmwGw06HXDP8n2XZsDh8dAoSI48G4KODRA==",
       "type": "package",
@@ -33028,24 +33495,28 @@
       "Microsoft.Extensions.Logging.Debug >= 8.0.0",
       "Microsoft.Maui.Controls >= 8.0.82",
       "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.10"
+      "Microsoft.NET.ILLink.Tasks >= 8.0.10",
+      "Plugin.Maui.SwipeCardView >= 1.0.0-preview1"
     ],
     "net8.0-ios18.0": [
       "Microsoft.Extensions.Logging.Debug >= 8.0.0",
       "Microsoft.Maui.Controls >= 8.0.82",
       "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.10"
+      "Microsoft.NET.ILLink.Tasks >= 8.0.10",
+      "Plugin.Maui.SwipeCardView >= 1.0.0-preview1"
     ],
     "net8.0-maccatalyst18.0": [
       "Microsoft.Extensions.Logging.Debug >= 8.0.0",
       "Microsoft.Maui.Controls >= 8.0.82",
       "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.10"
+      "Microsoft.NET.ILLink.Tasks >= 8.0.10",
+      "Plugin.Maui.SwipeCardView >= 1.0.0-preview1"
     ],
     "net8.0-windows10.0.19041": [
       "Microsoft.Extensions.Logging.Debug >= 8.0.0",
       "Microsoft.Maui.Controls >= 8.0.82",
-      "Microsoft.Maui.Controls.Compatibility >= 8.0.82"
+      "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
+      "Plugin.Maui.SwipeCardView >= 1.0.0-preview1"
     ]
   },
   "packageFolders": {
@@ -33131,6 +33602,10 @@
             "target": "Package",
             "version": "[8.0.10, )",
             "autoReferenced": true
+          },
+          "Plugin.Maui.SwipeCardView": {
+            "target": "Package",
+            "version": "[1.0.0-preview1, )"
           }
         },
         "imports": [
@@ -33174,6 +33649,10 @@
             "target": "Package",
             "version": "[8.0.10, )",
             "autoReferenced": true
+          },
+          "Plugin.Maui.SwipeCardView": {
+            "target": "Package",
+            "version": "[1.0.0-preview1, )"
           }
         },
         "imports": [
@@ -33217,6 +33696,10 @@
             "target": "Package",
             "version": "[8.0.10, )",
             "autoReferenced": true
+          },
+          "Plugin.Maui.SwipeCardView": {
+            "target": "Package",
+            "version": "[1.0.0-preview1, )"
           }
         },
         "imports": [
@@ -33255,6 +33738,10 @@
           "Microsoft.Maui.Controls.Compatibility": {
             "target": "Package",
             "version": "[8.0.82, )"
+          },
+          "Plugin.Maui.SwipeCardView": {
+            "target": "Package",
+            "version": "[1.0.0-preview1, )"
           }
         },
         "imports": [

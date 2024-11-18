@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SLON.Profile"
              Title="Profile">
-    <VerticalStackLayout>
+    <!--<VerticalStackLayout>-->
         <Label
             Text="Это профиль"
             Style="{StaticResource Headline}"
             SemanticProperties.HeadingLevel="Level1" />
-    </VerticalStackLayout>
+    <!--</VerticalStackLayout>-->
 </ContentPage>

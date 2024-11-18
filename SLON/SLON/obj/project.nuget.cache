@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JLOopR0U4aw=",
+  "dgSpecHash": "vPksElwCa0Q=",
   "success": true,
   "projectFilePath": "C:\\Users\\diamantove\\source\\repos\\SLON\\SLON\\SLON.csproj",
   "expectedPackageFiles": [
@@ -29,6 +29,7 @@
     "C:\\Users\\diamantove\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.10\\microsoft.net.illink.tasks.8.0.10.nupkg.sha512",
     "C:\\Users\\diamantove\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.22621.756\\microsoft.windows.sdk.buildtools.10.0.22621.756.nupkg.sha512",
     "C:\\Users\\diamantove\\.nuget\\packages\\microsoft.windowsappsdk\\1.5.240627000\\microsoft.windowsappsdk.1.5.240627000.nupkg.sha512",
+    "C:\\Users\\diamantove\\.nuget\\packages\\plugin.maui.swipecardview\\1.0.0-preview1\\plugin.maui.swipecardview.1.0.0-preview1.nupkg.sha512",
     "C:\\Users\\diamantove\\.nuget\\packages\\xamarin.android.glide\\4.15.1.2\\xamarin.android.glide.4.15.1.2.nupkg.sha512",
     "C:\\Users\\diamantove\\.nuget\\packages\\xamarin.android.glide.annotations\\4.15.1.2\\xamarin.android.glide.annotations.4.15.1.2.nupkg.sha512",
     "C:\\Users\\diamantove\\.nuget\\packages\\xamarin.android.glide.disklrucache\\4.15.1.2\\xamarin.android.glide.disklrucache.4.15.1.2.nupkg.sha512",

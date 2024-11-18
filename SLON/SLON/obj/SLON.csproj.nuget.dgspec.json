@@ -83,6 +83,10 @@
               "target": "Package",
               "version": "[8.0.10, )",
               "autoReferenced": true
+            },
+            "Plugin.Maui.SwipeCardView": {
+              "target": "Package",
+              "version": "[1.0.0-preview1, )"
             }
           },
           "imports": [
@@ -126,6 +130,10 @@
               "target": "Package",
               "version": "[8.0.10, )",
               "autoReferenced": true
+            },
+            "Plugin.Maui.SwipeCardView": {
+              "target": "Package",
+              "version": "[1.0.0-preview1, )"
             }
           },
           "imports": [
@@ -169,6 +177,10 @@
               "target": "Package",
               "version": "[8.0.10, )",
               "autoReferenced": true
+            },
+            "Plugin.Maui.SwipeCardView": {
+              "target": "Package",
+              "version": "[1.0.0-preview1, )"
             }
           },
           "imports": [
@@ -207,6 +219,10 @@
             "Microsoft.Maui.Controls.Compatibility": {
               "target": "Package",
               "version": "[8.0.82, )"
+            },
+            "Plugin.Maui.SwipeCardView": {
+              "target": "Package",
+              "version": "[1.0.0-preview1, )"
             }
           },
           "imports": [
