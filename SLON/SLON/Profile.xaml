@@ -4,9 +4,9 @@
              x:Class="SLON.Profile"
              Title="Profile">
     <!--<VerticalStackLayout>-->
-        <Label
+        <!--<Label
             Text="Это профиль"
             Style="{StaticResource Headline}"
-            SemanticProperties.HeadingLevel="Level1" />
+            SemanticProperties.HeadingLevel="Level1" />-->
     <!--</VerticalStackLayout>-->
 </ContentPage>

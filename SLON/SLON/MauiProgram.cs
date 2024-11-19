@@ -15,6 +15,7 @@ namespace SLON
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("MaterialSymbolsOutlined-Regular.ttf", "MaterialSymbolsOutlined");
                 });
 
 #if DEBUG
