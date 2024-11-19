@@ -1,4 +1,4 @@
-using System.Globalization;
+п»їusing System.Globalization;
 using System.Xml;
 
 namespace SLON;
@@ -7,7 +7,7 @@ public partial class Profile : ContentPage
 {
     private bool _isEditing = false;
 
-    // Список доступных тегов
+    // РЎРїРёСЃРѕРє РґРѕСЃС‚СѓРїРЅС‹С… С‚РµРіРѕРІ
     private readonly List<string> allTags = new()
     {
         "Tester", "System administrator", "Mobile developer", "Game developer",
@@ -15,7 +15,7 @@ public partial class Profile : ContentPage
         "Data Analyst", "Data Scientist"
     };
 
-    // Список для хранения выбранных тегов
+    // РЎРїРёСЃРѕРє РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РІС‹Р±СЂР°РЅРЅС‹С… С‚РµРіРѕРІ
     private readonly List<string> selectedTags = new();
 
     public Profile()
@@ -25,18 +25,18 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Переключает режим редактирования для обновления состояние полей и видимости элементов интерфейса.
+    /// РџРµСЂРµРєР»СЋС‡Р°РµС‚ СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕР»РµР№ Рё РІРёРґРёРјРѕСЃС‚Рё СЌР»РµРјРµРЅС‚РѕРІ РёРЅС‚РµСЂС„РµР№СЃР°.
     /// </summary>
     private void OnEditIconClicked(object sender, EventArgs e)
     {
         _isEditing = !_isEditing;
 
-        // Переключаем состояние редактирования элементов
+        // РџРµСЂРµРєР»СЋС‡Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ
         NameInput.IsReadOnly = ResumeEditor.IsReadOnly = VocationInput.IsReadOnly = !_isEditing;
         AddTagIcon.IsVisible = SaveIcon.IsVisible = _isEditing;
         EditIcon.IsVisible = !_isEditing;
 
-        // Включаем/выключаем режим редактирования тегов
+        // Р’РєР»СЋС‡Р°РµРј/РІС‹РєР»СЋС‡Р°РµРј СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ С‚РµРіРѕРІ
         EnableTagEditMode();
 
         if (!_isEditing)
@@ -46,7 +46,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Обновляет аватар пользователя
+    /// РћР±РЅРѕРІР»СЏРµС‚ Р°РІР°С‚Р°СЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
     /// </summary>
     private async void OnAvatarButtonClicked(object sender, EventArgs e)
     {
@@ -56,7 +56,7 @@ public partial class Profile : ContentPage
         {
             var result = await FilePicker.Default.PickAsync(new PickOptions
             {
-                PickerTitle = "Выберите изображение:",
+                PickerTitle = "Р’С‹Р±РµСЂРёС‚Рµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ:",
                 FileTypes = FilePickerFileType.Images
             });
 
@@ -67,12 +67,12 @@ public partial class Profile : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", $"Не удалось загрузить изображение: {ex.Message}", "OK");
+            await DisplayAlert("РћС€РёР±РєР°", $"РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ: {ex.Message}", "OK");
         }
     }
 
     /// <summary>
-    /// Включение/выключение режима редактирования тегов
+    /// Р’РєР»СЋС‡РµРЅРёРµ/РІС‹РєР»СЋС‡РµРЅРёРµ СЂРµР¶РёРјР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ С‚РµРіРѕРІ
     /// </summary>
     private void EnableTagEditMode()
     {
@@ -86,7 +86,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Обработка нажатия на иконку добавления нового тега
+    /// РћР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёСЏ РЅР° РёРєРѕРЅРєСѓ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕРіРѕ С‚РµРіР°
     /// </summary>
     private void OnAddTagIconClicked(object sender, EventArgs e)
     {
@@ -99,7 +99,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Добавление тега при нажатии на кнопку с названием тега.
+    /// Р”РѕР±Р°РІР»РµРЅРёРµ С‚РµРіР° РїСЂРё РЅР°Р¶Р°С‚РёРё РЅР° РєРЅРѕРїРєСѓ СЃ РЅР°Р·РІР°РЅРёРµРј С‚РµРіР°.
     /// </summary>
     private void OnTagButtonClicked(object sender, EventArgs e)
     {
@@ -111,7 +111,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Добавление выбранного тега из списка.
+    /// Р”РѕР±Р°РІР»РµРЅРёРµ РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‚РµРіР° РёР· СЃРїРёСЃРєР°.
     /// </summary>
     private void OnTagSelected(object sender, SelectionChangedEventArgs e)
     {
@@ -123,7 +123,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Добавление нового тега в контейнер тегов.
+    /// Р”РѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ С‚РµРіР° РІ РєРѕРЅС‚РµР№РЅРµСЂ С‚РµРіРѕРІ.
     /// </summary>
     private void AddTagToContainer(string tagName)
     {
@@ -187,7 +187,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Заполнение списка доступных для выбора тегов.
+    /// Р—Р°РїРѕР»РЅРµРЅРёРµ СЃРїРёСЃРєР° РґРѕСЃС‚СѓРїРЅС‹С… РґР»СЏ РІС‹Р±РѕСЂР° С‚РµРіРѕРІ.
     /// </summary>
     private void PopulateTagSelectionList()
     {
