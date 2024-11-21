@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Xml;
 
 namespace SLON;
 
@@ -7,25 +6,22 @@ public partial class Profile : ContentPage
 {
     private bool _isEditing = false;
 
-    // Список доступных тегов
-    private readonly List<string> allTags = new()
+    // Список категорий
+    private readonly List<string> allCategories = new()
     {
-        "Tester", "System administrator", "Mobile developer", "Game developer",
-        "Frontend developer", "Backend developer", "Fullstack developer",
-        "Data Analyst", "Data Scientist"
+        "IT", "Creation", "Sport", "Science", "Business", "Education"
     };
 
-    // Список для хранения выбранных тегов
-    private readonly List<string> selectedTags = new();
+    // Список для хранения добавленных категорий и их данных
+    private readonly Dictionary<string, (string Tags, string Skills)> addedCategories = new();
 
     public Profile()
     {
         InitializeComponent();
-        PopulateTagSelectionList();
     }
 
     /// <summary>
-    /// Переключает режим редактирования для обновления состояние полей и видимости элементов интерфейса.
+    /// Переключает режим редактирования для обновления состояния полей и видимости элементов интерфейса.
     /// </summary>
     private void OnEditIconClicked(object sender, EventArgs e)
     {
@@ -33,11 +29,11 @@ public partial class Profile : ContentPage
 
         // Переключаем состояние редактирования элементов
         NameInput.IsReadOnly = ResumeEditor.IsReadOnly = VocationInput.IsReadOnly = !_isEditing;
-        AddTagIcon.IsVisible = SaveIcon.IsVisible = _isEditing;
+        AddCategoryIcon.IsVisible = SaveIcon.IsVisible = _isEditing;
         EditIcon.IsVisible = !_isEditing;
 
-        // Включаем/выключаем режим редактирования тегов
-        EnableTagEditMode();
+        // Переключаем видимость кнопок удаления у карточек
+        ToggleDeleteButtons(_isEditing);
 
         if (!_isEditing)
         {
@@ -46,7 +42,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Обновляет аватар пользователя
+    /// Обновляет аватар пользователя.
     /// </summary>
     private async void OnAvatarButtonClicked(object sender, EventArgs e)
     {
@@ -72,81 +68,92 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Включение/выключение режима редактирования тегов
+    /// Открытие окна для добавления новой категории
     /// </summary>
-    private void EnableTagEditMode()
+    private async void OnAddCategoryIconClicked(object sender, EventArgs e)
     {
-        foreach (var frame in TagsContainer.Children.OfType<Frame>())
+        string selectedCategory = await DisplayActionSheet("Выберите категорию","Отмена",null,allCategories.Except(addedCategories.Keys).ToArray());
+
+        if (string.IsNullOrWhiteSpace(selectedCategory) || selectedCategory == "Отмена")
         {
-            if (frame.Content is Grid grid && grid.Children.FirstOrDefault() is ImageButton deleteIcon)
+            return;
+        }
+
+        OpenCategoryPopup(selectedCategory);
+    }
+
+    /// <summary>
+    /// Открытие всплывающего окна для редактирования/добавления категории.
+    /// </summary>
+    private void OpenCategoryPopup(string categoryName)
+    {
+        CategoryPopup.IsVisible = true;
+        CategoryNameLabel.Text = categoryName;
+
+        if (addedCategories.TryGetValue(categoryName, out var data))
+        {
+            TagsEditor.Text = data.Tags;
+            SkillsEditor.Text = data.Skills;
+        }
+        else
+        {
+            TagsEditor.Text = string.Empty;
+            SkillsEditor.Text = string.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Сохраняет изменения в категории.
+    /// </summary>
+    private void OnSaveCategoryClicked(object sender, EventArgs e)
+    {
+        string categoryName = CategoryNameLabel.Text;
+        string tags = TagsEditor.Text;
+        string skills = SkillsEditor.Text;
+
+        addedCategories[categoryName] = (tags, skills);
+
+        UpdateCategoryCard(categoryName);
+
+        CategoryPopup.IsVisible = false;
+    }
+
+    /// <summary>
+    /// Обновление существующей карточки категории или добавление новой.
+    /// </summary>
+    private void UpdateCategoryCard(string categoryName)
+    {
+        // Проверка на существование карточки для данной категории
+        var existingCard = CategoriesContainer.Children.OfType<Frame>().FirstOrDefault(f => f.AutomationId == categoryName);
+
+        if (existingCard != null)
+        {
+            var grid = existingCard.Content as Grid;
+            var label = grid?.Children.OfType<Label>().FirstOrDefault();
+            if (label != null)
             {
-                deleteIcon.IsVisible = _isEditing;
+                label.Text = categoryName;
             }
+            return;
         }
-    }
 
-    /// <summary>
-    /// Обработка нажатия на иконку добавления нового тега
-    /// </summary>
-    private void OnAddTagIconClicked(object sender, EventArgs e)
-    {
-        TagSelectionList.IsVisible = !TagSelectionList.IsVisible;
-
-        if (TagSelectionList.IsVisible)
+        var categoryFrame = new Frame
         {
-            PopulateTagSelectionList();
-        }
-    }
-
-    /// <summary>
-    /// Добавление тега при нажатии на кнопку с названием тега.
-    /// </summary>
-    private void OnTagButtonClicked(object sender, EventArgs e)
-    {
-        if (sender is Button tagButton && !string.IsNullOrWhiteSpace(tagButton.Text))
-        {
-            AddTagToContainer(tagButton.Text);
-            TagSelectionList.IsVisible = false;
-        }
-    }
-
-    /// <summary>
-    /// Добавление выбранного тега из списка.
-    /// </summary>
-    private void OnTagSelected(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection.FirstOrDefault() is string selectedTag)
-        {
-            AddTagToContainer(selectedTag);
-            TagSelectionList.IsVisible = false;
-        }
-    }
-
-    /// <summary>
-    /// Добавление нового тега в контейнер тегов.
-    /// </summary>
-    private void AddTagToContainer(string tagName)
-    {
-        if (selectedTags.Contains(tagName)) return;
-
-        selectedTags.Add(tagName);
-
-        var tagFrame = new Frame
-        {
+            AutomationId = categoryName,
             BackgroundColor = Colors.Gray,
             CornerRadius = 5,
-            Padding = new Thickness(5, 2),
+            Padding = new Thickness(10),
             Margin = new Thickness(5),
             HasShadow = false
         };
 
-        var tagGrid = new Grid
+        var categoryGrid = new Grid
         {
             ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = GridLength.Auto },
-                new ColumnDefinition { Width = GridLength.Star }
-            }
+        {
+            new ColumnDefinition { Width = GridLength.Auto },
+            new ColumnDefinition { Width = GridLength.Star }
+        }
         };
 
         var deleteButton = new ImageButton
@@ -155,50 +162,58 @@ public partial class Profile : ContentPage
             BackgroundColor = Colors.Transparent,
             WidthRequest = 16,
             HeightRequest = 16,
-            IsVisible = _isEditing,
             HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Center
+            VerticalOptions = LayoutOptions.Center,
+            IsVisible = _isEditing
         };
 
         deleteButton.Clicked += (s, e) =>
         {
-            TagsContainer.Children.Remove(tagFrame);
-            selectedTags.Remove(tagName);
-            PopulateTagSelectionList();
+            CategoriesContainer.Children.Remove(categoryFrame);
+            addedCategories.Remove(categoryName);
         };
 
-        var tagLabel = new Label
+        var categoryLabel = new Label
         {
-            Text = tagName,
+            Text = categoryName,
             TextColor = Colors.White,
-            FontSize = 14,
+            FontSize = 16,
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Start
         };
 
-        tagGrid.Children.Add(deleteButton);
+        categoryGrid.Children.Add(deleteButton);
         Grid.SetColumn(deleteButton, 0);
-        tagGrid.Children.Add(tagLabel);
-        Grid.SetColumn(tagLabel, 1);
+        categoryGrid.Children.Add(categoryLabel);
+        Grid.SetColumn(categoryLabel, 1);
 
-        tagFrame.Content = tagGrid;
+        categoryFrame.Content = categoryGrid;
 
-        TagsContainer.Children.Add(tagFrame);
+        CategoriesContainer.Children.Add(categoryFrame);
+
+        categoryFrame.GestureRecognizers.Add(new TapGestureRecognizer{Command = new Command(() => OpenCategoryPopup(categoryName))});
+    }
+
+
+    /// <summary>
+    /// Переключает видимость кнопок удаления для карточек.
+    /// </summary>
+    private void ToggleDeleteButtons(bool isVisible)
+    {
+        foreach (var frame in CategoriesContainer.Children.OfType<Frame>())
+        {
+            if (frame.Content is Grid grid && grid.Children.OfType<ImageButton>().FirstOrDefault() is ImageButton deleteButton)
+            {
+                deleteButton.IsVisible = isVisible;
+            }
+        }
     }
 
     /// <summary>
-    /// Заполнение списка доступных для выбора тегов.
+    /// Сохранение изменений профиля.
     /// </summary>
-    private void PopulateTagSelectionList()
-    {
-        var availableTags = allTags.Except(selectedTags).ToList();
-        TagSelectionList.ItemsSource = availableTags;
-    }
-
     private void SaveProfileChanges()
     {
         DisplayAlert("Success", "Profile changes saved!", "OK");
     }
 }
-
-
