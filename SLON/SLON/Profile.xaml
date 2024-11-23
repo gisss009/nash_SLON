@@ -227,69 +227,69 @@
                     <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
                         <!-- Cancel Icon -->
                         <ImageButton x:Name="CancelEventButton"
-                            Source="delete_icon.png"
-                            BackgroundColor="Transparent"
-                            WidthRequest="24"
-                            HeightRequest="24"
-                            Clicked="OnCancelEventClicked" />
+                                     Source="delete_icon.png"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     Clicked="OnCancelEventClicked" />
                         <!-- Title -->
                         <Label Text="Create event card"
-                       FontSize="20"
-                       FontAttributes="Bold"
-                       TextColor="White"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"
-                       Grid.Column="1" />
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Grid.Column="1" />
                         <!-- Save Icon -->
                         <ImageButton x:Name="SaveEventButton"
-                            Source="save_icon.png"
-                            BackgroundColor="Transparent"
-                            WidthRequest="24"
-                            HeightRequest="24"
-                            Clicked="OnSaveEventClicked"
-                            Grid.Column="2" />
+                                     Source="save_icon.png"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     Clicked="OnSaveEventClicked"
+                                     Grid.Column="2" />
                     </Grid>
 
                     <!-- Event Name -->
                     <Frame BackgroundColor="Gray" CornerRadius="0" Padding="10">
                         <Entry x:Name="EventNameInput"
-                       Placeholder="Event's name"
-                       TextColor="White"
-                       FontSize="18"
-                       BackgroundColor="Transparent" />
+                               Placeholder="Event's name"
+                               TextColor="White"
+                               FontSize="18"
+                               BackgroundColor="Transparent" />
                     </Frame>
 
                     <!-- Tags Section -->
                     <VerticalStackLayout>
                         <Label Text="Tags"
-                       FontSize="16"
-                       FontAttributes="Bold"
-                       TextColor="White"
-                       HorizontalOptions="Center"/>
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
                         <ScrollView VerticalOptions="FillAndExpand" HeightRequest="80" BackgroundColor="Gray" >
                             <Editor x:Name="EventTagsInput"
-                            Placeholder="Enter tags... Tag1 Tag2 Tag3"
-                            TextColor="White"
-                            FontSize="16"
-                            AutoSize="TextChanges"
-                            BackgroundColor="Transparent" />
+                                    Placeholder="Enter tags... Tag1 Tag2 Tag3"
+                                    TextColor="White"
+                                    FontSize="16"
+                                    AutoSize="TextChanges"
+                                    BackgroundColor="Transparent" />
                         </ScrollView>
                     </VerticalStackLayout>
 
                     <!-- Short Description Section -->
                     <VerticalStackLayout>
                         <Label Text="Short description"
-                       FontSize="16"
-                       FontAttributes="Bold"
-                       TextColor="White"
-                       HorizontalOptions="Center"/>
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
                         <ScrollView VerticalOptions="FillAndExpand" HeightRequest="120" BackgroundColor="Gray">
                             <Editor x:Name="EventDescriptionInput"
-                            Placeholder="Describe the event..."
-                            TextColor="White"
-                            FontSize="16"
-                            AutoSize="TextChanges"
-                            BackgroundColor="Transparent" />
+                                    Placeholder="Describe the event..."
+                                    TextColor="White"
+                                    FontSize="16"
+                                    AutoSize="TextChanges"
+                                    BackgroundColor="Transparent" />
                         </ScrollView>
                     </VerticalStackLayout>
 
