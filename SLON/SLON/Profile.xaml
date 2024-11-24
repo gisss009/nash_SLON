@@ -251,7 +251,7 @@
                     </Grid>
 
                     <!-- Event Name -->
-                    <Frame BackgroundColor="Gray" CornerRadius="0" Padding="10">
+                    <Frame BackgroundColor="Gray" CornerRadius="0" Padding="10" BorderColor="Black">
                         <Entry x:Name="EventNameInput"
                                Placeholder="Event's name"
                                TextColor="White"
@@ -295,9 +295,7 @@
 
                     <!-- Location -->
                     <VerticalStackLayout>
-                        <!-- Заголовок -->
                         <Label Text="Location" FontSize="16" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" />
-
                         <!-- Контейнер с прокруткой для поля ввода -->
                         <Grid VerticalOptions="FillAndExpand" BackgroundColor="Gray">
                             <!-- Поле ввода с прокруткой -->
@@ -308,10 +306,10 @@
                                         PlaceholderColor="White" 
                                         BackgroundColor="Transparent" 
                                         AutoSize="TextChanges"
-                                        HorizontalOptions="StartAndExpand" />
+                                        Margin="0,18,0,0"/>
                             </ScrollView>
 
-                            <!-- Кнопки переключения (фигурируют в верхней части, не прокручиваются) -->
+                            <!-- Кнопки переключения-->
                             <HorizontalStackLayout HorizontalOptions="End">
                                 <Border Padding="-20" Margin="0,0,0,75">
                                     <Border.StrokeShape>

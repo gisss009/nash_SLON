@@ -15,7 +15,7 @@ public partial class Profile : ContentPage
         "IT", "Creation", "Sport", "Science", "Business", "Education"
     };
 
-    // Список для хранения добавленных категорий и их данных
+    // Словарь для хранения добавленных категорий и их данных
     private readonly Dictionary<string, (string Tags, string Skills)> addedCategories = new();
 
     // Список мероприятий
@@ -75,7 +75,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Открытие окна для добавления новой категории
+    /// Открытие окна для добавления новой категории.
     /// </summary>
     private async void OnAddCategoryIconClicked(object sender, EventArgs e)
     {
@@ -94,6 +94,8 @@ public partial class Profile : ContentPage
     /// </summary>
     private void OpenCategoryPopup(string categoryName)
     {
+        if (!_isEditing) {  return; }
+            
         CategoryPopup.IsVisible = true;
         CategoryNameLabel.Text = categoryName;
 
@@ -244,7 +246,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Сохранить мероприятие.
+    /// Сохранение мероприятия.
     /// </summary>
     private void OnSaveEventClicked(object sender, EventArgs e)
     {
@@ -292,6 +294,7 @@ public partial class Profile : ContentPage
     {
         var frame = new Frame
         {
+            AutomationId = eventName,
             BackgroundColor = Colors.Gray,
             CornerRadius = 5,
             Padding = 10,
@@ -301,10 +304,10 @@ public partial class Profile : ContentPage
         var grid = new Grid
         {
             ColumnDefinitions = new ColumnDefinitionCollection
-            {
-                new ColumnDefinition { Width = GridLength.Auto },
-                new ColumnDefinition { Width = GridLength.Star }
-            }
+        {
+            new ColumnDefinition { Width = GridLength.Auto },
+            new ColumnDefinition { Width = GridLength.Star }
+        }
         };
 
         var deleteButton = new ImageButton
@@ -336,18 +339,17 @@ public partial class Profile : ContentPage
         Grid.SetColumn(label, 1);
 
         frame.Content = grid;
-        frame.GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = new Command(() => EditEventCard(eventName))
-        });
 
         EventsContainer.Children.Add(frame);
+
+        frame.GestureRecognizers.Clear();
+        frame.GestureRecognizers.Add(new TapGestureRecognizer{Command = new Command(() =>{OpenEventPopup(eventName, _isEditing);})});
     }
 
     /// <summary>
-    /// Редактирование карточки мероприятия.
+    /// Открытие всплывающего окна для просмотра/редактирования мероприятия.
     /// </summary>
-    private void EditEventCard(string eventName)
+    private void OpenEventPopup(string eventName, bool isEditing)
     {
         var eventData = events.FirstOrDefault(e => e.Name == eventName);
 
@@ -355,6 +357,10 @@ public partial class Profile : ContentPage
         EventTagsInput.Text = eventData.Tags;
         EventDescriptionInput.Text = eventData.Description;
         EventLocationInput.Text = eventData.Location;
+
+        EventNameInput.IsReadOnly = EventTagsInput.IsReadOnly = EventDescriptionInput.IsReadOnly = EventLocationInput.IsReadOnly = !isEditing;
+        SaveEventButton.IsVisible = OfflineButton.IsEnabled = OnlineButton.IsEnabled = isEditing;
+
         EventPopup.IsVisible = true;
     }
 
