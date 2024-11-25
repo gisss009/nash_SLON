@@ -1,8 +1,11 @@
-﻿using SLON.Models;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
+using SLON.Models;
 using System.Collections.ObjectModel;
 
 namespace SLON
 {
+
     public partial class MainPage : ContentPage
     {
         public ObservableCollection<User> Users { get; set; } = new();
@@ -36,6 +39,12 @@ namespace SLON
             //    Users.Add(user);
             //}
         }
+        private void OnButtonSettingsClicked(object sender, System.EventArgs e)
+        {
+            var popup = new MainPageSettings();
 
+            popup.Anchor = sender as Button;
+            this.ShowPopup(popup);
+        }
     }
 }
