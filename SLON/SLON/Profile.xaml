@@ -162,7 +162,6 @@
                                 IsReadOnly="True" />
                     </ScrollView>
                 </Frame>
-
             </VerticalStackLayout>
         </ScrollView>
 
@@ -259,16 +258,16 @@
                                BackgroundColor="Transparent" />
                     </Frame>
 
-                    <!-- Tags Section -->
+                    <!-- Category Section -->
                     <VerticalStackLayout>
-                        <Label Text="Tags"
+                        <Label Text="Categories"
                                FontSize="16"
                                FontAttributes="Bold"
                                TextColor="White"
                                HorizontalOptions="Center"/>
                         <ScrollView VerticalOptions="FillAndExpand" HeightRequest="80" BackgroundColor="Gray" >
-                            <Editor x:Name="EventTagsInput"
-                                    Placeholder="Enter tags... Tag1 Tag2 Tag3"
+                            <Editor x:Name="EventCategoriesInput"
+                                    Placeholder="Enter categories... IT Creation Sport Science Business Education"
                                     TextColor="White"
                                     FontSize="16"
                                     AutoSize="TextChanges"

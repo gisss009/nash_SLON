@@ -19,7 +19,7 @@ public partial class Profile : ContentPage
     private readonly Dictionary<string, (string Tags, string Skills)> addedCategories = new();
 
     // Список мероприятий
-    private readonly List<(string Name, string Tags, string Description, string Location, bool IsOnline)> events = new();
+    private readonly List<(string Name, string Categories, string Description, string Location, bool IsOnline)> events = new();
 
     public Profile()
     {
@@ -238,7 +238,7 @@ public partial class Profile : ContentPage
     private void OnAddEventIconClicked(object sender, EventArgs e)
     {
         EventNameInput.Text = string.Empty;
-        EventTagsInput.Text = string.Empty;
+        EventCategoriesInput.Text = string.Empty;
         EventDescriptionInput.Text = string.Empty;
         EventLocationInput.Text = string.Empty;
 
@@ -251,7 +251,7 @@ public partial class Profile : ContentPage
     private void OnSaveEventClicked(object sender, EventArgs e)
     {
         string name = EventNameInput.Text;
-        string tags = EventTagsInput.Text;
+        string tags = EventCategoriesInput.Text;
         string description = EventDescriptionInput.Text;
         string location = EventLocationInput.Text;
         bool isOnline = OnlineButton.BackgroundColor == Colors.White;
@@ -354,11 +354,11 @@ public partial class Profile : ContentPage
         var eventData = events.FirstOrDefault(e => e.Name == eventName);
 
         EventNameInput.Text = eventData.Name;
-        EventTagsInput.Text = eventData.Tags;
+        EventCategoriesInput.Text = eventData.Categories;
         EventDescriptionInput.Text = eventData.Description;
         EventLocationInput.Text = eventData.Location;
 
-        EventNameInput.IsReadOnly = EventTagsInput.IsReadOnly = EventDescriptionInput.IsReadOnly = EventLocationInput.IsReadOnly = !isEditing;
+        EventNameInput.IsReadOnly = EventCategoriesInput.IsReadOnly = EventDescriptionInput.IsReadOnly = EventLocationInput.IsReadOnly = !isEditing;
         SaveEventButton.IsVisible = OfflineButton.IsEnabled = OnlineButton.IsEnabled = isEditing;
 
         EventPopup.IsVisible = true;
