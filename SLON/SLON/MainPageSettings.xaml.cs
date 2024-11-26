@@ -10,11 +10,13 @@ namespace SLON;
 public partial class MainPageSettings : Popup
 {
     public ObservableCollection<string> categories { get; set; } = new();
-    public HashSet<string> selectedCategories { get; set; } = Settings.selectedCategories;
+    //public HashSet<string> selectedCategories { get; set; } = Settings.selectedCategories;
+    private MainPage mainPage;
 
-    public MainPageSettings()
+    public MainPageSettings(MainPage mainPage)
     {
         InitializeComponent();
+        this.mainPage = mainPage;
 
         categories.Add("IT");
         categories.Add("Creation");
@@ -23,14 +25,12 @@ public partial class MainPageSettings : Popup
         categories.Add("Business");
         categories.Add("Education");
 
-        // Создаём CollectionView программно
         var collectionView = new CollectionView
         {
             ItemsSource = categories,
             SelectionMode = SelectionMode.None
         };
 
-        // Устанавливаем DataTemplate для элементов
         collectionView.ItemTemplate = new DataTemplate(() =>
         {
             var button = new Button
@@ -38,27 +38,24 @@ public partial class MainPageSettings : Popup
                 TextColor = Colors.Black,
                 CornerRadius = 3,
                 HeightRequest = 40,
+                Padding=-5,
                 Margin = new Thickness(0, 5),
                 FontAttributes = FontAttributes.Bold,
+                BorderColor = Colors.Black,
+                BorderWidth = 2,
+                FontSize = 18,
             };
 
-            // Привязываем текст кнопки
             button.SetBinding(Button.TextProperty, ".");
 
             // Обновляем цвет кнопки в зависимости от состояния
             button.BindingContextChanged += (sender, e) =>
             {
                 if (sender is Button btn)
-                {
-                    if (selectedCategories.Contains((string)btn.BindingContext))
-                    {
+                    if (Settings.selectedCategories.Contains((string)btn.BindingContext))
                         btn.BackgroundColor = Color.FromRgb(61, 61, 61); // Выбранная категория
-                    }
                     else
-                    {
                         btn.BackgroundColor = Color.FromRgb(217, 217, 217); // Не выбрана категория
-                    }
-                }
             };
 
             // Добавляем обработчик нажатия
@@ -69,40 +66,33 @@ public partial class MainPageSettings : Popup
 
 
         if (verticalStackLayout != null)
-        {
             verticalStackLayout.Children.Insert(1, collectionView); // Индекс 1 — чтобы добавить CollectionView после заголовка
-        }
-        else
-        {
-            Debug.WriteLine("verticalStackLayout не найден.");
-        }
     }
 
     private void OnCloseClicked(object sender, EventArgs e)
     {
         // Сохраняем выбранные категории в Settings
-        Settings.selectedCategories = new HashSet<string>(selectedCategories); // Важно создать новый экземпляр
+        mainPage.FilterCards();
         Close();
     }
 
-    private void OnCategorySelected(object sender, EventArgs e)
+    private void OnCategorySelected(object? sender, EventArgs e)
     {
         if (sender is Button button)
         {
-            // Выбор/отмена выбора категории
-            if (!selectedCategories.Contains(button.Text))
+            if (!Settings.selectedCategories.Contains(button.Text))
             {
                 button.BackgroundColor = Color.FromRgb(61, 61, 61); // Выбранная категория
-                selectedCategories.Add(button.Text);
+                Settings.selectedCategories.Add(button.Text);
             }
             else
             {
                 button.BackgroundColor = Color.FromRgb(217, 217, 217); // Не выбрана категория
-                selectedCategories.Remove(button.Text);
+                Settings.selectedCategories.Remove(button.Text);
             }
 
             // Логируем текущее состояние после каждого выбора
-            Debug.WriteLine("Current selected categories: " + string.Join(", ", selectedCategories));
+            Debug.WriteLine("Current selected categories: " + string.Join(", ", Settings.selectedCategories));
         }
     }
 }
