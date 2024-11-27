@@ -117,7 +117,7 @@
             
             <!--Event card-->
 
-            <swipeCardView:SwipeCardView x:Name="swipeCardView" 
+            <!--<swipeCardView:SwipeCardView x:Name="swipeCardView" 
                             ItemsSource="{Binding Users}" Padding="15"
                             SupportedSwipeDirections="Left, Right"
                             HorizontalOptions="FillAndExpand" 
@@ -130,7 +130,7 @@
                             <Frame BackgroundColor="#1E1E1E" CornerRadius="15" Padding="20"
                     Margin="0,40,0,80" InputTransparent="True">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                    <!-- Аватар -->
+                                    --><!-- Аватар --><!--
 
                                     <Ellipse WidthRequest="80" HeightRequest="80" Fill="#3C3C3C"
                                 HorizontalOptions="Center" VerticalOptions="Start">
@@ -140,26 +140,25 @@
                                         <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
                                     </Ellipse>
 
-                                    <!-- Заголовок -->
+                                    --><!-- Заголовок --><!--
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="16" FontAttributes="Bold"
                             HorizontalOptions="Center" />
                                     <Label Text="{Binding Vocation}" TextColor="White" FontSize="14"
                             HorizontalOptions="Center" />
 
-                                    <!-- Теги -->
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Categories" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
                                     <Label Text="{Binding Tags}" TextColor="White" FontSize="12" />
 
-                                    <!-- Информация -->
+                                    --><!-- Информация --><!--
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Info" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
                                     <Label Text="{Binding Info}"
                             TextColor="White" FontSize="12" LineBreakMode="WordWrap" />
 
-                                    <!-- Навыки -->
+                                    --><!-- Навыки --><!--
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Place" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
@@ -169,7 +168,7 @@
                         </Grid>
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
-            </swipeCardView:SwipeCardView>
+            </swipeCardView:SwipeCardView>-->
             
         </Grid>
     </StackLayout>
