@@ -16,6 +16,9 @@ namespace SLON
         public ObservableCollection<Event> Events { get; set; } = new();
         public ICommand OnCardSwipedCommand { get; }
 
+        // profiles = 0; events = 1
+        public int ProfilesEventsButtonStatus = 0;
+
         public MainPage()
         {
             InitializeComponent();
@@ -120,6 +123,34 @@ namespace SLON
         private void OnButtonSettingsClicked(object sender, System.EventArgs e)
         {
             this.ShowPopupAsync(new MainPageSettings(this));
+        }
+
+        public void OnEventsButtonClicked(object sender, EventArgs e)
+        {
+            if (ProfilesEventsButtonStatus != 0)
+                return;
+
+            ProfilesEventsButtonStatus = 1;
+
+            EventsButton.BackgroundColor = Colors.Grey;
+            ProfilesButton.BackgroundColor = Colors.Black;
+
+            swipeCardView.IsVisible = false;
+            swipeCardViewEvent.IsVisible = true;
+        }
+
+        public void OnProfilesButtonClicked(object sender, EventArgs e)
+        {
+            if (ProfilesEventsButtonStatus != 1)
+                return;
+
+            ProfilesEventsButtonStatus = 0;
+
+            EventsButton.BackgroundColor = Colors.Black;
+            ProfilesButton.BackgroundColor = Colors.Grey;
+
+            swipeCardView.IsVisible = true;
+            swipeCardViewEvent.IsVisible = false;
         }
     }
 }
