@@ -14,10 +14,11 @@ public class Event
     public string Info;
     public string Place;
 
-    public Event(int id, string name, string info, string place)
+    public Event(int id, string name, string tags, string info, string place)
     {
         Id = id;
         Name = name;
+        Tags = tags;
         Info = info;
         Place = place;
     }

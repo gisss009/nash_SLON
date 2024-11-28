@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using Plugin.Maui.SwipeCardView;
+using Plugin.Maui.SwipeCardView.Core;
 using SLON.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows.Input;
 
 namespace SLON
 {
@@ -12,11 +14,30 @@ namespace SLON
     {
         public ObservableCollection<User> Users { get; set; } = new();
         public ObservableCollection<Event> Events { get; set; } = new();
+        public ICommand OnCardSwipedCommand { get; }
 
         public MainPage()
         {
             InitializeComponent();
+            OnCardSwipedCommand = new Command<SwipedCardEventArgs>(OnCardSwiped);
             BindingContext = this;
+        }
+
+        private void OnCardSwiped(SwipedCardEventArgs e)
+        {
+            var item = e.Item as User;
+
+            if (e.Direction == SwipeCardDirection.Left)
+            {
+                Favourites.favorites.Add(item);
+                //    Favourites.favorites.Add(new Event(
+                //    swipedUser.Id,
+                //    swipedUser.Name,
+                //    swipedUser.Tags,
+                //    swipedUser.Info,
+                //    "No location specified"
+                //));
+            }
         }
 
         protected /*async*/ override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -46,16 +67,16 @@ namespace SLON
 
         public void FillEventsCards()
         {
-            Events.Add(new Event(1, "Tech Conference 2024", "A conference on the latest trends in mobile app design, APIs, and UI/UX", "Ulitsa 2-ya Krivorozhskaya, Rostov-on-Don"));
-            Events.Add(new Event(2, "Backend Development Workshop", "A hands-on workshop focusing on building high-performance APIs", "Ulitsa Budennovskiy, Rostov-on-Don"));
-            Events.Add(new Event(3, "React Masterclass", "An in-depth session on mastering React and responsive design", "Ulitsa Berzhaninova, Rostov-on-Don"));
-            Events.Add(new Event(4, "AI and Machine Learning Summit", "A summit dedicated to AI advancements and machine learning applications", "Ulitsa Chekistov, Rostov-on-Don"));
-            Events.Add(new Event(5, "Social Media Marketing Bootcamp", "A bootcamp focused on building effective social media campaigns", "Ulitsa Pushkinskaya, Rostov-on-Don"));
-            Events.Add(new Event(6, "DevOps and Automation Training", "A training session on CI/CD pipelines and DevOps tools", "Ulitsa Sovetskaya, Rostov-on-Don"));
-            Events.Add(new Event(7, "Agile Project Management Seminar", "A seminar on Agile methodologies, Scrum, and Kanban", "Ulitsa Lenina, Rostov-on-Don"));
-            Events.Add(new Event(8, "Blockchain & Crypto Conference", "A conference focused on the latest in blockchain technology and smart contracts", "Ulitsa Maksima Gorkogo, Rostov-on-Don"));
-            Events.Add(new Event(9, "Content Writing for SEO", "A workshop on creating SEO-friendly content for blogs and websites", "Ulitsa Nekrasova, Rostov-on-Don"));
-            Events.Add(new Event(10, "Cybersecurity Awareness Workshop", "A workshop on network security and ethical hacking", "Ulitsa Molodezhnyy, Rostov-on-Don"));
+            Events.Add(new Event(1, "Tech Conference 2024", "Technology, Mobile, UI/UX", "A conference on the latest trends in mobile app design, APIs, and UI/UX", "Ulitsa 2-ya Krivorozhskaya, Rostov-on-Don"));
+            Events.Add(new Event(2, "Backend Development Workshop", "Backend, APIs, Performance", "A hands-on workshop focusing on building high-performance APIs", "Ulitsa Budennovskiy, Rostov-on-Don"));
+            Events.Add(new Event(3, "React Masterclass", "React, Frontend, Responsive Design", "An in-depth session on mastering React and responsive design", "Ulitsa Berzhaninova, Rostov-on-Don"));
+            Events.Add(new Event(4, "AI and Machine Learning Summit", "AI, Machine Learning, Technology", "A summit dedicated to AI advancements and machine learning applications", "Ulitsa Chekistov, Rostov-on-Don"));
+            Events.Add(new Event(5, "Social Media Marketing Bootcamp", "Marketing, Social Media, Campaigns", "A bootcamp focused on building effective social media campaigns", "Ulitsa Pushkinskaya, Rostov-on-Don"));
+            Events.Add(new Event(6, "DevOps and Automation Training", "DevOps, CI/CD, Automation", "A training session on CI/CD pipelines and DevOps tools", "Ulitsa Sovetskaya, Rostov-on-Don"));
+            Events.Add(new Event(7, "Agile Project Management Seminar", "Agile, Scrum, Kanban", "A seminar on Agile methodologies, Scrum, and Kanban", "Ulitsa Lenina, Rostov-on-Don"));
+            Events.Add(new Event(8, "Blockchain & Crypto Conference", "Blockchain, Cryptocurrency, Smart Contracts", "A conference focused on the latest in blockchain technology and smart contracts", "Ulitsa Maksima Gorkogo, Rostov-on-Don"));
+            Events.Add(new Event(9, "Content Writing for SEO", "SEO, Content Writing, Blogging", "A workshop on creating SEO-friendly content for blogs and websites", "Ulitsa Nekrasova, Rostov-on-Don"));
+            Events.Add(new Event(10, "Cybersecurity Awareness Workshop", "Cybersecurity, Networking, Ethical Hacking", "A workshop on network security and ethical hacking", "Ulitsa Molodezhnyy, Rostov-on-Don"));
         }
 
         public void FilterCards()
@@ -98,10 +119,7 @@ namespace SLON
 
         private void OnButtonSettingsClicked(object sender, System.EventArgs e)
         {
-            var popup = new MainPageSettings(this);
-
-            popup.Anchor = sender as Button;
-            this.ShowPopup(popup);
+            this.ShowPopupAsync(new MainPageSettings(this));
         }
     }
 }
