@@ -7,18 +7,17 @@
     <Shell.TitleView>
         <HorizontalStackLayout HorizontalOptions="Center">
             <Label 
-             Text="Your likes"
-             Padding="10"
-             TextColor="White"
-             FontSize="Title" />
+          Text="Your likes"
+          Padding="10"
+          TextColor="White"
+          FontSize="Title" />
         </HorizontalStackLayout>
     </Shell.TitleView>
 
 
-    <VerticalStackLayout
-        
-        x:Name="favoritesPanel" Padding="10" BackgroundColor="Black">
-        
+    <ScrollView>
+        <VerticalStackLayout   x:Name="favoritesPanel" Padding="10" BackgroundColor="Black">
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>  

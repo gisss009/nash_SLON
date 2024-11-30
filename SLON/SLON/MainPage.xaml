@@ -19,7 +19,7 @@
 
     <StackLayout Padding="10">
 
-        <Grid >
+        <Grid>
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="-3">
                 <Border>
                     <Border.StrokeShape>
@@ -80,13 +80,21 @@
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <!-- Аватар -->
 
-                                    <Ellipse WidthRequest="80" HeightRequest="80" Fill="#3C3C3C"
-                                            HorizontalOptions="Center" VerticalOptions="Start">
-                                        <Ellipse.Stroke>
-                                            <SolidColorBrush Color="White"/>
-                                        </Ellipse.Stroke>
-                                        <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
-                                    </Ellipse>
+                                    <Grid>
+
+                                        <Ellipse WidthRequest="80" HeightRequest="80"
+                                                 HorizontalOptions="Center" VerticalOptions="Start">
+                                            <Ellipse.Stroke>
+                                                <SolidColorBrush Color="White"/>
+                                            </Ellipse.Stroke>
+                                            <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
+                                        </Ellipse>
+                                        <Image Grid.Column="0" Aspect="AspectFill" HeightRequest="80" Source="Resources/Images/default_profile_icon.png" WidthRequest="80">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="40, 40" RadiusX="40" RadiusY="40" />
+                                            </Image.Clip>
+                                        </Image>
+                                    </Grid>
 
                                     <!-- Заголовок -->
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="16" FontAttributes="Bold"
@@ -137,7 +145,6 @@
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
 
                                     <!--Заголовок-->
-
                                     <Label Text="Event" TextColor="White" FontSize="Title" FontAttributes="Bold"
                                             HorizontalOptions="Center" />
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="Header" FontAttributes="Bold"

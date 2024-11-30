@@ -5,11 +5,11 @@ using Plugin.Maui.SwipeCardView.Core;
 using SLON.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 
 namespace SLON
 {
-
     public partial class MainPage : ContentPage
     {
         public ObservableCollection<User> Users { get; set; } = new();
@@ -26,24 +26,7 @@ namespace SLON
             BindingContext = this;
         }
 
-        private void OnCardSwiped(SwipedCardEventArgs e)
-        {
-            var item = e.Item as User;
-
-            if (e.Direction == SwipeCardDirection.Left)
-            {
-                Favourites.favorites.Add(item);
-                //    Favourites.favorites.Add(new Event(
-                //    swipedUser.Id,
-                //    swipedUser.Name,
-                //    swipedUser.Tags,
-                //    swipedUser.Info,
-                //    "No location specified"
-                //));
-            }
-        }
-
-        protected /*async*/ override void OnNavigatedTo(NavigatedToEventArgs args)
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
 
@@ -56,7 +39,7 @@ namespace SLON
 
         public void FillUserCards()
         {
-            Users.Add(new User(1, "Alice Johnson", "IT, Creation", "UI Designer", "Specialist in mobile app design", "Adobe XD, Figma, Photoshop"));
+            Users.Add(new User(1, "Алиса Джигурда", "IT, Creation", "UI Designer", "Specialist in mobile app design", "Adobe XD, Figma, Photoshop"));
             Users.Add(new User(2, "Bob Smith", "IT", "Backend Developer", "Focused on high-performance APIs", "C#, .NET, SQL"));
             Users.Add(new User(3, "Carla Perez", "IT, Creation", "Frontend Developer", "React expert with a focus on responsive design", "JavaScript, React, CSS"));
             Users.Add(new User(4, "David Lee", "IT, Science", "Data Scientist", "Experienced in AI and machine learning", "Python, TensorFlow, PyTorch"));
@@ -66,6 +49,12 @@ namespace SLON
             Users.Add(new User(8, "Henry Carter", "IT, Business", "Blockchain Developer", "Expert in smart contracts", "Solidity, Ethereum, Web3"));
             Users.Add(new User(9, "Ivy Martinez", "Creation, Education", "Content Writer", "Crafts engaging stories", "Copywriting, Blogging, SEO Writing"));
             Users.Add(new User(10, "Jack Robinson", "IT, Science", "Cybersecurity Specialist", "Focus on network security", "Penetration Testing, Firewalls, Ethical Hacking"));
+
+            var usersToAdd = Users.Where(user => !Favourites.favorites.Any(fav => fav.Id == user.Id)).ToList();
+            foreach (var user in usersToAdd)
+            {
+                Users.Add(user);
+            }
         }
 
         public void FillEventsCards()
@@ -80,6 +69,31 @@ namespace SLON
             Events.Add(new Event(8, "Blockchain & Crypto Conference", "Blockchain, Cryptocurrency, Smart Contracts", "A conference focused on the latest in blockchain technology and smart contracts", "Ulitsa Maksima Gorkogo, Rostov-on-Don"));
             Events.Add(new Event(9, "Content Writing for SEO", "SEO, Content Writing, Blogging", "A workshop on creating SEO-friendly content for blogs and websites", "Ulitsa Nekrasova, Rostov-on-Don"));
             Events.Add(new Event(10, "Cybersecurity Awareness Workshop", "Cybersecurity, Networking, Ethical Hacking", "A workshop on network security and ethical hacking", "Ulitsa Molodezhnyy, Rostov-on-Don"));
+        }
+
+        private void OnCardSwiped(SwipedCardEventArgs e)
+        {
+            if (e.Item is User swipedUser)
+            {
+                if (e.Direction == SwipeCardDirection.Left)
+                {
+                    Debug.WriteLine($"Liked: {swipedUser.Name}");
+                    Debug.WriteLine($"count: {Favourites.favorites.Count}");
+
+                    if (!Favourites.favorites.Any(u => u.Id == swipedUser.Id))
+                    {
+                        Favourites.favorites.Add(swipedUser);
+                    }
+                }
+                else if (e.Direction == SwipeCardDirection.Right)
+                {
+                    Debug.WriteLine($"Skipped: {swipedUser.Name}");
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Swiped item is not a User");
+            }
         }
 
         public void FilterCards()
@@ -101,7 +115,7 @@ namespace SLON
                         {
                             flag = 1;
                             break;
-                        }    
+                        }
                     }
 
                     if (flag == 1)

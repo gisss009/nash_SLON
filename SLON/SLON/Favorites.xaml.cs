@@ -1,30 +1,38 @@
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Microsoft.Maui.Controls;
 using SLON.Models;
-using Syncfusion.Maui.Core.Internals;
-using static Microsoft.Maui.Controls.Button.ButtonContentLayout;
+
 namespace SLON;
 
 public partial class Favorites : ContentPage
 {
+    public ObservableCollection<User> favorites = Favourites.favorites;
+
     public Favorites()
     {
         InitializeComponent();
+        BindingContext = this;
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        Debug.WriteLine("NAVIGATE");
+        Debug.WriteLine("COUNT: " + favorites.Count);
+
         LoadFavorites();
     }
+
     private void LoadFavorites()
     {
-       
-        HashSet<User> favorites = Favourites.favorites;
-        //favorites.Add(new User(3, "Carla Perez", "IT, Creation", "Frontend Developer", "React expert with a focus on responsive design", "JavaScript, React, CSS"));
-        //favorites.Add(new User(4, "David Lee", "IT, Science", "Data Scientist", "Experienced in AI and machine learning", "Python, TensorFlow, PyTorch"));
-        //favorites.Add(new User(1, "Alice Johnson", "IT, Creation", "UI Designer", "Specialist in mobile app design", "Adobe XD, Figma, Photoshop"));
-        //favorites.Add(new User(2, "Bob Smith", "IT", "Backend Developer", "Focused on high-performance APIs", "C#, .NET, SQL"));
-
+        Debug.WriteLine($"count posle: {favorites.Count}");
         favoritesPanel.Children.Clear();
 
         if (favorites.Count == 0)
         {
+            Frame frame = new Frame();
             Image image = new Image
             {
                 Source = ImageSource.FromFile("Resources/Images/slon.png"),
@@ -33,9 +41,8 @@ public partial class Favorites : ContentPage
                 VerticalOptions = LayoutOptions.Center
             };
             image.Margin = new Thickness(0, DeviceInfo.Platform == DevicePlatform.iOS ? 20 : 100, 0, 0);
-            
 
-            // Если HashSet пуст, выводим:
+           
             Label firstLine = new Label
             {
 
@@ -48,6 +55,7 @@ public partial class Favorites : ContentPage
 
             };
             firstLine.Margin = new Thickness(0, DeviceInfo.Platform == DevicePlatform.iOS ? 20 : 0, 0, 0);
+
             Label secondLine = new Label
             {
 
@@ -60,52 +68,80 @@ public partial class Favorites : ContentPage
 
             };
             secondLine.Margin = new Thickness(0, DeviceInfo.Platform == DevicePlatform.iOS ? 20 : 0, 0, 0);
-            Content = new StackLayout
+
+            frame.Content = new StackLayout
             {
                 Children = {
                     image,
                     firstLine,
                     secondLine
-            
-            
-            }
+                }
             };
-        }
 
+            favoritesPanel.Children.Add(image);
+            favoritesPanel.Children.Add(firstLine);
+            favoritesPanel.Children.Add(secondLine);
+        }
         else
         {
-            // Если есть элементы, создаем кнопки для каждого пользователя
             foreach (var user in favorites)
             {
-                
+                Debug.WriteLine("ADDED IN BUTTON: " + user.Name);
 
-                Button userButton = new Button
+                Frame userFrame = new Frame
                 {
-                    ImageSource = ImageSource.FromFile("Resources/Images/account.png"),
-
-                    ContentLayout = new Button.ButtonContentLayout(ImagePosition.Left, 100),
-                    Text = user.Name + "\n" + user.Vocation, 
+                    Padding = new Thickness(5),
                     BackgroundColor = Color.FromArgb("#222222"),
-                    Padding = 5,
                     Margin = new Thickness(5),
                     CornerRadius = 10
                 };
 
-                
-                // обработчик события нажатия на кнопку
-                userButton.Clicked += UserButton_Click;
+                Grid userGrid = new Grid
+                {
+                    ColumnDefinitions = new ColumnDefinitionCollection
+                    {
+                        new ColumnDefinition { Width = new GridLength(60) },
+                        new ColumnDefinition { Width = GridLength.Star }
+                    }
+                };
 
+                Image userIcon = new Image
+                {
+                    Source = ImageSource.FromFile("Resources/Images/default_profile_icon1.png"),
+                    WidthRequest = 50,
+                    HeightRequest = 50,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Start
+                };
+                Grid.SetColumn(userIcon, 0);
 
-                favoritesPanel.Children.Add(userButton);
-                this.Content = favoritesPanel;
+                Label userLabel = new Label
+                {
+                    Text = $"{user.Name}\n{user.Vocation}",
+                    TextColor = Colors.White,
+                    FontSize = 16,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Start
+                };
+                Grid.SetColumn(userLabel, 1);
+
+                userGrid.Children.Add(userIcon);
+                userGrid.Children.Add(userLabel);
+
+                TapGestureRecognizer tapGesture = new TapGestureRecognizer();
+                tapGesture.Tapped += (s, e) => OnUserTapped(user);
+                userGrid.GestureRecognizers.Add(tapGesture);
+
+                userFrame.Content = userGrid;
+
+                favoritesPanel.Children.Add(userFrame);
             }
         }
-    }
+        }
 
-    private async void UserButton_Click(object sender, EventArgs e)
-    {
-        
-    }
-}
-
+        private async void OnUserTapped(User selectedUser)
+        {
+            await DisplayAlert("User Info", $"You clicked on {selectedUser.Name}", "OK");
+        }
+    };
 
