@@ -2,11 +2,22 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SLON.Favorites"
-             Title="Favorites">
-    <VerticalStackLayout>
-        <Label
-            Text="Это избранные111"
-            Style="{StaticResource Headline}"
-            SemanticProperties.HeadingLevel="Level1" />
-    </VerticalStackLayout>
-</ContentPage>
+             BackgroundColor="#141414">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout HorizontalOptions="Center">
+            <Label 
+          Text="Your likes"
+          Padding="10"
+          TextColor="White"
+          FontSize="Title" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+
+    <ScrollView>
+        <VerticalStackLayout   x:Name="favoritesPanel" Padding="10" BackgroundColor="Black">
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>  
