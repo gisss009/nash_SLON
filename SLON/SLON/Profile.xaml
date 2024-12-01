@@ -112,6 +112,41 @@
                     </VerticalStackLayout>
                 </Frame>
 
+                <!-- Events Section -->
+                <Frame BackgroundColor="Gray"
+                       CornerRadius="10"
+                       Padding="10">
+                    <VerticalStackLayout>
+                        <!-- Events Title -->
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="Events"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Start" />
+
+                            <!-- Add Event Button -->
+                            <ImageButton x:Name="AddEventIcon"
+                                         Source="add_icon.png"
+                                         BackgroundColor="Transparent"
+                                         WidthRequest="24"
+                                         HeightRequest="24"
+                                         HorizontalOptions="End"
+                                         VerticalOptions="Center"
+                                         IsVisible="False"
+                                         Clicked="OnAddEventIconClicked" />
+                        </Grid>
+
+                        <!-- Events Content -->
+                        <FlexLayout x:Name="EventsContainer"
+                                    Direction="Row"
+                                    Wrap="Wrap"
+                                    Margin="0,10,0,0">
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
                 <!-- Resume Section -->
                 <Frame BackgroundColor="Gray"
                        CornerRadius="10"
@@ -127,11 +162,10 @@
                                 IsReadOnly="True" />
                     </ScrollView>
                 </Frame>
-
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Popup для редактирования категории -->
+        <!-- CategoryPopup Section -->
         <ContentView x:Name="CategoryPopup" IsVisible="False" BackgroundColor="#80000000">
             <Frame BackgroundColor="#2E2E2E" CornerRadius="10" Padding="20" Margin="40">
                 <VerticalStackLayout Spacing="15">
@@ -146,27 +180,33 @@
                     <!-- Поле для тегов -->
                     <VerticalStackLayout>
                         <Label Text="Tags"
-                               FontSize="14"
+                               FontSize="16"
                                FontAttributes="Bold"
                                TextColor="White" />
-                        <Editor x:Name="TagsEditor"
-                                Placeholder="Enter tags..."
-                                BackgroundColor="Gray"
-                                TextColor="White"
-                                FontSize="16" />
+                        <ScrollView VerticalOptions="FillAndExpand" HeightRequest="150">
+                            <Editor x:Name="TagsEditor"
+                                    Placeholder="Enter tags... Tag1 Tag2 Tag3"
+                                    BackgroundColor="Gray"
+                                    TextColor="White"
+                                    FontSize="16"
+                                    AutoSize="TextChanges" />
+                        </ScrollView>
                     </VerticalStackLayout>
 
                     <!-- Поле для описания навыков -->
                     <VerticalStackLayout>
                         <Label Text="Skills"
-                               FontSize="14"
+                               FontSize="16"
                                FontAttributes="Bold"
                                TextColor="White" />
-                        <Editor x:Name="SkillsEditor"
-                                Placeholder="Describe your skills..."
-                                BackgroundColor="Gray"
-                                TextColor="White"
-                                FontSize="16" />
+                        <ScrollView VerticalOptions="FillAndExpand" HeightRequest="150">
+                            <Editor x:Name="SkillsEditor"
+                                    Placeholder="Describe your skills..."
+                                    BackgroundColor="Gray"
+                                    TextColor="White"
+                                    FontSize="16"
+                                    AutoSize="TextChanges" />
+                        </ScrollView>
                     </VerticalStackLayout>
 
                     <!-- Кнопка сохранения -->
@@ -177,7 +217,144 @@
                 </VerticalStackLayout>
             </Frame>
         </ContentView>
+
+        <!-- EventPopup Section -->
+        <ContentView x:Name="EventPopup" IsVisible="False" BackgroundColor="#80000000">
+            <Frame BackgroundColor="#2E2E2E" CornerRadius="10" Padding="20" Margin="40">
+                <VerticalStackLayout Spacing="20">
+                    <!-- Header Section -->
+                    <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                        <!-- Cancel Icon -->
+                        <ImageButton x:Name="CancelEventButton"
+                                     Source="delete_icon.png"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     Clicked="OnCancelEventClicked" />
+                        <!-- Title -->
+                        <Label Text="Create event card"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Grid.Column="1" />
+                        <!-- Save Icon -->
+                        <ImageButton x:Name="SaveEventButton"
+                                     Source="save_icon.png"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     Clicked="OnSaveEventClicked"
+                                     Grid.Column="2" />
+                    </Grid>
+
+                    <!-- Event Name -->
+                    <Frame BackgroundColor="Gray" CornerRadius="0" Padding="10" BorderColor="Black">
+                        <Entry x:Name="EventNameInput"
+                               Placeholder="Event's name"
+                               TextColor="White"
+                               FontSize="18"
+                               BackgroundColor="Transparent" />
+                    </Frame>
+
+                    <!-- Category Section -->
+                    <VerticalStackLayout>
+                        <Label Text="Categories"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
+                        <ScrollView VerticalOptions="FillAndExpand" HeightRequest="80" BackgroundColor="Gray" >
+                            <Editor x:Name="EventCategoriesInput"
+                                    Placeholder="Enter categories... IT Creation Sport Science Business Education"
+                                    TextColor="White"
+                                    FontSize="16"
+                                    AutoSize="TextChanges"
+                                    BackgroundColor="Transparent" />
+                        </ScrollView>
+                    </VerticalStackLayout>
+
+                    <!-- Short Description Section -->
+                    <VerticalStackLayout>
+                        <Label Text="Short description"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
+                        <ScrollView VerticalOptions="FillAndExpand" HeightRequest="120" BackgroundColor="Gray">
+                            <Editor x:Name="EventDescriptionInput"
+                                    Placeholder="Describe the event..."
+                                    TextColor="White"
+                                    FontSize="16"
+                                    AutoSize="TextChanges"
+                                    BackgroundColor="Transparent" />
+                        </ScrollView>
+                    </VerticalStackLayout>
+
+                    <!-- Location -->
+                    <VerticalStackLayout>
+                        <Label Text="Location" FontSize="16" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" />
+                        <!-- Контейнер с прокруткой для поля ввода -->
+                        <Grid VerticalOptions="FillAndExpand" BackgroundColor="Gray">
+                            <!-- Поле ввода с прокруткой -->
+                            <ScrollView Grid.Row="0" VerticalOptions="FillAndExpand" HeightRequest="100" BackgroundColor="Gray">
+                                <Editor x:Name="EventLocationInput" 
+                                        Placeholder="Venue..." 
+                                        TextColor="White" 
+                                        PlaceholderColor="White" 
+                                        BackgroundColor="Transparent" 
+                                        AutoSize="TextChanges"
+                                        Margin="0,18,0,0"/>
+                            </ScrollView>
+
+                            <!-- Кнопки переключения-->
+                            <HorizontalStackLayout HorizontalOptions="End">
+                                <Border Padding="-20" Margin="0,0,0,75">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10,0,10,0"/>
+                                    </Border.StrokeShape>
+                                    <Button x:Name="OnlineButton"
+                                            Text="online"
+                                            FontSize="8"
+                                            TextColor="White"
+                                            BackgroundColor="DarkGray" 
+                                            CornerRadius="0"
+                                            BorderColor="White"
+                                            BorderWidth="0.1"
+                                            WidthRequest="80"
+                                            HeightRequest="40"
+                                            Clicked="OnLocationButtonClicked">
+                                    </Button>
+                                </Border>
+
+                                <Border Padding="-20" Margin="0,0,0,75">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0,10,0,10"/>
+                                    </Border.StrokeShape>
+                                    <Button x:Name="OfflineButton"
+                                            Text="offline"
+                                            FontSize="8"
+                                            TextColor="White"
+                                            BackgroundColor="DarkGray"
+                                            CornerRadius="0"
+                                            BorderColor="White"
+                                            BorderWidth="0.1"
+                                            WidthRequest="80"
+                                            HeightRequest="40"
+                                            Clicked="OnLocationButtonClicked">
+                                    </Button>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+
+
+                </VerticalStackLayout>
+            </Frame>
+        </ContentView>
+
+
     </Grid>
 
 </ContentPage>
-
