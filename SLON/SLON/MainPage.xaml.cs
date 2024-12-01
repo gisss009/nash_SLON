@@ -59,16 +59,17 @@ namespace SLON
 
         public void FillEventsCards()
         {
-            Events.Add(new Event(1, "Tech Conference 2024", "Technology, Mobile, UI/UX", "A conference on the latest trends in mobile app design, APIs, and UI/UX", "Ulitsa 2-ya Krivorozhskaya, Rostov-on-Don"));
-            Events.Add(new Event(2, "Backend Development Workshop", "Backend, APIs, Performance", "A hands-on workshop focusing on building high-performance APIs", "Ulitsa Budennovskiy, Rostov-on-Don"));
-            Events.Add(new Event(3, "React Masterclass", "React, Frontend, Responsive Design", "An in-depth session on mastering React and responsive design", "Ulitsa Berzhaninova, Rostov-on-Don"));
-            Events.Add(new Event(4, "AI and Machine Learning Summit", "AI, Machine Learning, Technology", "A summit dedicated to AI advancements and machine learning applications", "Ulitsa Chekistov, Rostov-on-Don"));
-            Events.Add(new Event(5, "Social Media Marketing Bootcamp", "Marketing, Social Media, Campaigns", "A bootcamp focused on building effective social media campaigns", "Ulitsa Pushkinskaya, Rostov-on-Don"));
-            Events.Add(new Event(6, "DevOps and Automation Training", "DevOps, CI/CD, Automation", "A training session on CI/CD pipelines and DevOps tools", "Ulitsa Sovetskaya, Rostov-on-Don"));
-            Events.Add(new Event(7, "Agile Project Management Seminar", "Agile, Scrum, Kanban", "A seminar on Agile methodologies, Scrum, and Kanban", "Ulitsa Lenina, Rostov-on-Don"));
-            Events.Add(new Event(8, "Blockchain & Crypto Conference", "Blockchain, Cryptocurrency, Smart Contracts", "A conference focused on the latest in blockchain technology and smart contracts", "Ulitsa Maksima Gorkogo, Rostov-on-Don"));
-            Events.Add(new Event(9, "Content Writing for SEO", "SEO, Content Writing, Blogging", "A workshop on creating SEO-friendly content for blogs and websites", "Ulitsa Nekrasova, Rostov-on-Don"));
-            Events.Add(new Event(10, "Cybersecurity Awareness Workshop", "Cybersecurity, Networking, Ethical Hacking", "A workshop on network security and ethical hacking", "Ulitsa Molodezhnyy, Rostov-on-Don"));
+            Events.Add(new Event(1, "Tech Conference 2024", "IT, Education", "A conference on the latest trends in mobile app design, APIs, and UI/UX", "Ulitsa 2-ya Krivorozhskaya, Rostov-on-Don"));
+            Events.Add(new Event(2, "Backend Development Workshop", "IT, Education", "A hands-on workshop focusing on building high-performance APIs", "Ulitsa Budennovskiy, Rostov-on-Don"));
+            Events.Add(new Event(3, "React Masterclass", "IT, Education", "An in-depth session on mastering React and responsive design", "Ulitsa Berzhaninova, Rostov-on-Don"));
+            Events.Add(new Event(4, "AI and Machine Learning Summit", "IT, Science", "A summit dedicated to AI advancements and machine learning applications", "Ulitsa Chekistov, Rostov-on-Don"));
+            Events.Add(new Event(5, "Social Media Marketing Bootcamp", "Business, Education", "A bootcamp focused on building effective social media campaigns", "Ulitsa Pushkinskaya, Rostov-on-Don"));
+            Events.Add(new Event(6, "DevOps and Automation Training", "IT, Education", "A training session on CI/CD pipelines and DevOps tools", "Ulitsa Sovetskaya, Rostov-on-Don"));
+            Events.Add(new Event(7, "Agile Project Management Seminar", "Business, Education", "A seminar on Agile methodologies, Scrum, and Kanban", "Ulitsa Lenina, Rostov-on-Don"));
+            Events.Add(new Event(8, "Blockchain & Crypto Conference", "IT, Business", "A conference focused on the latest in blockchain technology and smart contracts", "Ulitsa Maksima Gorkogo, Rostov-on-Don"));
+            Events.Add(new Event(9, "Content Writing for SEO", "Creation, Business", "A workshop on creating SEO-friendly content for blogs and websites", "Ulitsa Nekrasova, Rostov-on-Don"));
+            Events.Add(new Event(10, "Cybersecurity Awareness Workshop", "IT, Education", "A workshop on network security and ethical hacking", "Ulitsa Molodezhnyy, Rostov-on-Don"));
+
         }
 
         private void OnCardSwiped(SwipedCardEventArgs e)

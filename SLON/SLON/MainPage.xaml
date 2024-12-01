@@ -104,7 +104,7 @@
 
                                     <!-- Теги -->
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
-                                        <Label Text="Categories" TextColor="Black" FontSize="14" FontAttributes="Bold" />
+                                        <Label Text="Tags" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
                                     <Label Text="{Binding Tags}" TextColor="White" FontSize="12" />
 

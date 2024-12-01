@@ -95,4 +95,12 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningKeyStore>..\key.keystore</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>123asd</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>SlonAlias</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>123asd</AndroidSigningKeyPass>
+	</PropertyGroup>-->
+
 </Project>
