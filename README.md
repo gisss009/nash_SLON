@@ -13,3 +13,5 @@
 - Создание удобного интерфейса
 - Реализовать фильтр по тегам
 - Тестирование и запуск
+
+  Дизайн приложения: https://www.figma.com/design/pPzfEcWIxMnS5KpJv0LxZS/SLON?node-id=0-1&t=NzosNv71ZgvXEIeR-1
