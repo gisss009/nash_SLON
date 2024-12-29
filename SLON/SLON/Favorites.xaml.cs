@@ -8,6 +8,7 @@ namespace SLON;
 public partial class Favorites : ContentPage
 {
     public ObservableCollection<User> favorites = Favourites.favorites;
+    private Image starIcon;
 
     public Favorites()
     {
@@ -29,7 +30,7 @@ public partial class Favorites : ContentPage
     {
         Debug.WriteLine($"count posle: {favorites.Count}");
         favoritesPanel.Children.Clear();
-
+        //Image starIcon;
         if (favorites.Count == 0)
         {
             Frame frame = new Frame();
@@ -125,8 +126,20 @@ public partial class Favorites : ContentPage
                 };
                 Grid.SetColumn(userLabel, 1);
 
+                starIcon = new Image
+                {
+                    Source = ImageSource.FromFile("Resources/Images/empty_star.png"),
+                    WidthRequest = 50,
+                    HeightRequest = 50,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.End
+                };
+                Grid.SetColumn(starIcon, 1);
+                
+
                 userGrid.Children.Add(userIcon);
                 userGrid.Children.Add(userLabel);
+                userGrid.Children.Add(starIcon);
 
                 TapGestureRecognizer tapGesture = new TapGestureRecognizer();
                 tapGesture.Tapped += (s, e) => OnUserTapped(user);
@@ -137,11 +150,41 @@ public partial class Favorites : ContentPage
                 favoritesPanel.Children.Add(userFrame);
             }
         }
+    }
+
+    private async void OnUserTapped(User selectedUser)
+    {
+        // Получаем starIcon через родительский элемент, чтобы изменить его источник
+        var userFrame = favoritesPanel.Children
+            .OfType<Frame>()
+            .FirstOrDefault(f => f.Content is Grid userGrid && userGrid.Children.OfType<Label>().Any(l => l.Text.Contains(selectedUser.Name)));
+
+        if (userFrame != null)
+        {
+            var userGrid = (Grid)userFrame.Content;
+            var starIcon = userGrid.Children.OfType<Image>().LastOrDefault(); // Получаем последний элемент, который является starIcon
+
+            if (starIcon != null)
+            {
+                // Меняем источник изображения
+                if (starIcon.Source.ToString().Contains("empty_star.png"))
+                {
+                    starIcon.Source = ImageSource.FromFile("Resources/Images/fill_star.png");
+                }
+                else
+                {
+                    starIcon.Source = ImageSource.FromFile("Resources/Images/empty_star.png");
+                }
+            }
         }
 
-        private async void OnUserTapped(User selectedUser)
-        {
-            await DisplayAlert("User Info", $"You clicked on {selectedUser.Name}", "OK");
-        }
-    };
+        //await DisplayAlert("User Info", $"You clicked on {selectedUser.Name}", "OK");
+    }
+
+    //private async void OnUserTapped(User selectedUser)
+    //{
+
+    //    await DisplayAlert("User Info", $"You clicked on {selectedUser.Name}", "OK");
+    //}
+};
 
