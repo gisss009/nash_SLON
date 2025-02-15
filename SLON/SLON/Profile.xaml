@@ -40,7 +40,8 @@
                                TextColor="White"
                                FontAttributes="Bold"
                                IsReadOnly="True"
-                               HorizontalTextAlignment="Start" />
+                               HorizontalTextAlignment="Start"
+                               BackgroundColor="Transparent"/>
 
                         <!-- Editable Vocation -->
                         <Entry x:Name="VocationInput"
@@ -48,29 +49,47 @@
                                FontSize="18"
                                TextColor="White"
                                IsReadOnly="True"
-                               HorizontalTextAlignment="Start" />
+                               HorizontalTextAlignment="Start"
+                               BackgroundColor="Transparent"/>
                     </VerticalStackLayout>
 
-                    <!-- Edit and Save Icons -->
+                    <!-- Edit, Add Event, and Save Icons -->
                     <Grid Grid.ColumnSpan="2"
                           HorizontalOptions="End"
                           VerticalOptions="Start"
                           Margin="0,10,10,0">
-                        <!-- Edit Icon -->
-                        <ImageButton x:Name="EditIcon"
+
+                        <!-- Иконка создания мероприятия  Отступ справа от иконки редактирования(Margin) -->
+                        <ImageButton x:Name="AddEventIcon"
+                                     Source="add_icon1.png"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="32"
+                                     HeightRequest="32"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Center"
+                                     Margin="0,0,35,0"  
+                            Clicked="OnAddEventIconClicked" />
+
+                            <!-- Edit Icon -->
+                            <ImageButton x:Name="EditIcon"
                                      Source="edit_icon.png"
                                      BackgroundColor="Transparent"
                                      WidthRequest="24"
                                      HeightRequest="24"
-                                     IsVisible="True"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Center"
+                                     Margin="30,0,0,0"
                                      Clicked="OnEditIconClicked" />
 
-                        <!-- Save Icon -->
-                        <ImageButton x:Name="SaveIcon"
+                            <!-- Save Icon -->
+                            <ImageButton x:Name="SaveIcon"
                                      Source="save_icon.png"
                                      BackgroundColor="Transparent"
                                      WidthRequest="24"
                                      HeightRequest="24"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Center"
+                                     Margin="30,0,0,0"
                                      IsVisible="False"
                                      Clicked="OnEditIconClicked" />
                     </Grid>
@@ -125,17 +144,6 @@
                                    TextColor="White"
                                    VerticalOptions="Center"
                                    HorizontalOptions="Start" />
-
-                            <!-- Add Event Button -->
-                            <ImageButton x:Name="AddEventIcon"
-                                         Source="add_icon.png"
-                                         BackgroundColor="Transparent"
-                                         WidthRequest="24"
-                                         HeightRequest="24"
-                                         HorizontalOptions="End"
-                                         VerticalOptions="Center"
-                                         IsVisible="False"
-                                         Clicked="OnAddEventIconClicked" />
                         </Grid>
 
                         <!-- Events Content -->

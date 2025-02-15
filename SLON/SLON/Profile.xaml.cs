@@ -36,8 +36,22 @@ public partial class Profile : ContentPage
 
         // Переключаем состояние редактирования элементов
         NameInput.IsReadOnly = ResumeEditor.IsReadOnly = VocationInput.IsReadOnly = !_isEditing;
-        AddCategoryIcon.IsVisible = AddEventIcon.IsVisible = SaveIcon.IsVisible = _isEditing;
+        AddCategoryIcon.IsVisible = SaveIcon.IsVisible = _isEditing;
         EditIcon.IsVisible = !_isEditing;
+
+        // Управление кнопкой создания ивентов
+        if (_isEditing)
+        {
+            // В режиме редактирования делаем иконку полупрозрачной и неактивной
+            AddEventIcon.Opacity = 0.5; // Полупрозрачность (можно настроить значение от 0 до 1)
+            AddEventIcon.IsEnabled = false; // Делаем неактивной
+        }
+        else
+        {
+            // В обычном режиме возвращаем полную непрозрачность и активное состояние
+            AddEventIcon.Opacity = 1; // Полная непрозрачность
+            AddEventIcon.IsEnabled = true;
+        }
 
         // Переключаем видимость кнопок удаления у карточек
         ToggleDeleteButtons(_isEditing);
@@ -207,6 +221,7 @@ public partial class Profile : ContentPage
     /// </summary>
     private void ToggleDeleteButtons(bool isVisible)
     {
+        // Для категорий
         foreach (var frame in CategoriesContainer.Children.OfType<Frame>())
         {
             if (frame.Content is Grid grid && grid.Children.OfType<ImageButton>().FirstOrDefault() is ImageButton deleteButton)
@@ -215,6 +230,7 @@ public partial class Profile : ContentPage
             }
         }
 
+        // Для мероприятий
         foreach (var frame in EventsContainer.Children.OfType<Frame>())
         {
             if (frame.Content is Grid grid && grid.Children.OfType<ImageButton>().FirstOrDefault() is ImageButton deleteButton)
@@ -233,7 +249,7 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Открытие окна создания мероприятия.
+    /// Открытие окна создания мероприятия (Независимо от редактирования профиля)
     /// </summary>
     private void OnAddEventIconClicked(object sender, EventArgs e)
     {
@@ -262,12 +278,7 @@ public partial class Profile : ContentPage
             return;
         }
 
-        var existingEvent = events.FirstOrDefault(ev => ev.Name == name);
-        if (!string.IsNullOrEmpty(existingEvent.Name))
-        {
-            events.Remove(existingEvent);
-        }
-
+        events.RemoveAll(ev => ev.Name == name);
         events.Add((name, tags, description, location, isOnline));
         RefreshEventsUI();
 
@@ -275,12 +286,11 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Перерисовка всех карточек мероприятий
+    /// Обновление интерфейса событий
     /// </summary>
     private void RefreshEventsUI()
     {
         EventsContainer.Children.Clear();
-
         foreach (var ev in events)
         {
             AddEventCard(ev.Name);
@@ -289,6 +299,9 @@ public partial class Profile : ContentPage
 
     /// <summary>
     /// Добавляет карточку мероприятия
+    /// </summary>
+    /// <summary>
+    /// Добавление карточки мероприятия.
     /// </summary>
     private void AddEventCard(string eventName)
     {
@@ -310,13 +323,14 @@ public partial class Profile : ContentPage
         }
         };
 
+        // Кнопка удаления
         var deleteButton = new ImageButton
         {
             Source = "delete_icon.png",
             BackgroundColor = Colors.Transparent,
             WidthRequest = 16,
             HeightRequest = 16,
-            IsVisible = _isEditing
+            IsVisible = _isEditing // Видимость зависит от режима редактирования
         };
 
         deleteButton.Clicked += (s, e) =>
@@ -325,6 +339,7 @@ public partial class Profile : ContentPage
             events.RemoveAll(ev => ev.Name == eventName);
         };
 
+        // Название мероприятия
         var label = new Label
         {
             Text = eventName,
@@ -342,8 +357,12 @@ public partial class Profile : ContentPage
 
         EventsContainer.Children.Add(frame);
 
+        // Обработчик нажатия на карточку мероприятия
         frame.GestureRecognizers.Clear();
-        frame.GestureRecognizers.Add(new TapGestureRecognizer{Command = new Command(() =>{OpenEventPopup(eventName, _isEditing);})});
+        frame.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() => OpenEventPopup(eventName, _isEditing))
+        });
     }
 
     /// <summary>
