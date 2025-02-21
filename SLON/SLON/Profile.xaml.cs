@@ -396,14 +396,14 @@ public partial class Profile : ContentPage
     /// </summary>
     private void OnLocationButtonClicked(object sender, EventArgs e)
     {
-        if (sender == OnlineButton)
+        if (sender == OfflineButton)
         {
             OnlineButton.BackgroundColor = Colors.DarkGray;
             OfflineButton.BackgroundColor = Colors.Black;
 
             EventLocationInput.Placeholder = "Venue...";
         }
-        else if (sender == OfflineButton)
+        else if (sender == OnlineButton)
         {
             OfflineButton.BackgroundColor = Colors.DarkGray;
             OnlineButton.BackgroundColor = Colors.Black;

@@ -1,26 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell
+<Shell 
     x:Class="SLON.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SLON"
     Shell.FlyoutBehavior="Disabled"
-    Title="SLON">
+    Title="SLON" BackgroundColor="#3C3C3C"
+    
+    Shell.BackgroundColor="#1c1c1c"
+    Shell.ForegroundColor="White"
+    Shell.TabBarBackgroundColor="#1c1c1c"
+    Shell.TabBarForegroundColor="White"
+    Shell.TabBarTitleColor="White"
+    Shell.TabBarUnselectedColor="Gray">
+
+    <Shell.Resources>
+        <Style TargetType="Image">
+            <Setter Property="WidthRequest" Value="48" />
+            <Setter Property="HeightRequest" Value="48" />
+        </Style>
+    </Shell.Resources>
 
     <TabBar>
         <ShellContent
-            Title="Favorites"
+            Icon="Resources/Images/favorite.png"
             ContentTemplate="{DataTemplate local:Favorites}"
             Route="Favorites" />
         
         <ShellContent
-            Title="Main"
+            Icon="Resources/Images/search.png"
             ContentTemplate="{DataTemplate local:MainPage}"
             Route="MainPage" />
 
         <ShellContent
-        Title="Profile"
-        ContentTemplate="{DataTemplate local:Profile}"
-        Route="Profile" />
+            Icon="Resources/Images/account.png"
+            ContentTemplate="{DataTemplate local:Profile}"
+            Route="Profile" />
     </TabBar>
 </Shell>
