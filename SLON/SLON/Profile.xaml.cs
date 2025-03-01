@@ -45,15 +45,14 @@ public partial class Profile : ContentPage
         if (_isEditing)
         {
             AddEventIcon.Opacity = 0.5;
-            AddEventIcon.IsEnabled = false; 
+            AddEventIcon.IsEnabled = false;
         }
         else
         {
-            AddEventIcon.Opacity = 1; 
+            AddEventIcon.Opacity = 1;
             AddEventIcon.IsEnabled = true;
         }
 
-        // Переключаем видимость кнопок удаления у карточек
         ToggleDeleteButtons(_isEditing);
 
         foreach (var frame in EventsContainer.Children.OfType<Frame>())
@@ -233,7 +232,6 @@ public partial class Profile : ContentPage
     /// </summary>
     private void ToggleDeleteButtons(bool isVisible)
     {
-        // Для категорий
         foreach (var frame in CategoriesContainer.Children.OfType<Frame>())
         {
             if (frame.Content is Grid grid && grid.Children.OfType<ImageButton>().FirstOrDefault() is ImageButton deleteButton)
@@ -242,12 +240,11 @@ public partial class Profile : ContentPage
             }
         }
 
-        // Для мероприятий
         foreach (var frame in EventsContainer.Children.OfType<Frame>())
         {
             if (frame.Content is Grid grid && grid.Children.OfType<ImageButton>().FirstOrDefault() is ImageButton deleteButton)
             {
-                deleteButton.IsVisible = isVisible;
+                deleteButton.IsVisible = false;
             }
         }
     }
@@ -265,9 +262,6 @@ public partial class Profile : ContentPage
     /// <summary>
     /// Открытие окна создания мероприятия (Независимо от редактирования профиля)
     /// </summary>
-    /// <summary>
-    /// Открытие окна создания мероприятия.
-    /// </summary>
     private void OnAddEventIconClicked(object sender, EventArgs e)
     {
         _isCreatingEvent = true;
@@ -277,18 +271,18 @@ public partial class Profile : ContentPage
         EventNameInput.Text = string.Empty;
         EventDescriptionInput.Text = string.Empty;
         EventLocationInput.Text = string.Empty;
-        selectedCategories.Clear(); 
+        selectedCategories.Clear();
 
         foreach (var button in new[] { CategoryIT, CategoryCreation, CategorySport, CategoryScience, CategoryBusiness, CategoryEducation, CategorySocial, CategoryHealth })
         {
-            button.BackgroundColor = Colors.DarkGray; 
+            button.BackgroundColor = Colors.DarkGray;
             button.BorderColor = Colors.Transparent;
             button.BorderWidth = 0;
         }
 
-        SaveEventButton.Source = "save_icon.png"; 
+        SaveEventButton.Source = "save_icon.png";
         SaveEventButton.IsVisible = true;
-        DeleteEventButton.IsVisible = false; 
+        DeleteEventButton.IsVisible = false;
 
         // Разблокируем поля в режиме создания
         EventNameInput.IsReadOnly = false;
@@ -347,9 +341,6 @@ public partial class Profile : ContentPage
     }
 
     /// <summary>
-    /// Добавляет карточку мероприятия
-    /// </summary>
-    /// <summary>
     /// Добавление карточки мероприятия.
     /// </summary>
     private void AddEventCard(string eventName)
@@ -366,9 +357,9 @@ public partial class Profile : ContentPage
         var grid = new Grid
         {
             ColumnDefinitions = new ColumnDefinitionCollection
-        {
-            new ColumnDefinition { Width = GridLength.Star }
-        }
+            {
+                new ColumnDefinition { Width = GridLength.Star }
+            }
         };
 
         var label = new Label
@@ -382,7 +373,6 @@ public partial class Profile : ContentPage
         grid.Children.Add(label);
         Grid.SetColumn(label, 0);
 
-        // Иконка удаления
         var deleteButton = new ImageButton
         {
             Source = "trash_icon.png",
@@ -391,7 +381,7 @@ public partial class Profile : ContentPage
             HeightRequest = 24,
             HorizontalOptions = LayoutOptions.End,
             VerticalOptions = LayoutOptions.Center,
-            IsVisible = false // Показываем кнопку удаления только для созданных мероприятий
+            IsVisible = false
         };
 
         deleteButton.Clicked += (s, e) =>
@@ -407,7 +397,6 @@ public partial class Profile : ContentPage
 
         EventsContainer.Children.Add(frame);
 
-        // Обработчик нажатия на карточку мероприятия
         if (!_isEditing)
         {
             frame.GestureRecognizers.Clear();
@@ -423,7 +412,7 @@ public partial class Profile : ContentPage
     /// </summary>
     private void OpenEventPopup(string eventName, bool isEditing)
     {
-        _isCreatingEvent = string.IsNullOrEmpty(eventName); // Если eventName пустой, это создание нового мероприятия
+        _isCreatingEvent = string.IsNullOrEmpty(eventName);
         _isEditingEvent = _isCreatingEvent ? false : isEditing;
 
         var eventData = events.FirstOrDefault(e => e.Name == eventName);
@@ -500,9 +489,14 @@ public partial class Profile : ContentPage
 
     /// <summary>
     /// Переключение состояния кнопки Online/Offline.
+    /// Изменения применяются только если мы в режиме редактирования или создания мероприятия.
+    /// Цвета кнопок при этом сохраняются во всех режимах.
     /// </summary>
     private void OnLocationButtonClicked(object sender, EventArgs e)
     {
+        if (!(_isEditingEvent || _isCreatingEvent))
+            return;
+
         if (sender == OfflineButton)
         {
             OnlineButton.BackgroundColor = Colors.DarkGray;
@@ -525,7 +519,7 @@ public partial class Profile : ContentPage
         {
             SaveEventChanges();
             EventPopup.IsVisible = false;
-            _isCreatingEvent = false; // Сбрасываем флаг создания
+            _isCreatingEvent = false;
         }
         else if (_isEditingEvent)
         {
@@ -542,7 +536,7 @@ public partial class Profile : ContentPage
     {
         string eventName = EventNameInput.Text;
 
-        bool confirmDelete = await DisplayAlert("Удаление мероприятия",$"Вы уверены, что хотите удалить мероприятие \"{eventName}\"?","Да","Нет" );
+        bool confirmDelete = await DisplayAlert("Удаление мероприятия", $"Вы уверены, что хотите удалить мероприятие \"{eventName}\"?", "Да", "Нет");
 
         if (confirmDelete)
         {
@@ -552,6 +546,9 @@ public partial class Profile : ContentPage
         }
     }
 
+    /// <summary>
+    /// Сохраняет изменения мероприятия. При создании нового мероприятия производится проверка на уникальность имени.
+    /// </summary>
     private void SaveEventChanges()
     {
         string name = EventNameInput.Text;
@@ -565,17 +562,20 @@ public partial class Profile : ContentPage
             return;
         }
 
-        // Преобразуем список выбранных категорий в строку
         string categories = string.Join(", ", selectedCategories);
 
         if (_isCreatingEvent)
         {
-            // Режим создания: добавляем новое мероприятие
+            if (events.Any(ev => ev.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            {
+                DisplayAlert("Error", $"Событие с именем \"{name}\" уже существует.", "OK");
+                return;
+            }
             events.Add((name, categories, description, location, isOnline));
         }
         else
         {
-            // Режим редактирования: обновляем существующее мероприятие
+            // обновляем существующее мероприятие
             var existingEvent = events.FirstOrDefault(ev => ev.Name == name);
             if (existingEvent != default)
             {
@@ -596,14 +596,14 @@ public partial class Profile : ContentPage
             if (selectedCategories.Contains(category))
             {
                 selectedCategories.Remove(category);
-                button.BackgroundColor = Colors.DarkGray; 
-                button.BorderColor = Colors.Transparent; 
+                button.BackgroundColor = Colors.DarkGray;
+                button.BorderColor = Colors.Transparent;
                 button.BorderWidth = 0;
             }
             else
             {
                 selectedCategories.Add(category);
-                button.BackgroundColor = GetCategoryColor(category); 
+                button.BackgroundColor = GetCategoryColor(category);
                 button.BorderColor = Color.FromArgb("#00CED1");
                 button.BorderWidth = 2;
             }
@@ -626,6 +626,3 @@ public partial class Profile : ContentPage
         };
     }
 }
-
-
-
