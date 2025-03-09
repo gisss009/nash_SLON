@@ -151,46 +151,46 @@ def delete_profile_event_handler():
     return jsonify({"ok": True}), 400
 
 
-@app.route("/users/add_profile_own_event")
-def add_profile_own_event_handler():
-    username = request.args.get('username')
-    id = request.args.get('id')
+# @app.route("/users/add_profile_own_event")
+# def add_profile_own_event_handler():
+#     username = request.args.get('username')
+#     id = request.args.get('id')
 
-    if not username or not id:
-        return jsonify({"ok": False, "response": "parameter username or category is missing."})
+#     if not username or not id:
+#         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
-    if not find_profile(username):
-        return jsonify({"ok": False, "response": "username with current username not found."})
+#     if not find_profile(username):
+#         return jsonify({"ok": False, "response": "username with current username not found."})
 
-    try:
-        id = int(id)
-    except ValueError:
-        return jsonify({"ok": False, "response": "parameter id is not integer."})
+#     try:
+#         id = int(id)
+#     except ValueError:
+#         return jsonify({"ok": False, "response": "parameter id is not integer."})
 
-    add_profile_own_event(username, id)
+#     add_profile_own_event(username, id)
 
-    return jsonify({"ok": True}), 400
+#     return jsonify({"ok": True}), 400
 
 
-@app.route("/users/delete_profile_own_event")
-def delete_profile_own_event_handler():
-    username = request.args.get('username')
-    id = request.args.get('id')
+# @app.route("/users/delete_profile_own_event")
+# def delete_profile_own_event_handler():
+#     username = request.args.get('username')
+#     id = request.args.get('id')
 
-    if not username or not id:
-        return jsonify({"ok": False, "response": "parameter username or category is missing."})
+#     if not username or not id:
+#         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
-    if not find_profile(username):
-        return jsonify({"ok": False, "response": "username with current username not found."})
+#     if not find_profile(username):
+#         return jsonify({"ok": False, "response": "username with current username not found."})
 
-    try:
-        id = int(id)
-    except ValueError:
-        return jsonify({"ok": False, "response": "parameter id is not integer."})
+#     try:
+#         id = int(id)
+#     except ValueError:
+#         return jsonify({"ok": False, "response": "parameter id is not integer."})
 
-    delete_profile_own_event(username, id)
+#     delete_profile_own_event(username, id)
 
-    return jsonify({"ok": True}), 400
+#     return jsonify({"ok": True}), 400
 
 
 @app.route("/users/edit_profile_resume")
@@ -297,18 +297,21 @@ def get_event_handler():
 def add_event_handler():
     args = [
         request.args.get('name'),
+        request.args.get('owner_id'),
         request.args.get('categories'),
         request.args.get('description'),
         request.args.get('location'),
         request.args.get('date_from'),
-        request.args.get('date_to')
+        request.args.get('date_to'),
+        request.args.get('public'),
+        request.args.get('online')
     ]
 
     for arg in args:
         if not arg:
             return jsonify({"ok": False, "response": f"One of parameters is missing."})
         
-    new_event_hash = add_event(args[0], "[]", args[2], args[3], args[4], args[5])
+    new_event_hash = add_event(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8])
     
     for category in args[1].split(","):
         if category in ["IT", "Social", "Business", "Health", "Creation", "Sport", "Education", "Science"]:
@@ -414,6 +417,10 @@ def edit_event_date_handler():
     return jsonify({"ok": True}), 400
 
 
+@app.route("/events/get_all_events")
+def get_all_events_handler():
+    return jsonify({"ok": True, "response": get_all_events()}), 400
+
 @app.route("/users")
 def hello_world():
     return """
@@ -430,94 +437,145 @@ response: bool<br>
 <hr>
 get_profile(username: str)<br>
 response: {<br>
-    "username": str,<br>
-    "name" : str,<br>
-    "categories": list[int],<br>
-    "tags": {str (name of category): list[str] (tags of this category), ...},<br>
-    "own_events": list[str],<br>
-    "events": list[str],<br>
-    "resume": str,<br>
-    "swiped_users": list[int],<br>
-    "mail": str<br>
-    }<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "username": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "name" : str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "categories": list[int],<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "tags": {str (name of category): list[str] (tags of this category), ...},<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "own_events": list[str],<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "events": list[str],<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "resume": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "swiped_users": list[int],<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "mail": str<br>
+&nbsp;&nbsp;&nbsp;&nbsp; }<br>
 <hr>
 add_profile(username: str)<br>
-response: bool<br>
 <hr>
 edit_profile_name(username: str, name: str)<br>
-response: bool<br>
 <hr>
 add_profile_category(username: str, category: str)<br>
-response: bool<br>
 <hr>
 delete_profile_category(username: str, category: str)<br>
-response: bool<br>
 <hr>
 add_profile_event(username: str, hash: str)<br>
-response: bool<br>
 <hr>
 delete_profile_event(username: str, hash: str)<br>
-response: bool<br>
 <hr>
 add_profile_own_event(username: str, hash: str)<br>
-response: bool<br>
 <hr>
 delete_profile_own_event(username: str, hash: str)<br>
-response: bool<br>
 <hr>
 edit_profile_resume(username: str, resume: str)<br>
-response: bool<br>
 <hr>
 add_profile_swiped_user(username: str, id: int)<br>
-response: bool<br>
 <hr>
 delete_profile_swiped_user(username: str, id: int)<br>
-response: bool<br>
 <hr>
 edit_profile_mail(username: str, mail: int)<br>
-response: bool<br>
 <hr>
-get_event(hash: str)<br>
-response: {<br>
-    "hash": str,<br>
-    "name": str,<br>
-    "categories": list[str],<br>
-    "description": str,<br>
-    "location": str,<br>
-    "date_from": int,<br>
-    "date_to": int<br>
-}<br>
+get_profiles_by_categories(categories: str,str,str...)<br>
+response: list[dict]<br>
+! The tags contain the tags of the requested categories
+example:
+[<br>
+&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "username": "user1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "name": "Alice",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "categories": "IT,Health",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "tags": ["Python", "SQL"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "events": "event1,event2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "resume": "Resume1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "swiped_users": "user2,user3",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "mail": "alice@example.com"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; },<br>
+&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "username": "user2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "name": "Bob",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "categories": "Business,Sport",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "tags": ["Football", "Tennis"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "events": "event3",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "resume": "Resume2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "swiped_users": "user1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "mail": "bob@example.com"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; },<br>
+]<br>
 <hr>
-add_event(name, categories, description, location, date_from, date_to)<br>
-example of categories: IT,Business<br>
-date in unixtime<br>
-response: bool<br>
-<hr>
-edit_event_name(hash: str, name: str)<br>
-response: bool<br>
-<hr>
-add_event_category(hash: str, category: str)<br>
-response: bool<br>
-<hr>
-delete_event_category(hash: str, category: str)<br>
-response: bool<br>
-<hr>
-edit_event_description(hash: str, description: str)<br>
-response: bool<br>
-<hr>
-edit_event_location(hash: str, location: str)<br>
-response: bool<br>
-<hr>
-edit_event_date(hash: str, date_from: int, date_to: int)<br>
-response: bool<br>
-<hr>
+
 """
 
 
 @app.route("/events")
 def events_handler():
-    return """"""
+    return """
+get_event(hash: str)<br>
+response: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "hash": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "name": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "categories": list[str],<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "description": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "location": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "date_from": int,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "date_to": int<br>
+}<br>
+<hr>
+add_event(name: str, owner_id: int, categories: str,str,..., description: str, location: str, date_from: str, date_to: str, public: 0 or 1, online: 0 or 1)<br>
+example of categories: IT,Business<br>
+<hr>
+get_events_by_categories(categories: str,str...)<br>
+response: list[dict]<br>
+example:<br>
+[<br>
+&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "hash": "abc123",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "owner_id": 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "categories": ["IT","Health","Creation"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "name": "Event1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "description": "Desc1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "location": "Loc1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "date_from": "2023-01-01",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "date_to": "2023-01-05",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "public": 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "online": 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp; },<br>
+]<br>
+<hr>
+edit_event_name(hash: str, name: str)<br>
+<hr>
+add_event_category(hash: str, category: str)<br>
+<hr>
+delete_event_category(hash: str, category: str)<br>
+<hr>
+edit_event_description(hash: str, description: str)<br>
+<hr>
+edit_event_location(hash: str, location: str)<br>
+<hr>
+edit_event_date(hash: str, date_from: int, date_to: int)<br>
+<hr>
+get_all_events()<br>
+response: list[dict]<br>
+example:<br>
+[<br>
+&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "hash": "3TXKY5",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "owner_id": 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "members": ["user1", "user2"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "name": "name",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "categories": ["IT"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "description": "desc",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "location": "loc",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "date_from": "date_f",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "date_to": "date_t",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "public": 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "online": 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp; },<br>
+]<br>
+<hr>
+def add_event_member(event_hash: str, member: str)
+<hr>"""
 
+@app.route("/")
+def main_handler():
+    return "/users<br>/events"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
