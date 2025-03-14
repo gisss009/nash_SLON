@@ -55,9 +55,8 @@
             <ImageButton Source="Resources/Images/settings.png"
                          HorizontalOptions="End"
                          WidthRequest="36"
-                        HeightRequest="36"
-                        Clicked="OnButtonSettingsClicked">
-                
+                         HeightRequest="36"
+                         Clicked="OnButtonSettingsClicked">
             </ImageButton>
         </Grid>
 
@@ -66,22 +65,19 @@
                                         ItemsSource="{Binding Users}" Padding="0"
                                         SupportedSwipeDirections="Left, Right"
                                         HorizontalOptions="FillAndExpand" 
-							            VerticalOptions="FillAndExpand"
-							            LoopCards="True"
+                                        VerticalOptions="FillAndExpand"
+                                        LoopCards="True"
                                         SwipedCommand="{Binding OnCardSwipedCommand}"
                                         SwipedCommandParameter="{Binding .}"
                                         IsVisible="True">
                 <swipeCardView:SwipeCardView.ItemTemplate>
                     <DataTemplate>
-                        <Grid
-                            HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
+                        <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
                             <Frame BackgroundColor="#1E1E1E" CornerRadius="15" Padding="20"
                                 Margin="0,40,0,80" InputTransparent="True">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <!-- Аватар -->
-
                                     <Grid>
-
                                         <Ellipse WidthRequest="80" HeightRequest="80"
                                                  HorizontalOptions="Center" VerticalOptions="Start">
                                             <Ellipse.Stroke>
@@ -112,9 +108,8 @@
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Info" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
-                                    <Label Text="{Binding Info}"
-                                        TextColor="White" FontSize="12" LineBreakMode="WordWrap" />
-    
+                                    <Label Text="{Binding Info}" TextColor="White" FontSize="12" LineBreakMode="WordWrap" />
+
                                     <!-- Навыки -->
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Skills" TextColor="Black" FontSize="14" FontAttributes="Bold" />
@@ -126,44 +121,42 @@
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
-            
-            <!--Event card-->
 
+            <!-- Event card -->
             <swipeCardView:SwipeCardView x:Name="swipeCardViewEvent" 
-                            ItemsSource="{Binding Events}" Padding="0"
-                            SupportedSwipeDirections="Left, Right"
-                            HorizontalOptions="FillAndExpand" 
-				            VerticalOptions="FillAndExpand"
-				            LoopCards="True"
-                            IsVisible="False">
+                                         ItemsSource="{Binding Events}" Padding="0"
+                                         SupportedSwipeDirections="Left, Right"
+                                         HorizontalOptions="FillAndExpand" 
+                                         VerticalOptions="FillAndExpand"
+                                         LoopCards="True"
+                                         SwipedCommand="{Binding OnCardSwipedCommand}"
+                                         SwipedCommandParameter="{Binding .}"
+                                         IsVisible="False">
                 <swipeCardView:SwipeCardView.ItemTemplate>
                     <DataTemplate>
-                        <Grid
-                            HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
+                        <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
                             <Frame BackgroundColor="#1E1E1E" CornerRadius="15" Padding="20"
-                                    Margin="0,40,0,80" InputTransparent="True">
+                                   Margin="0,40,0,80" InputTransparent="True">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-
-                                    <!--Заголовок-->
+                                    <!-- Заголовок -->
                                     <Label Text="Event" TextColor="White" FontSize="Title" FontAttributes="Bold"
-                                            HorizontalOptions="Center" />
+                                           HorizontalOptions="Center" />
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="Header" FontAttributes="Bold"
-                                            HorizontalOptions="Center" />
+                                           HorizontalOptions="Center" />
 
-                                    <!--Теги--> 
+                                    <!-- Теги -->
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Categories" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
                                     <Label Text="{Binding Tags}" TextColor="White" FontSize="12" />
 
-                                     <!--Информация--> 
+                                    <!-- Информация -->
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Info" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
-                                    <Label Text="{Binding Info}"
-                                            TextColor="White" FontSize="12" LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding Info}" TextColor="White" FontSize="12" LineBreakMode="WordWrap" />
 
-                                     <!--Навыки--> 
+                                    <!-- Место проведения -->
                                     <Frame BackgroundColor="White" CornerRadius="5" Padding="5" HorizontalOptions="Start">
                                         <Label Text="Place" TextColor="Black" FontSize="14" FontAttributes="Bold" />
                                     </Frame>
@@ -174,7 +167,7 @@
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
-            
+
         </Grid>
     </StackLayout>
 
