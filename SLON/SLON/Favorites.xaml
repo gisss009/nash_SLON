@@ -32,11 +32,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-<<<<<<< Updated upstream
-        </VerticalStackLayout>
-    </ScrollView>
-</ContentPage>  
-=======
                 <!-- Переключатель Events/Profile, выровненный по центру -->
                 <HorizontalStackLayout Grid.Column="0" HorizontalOptions="CenterAndExpand">
                     <Border Padding="-15" Margin="40,0,0,0">
@@ -194,4 +189,3 @@
         </Grid>
     </VerticalStackLayout>
 </ContentPage>
->>>>>>> Stashed changes

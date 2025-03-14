@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
@@ -40,11 +40,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-<<<<<<< Updated upstream
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-=======
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
->>>>>>> Stashed changes
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -79,8 +75,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-<<<<<<< Updated upstream
-=======
 	  <Compile Update="PopupView.xaml.cs">
 	    <DependentUpon>PopupView.xaml</DependentUpon>
 	  </Compile>
@@ -93,7 +87,6 @@
 	  <MauiXaml Update="EventReadOnlyPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
->>>>>>> Stashed changes
 	  <MauiXaml Update="Favorites.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -103,15 +96,12 @@
 	  <MauiXaml Update="Profile.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-<<<<<<< Updated upstream
-=======
 	  <MauiXaml Update="RequestsAcceptedPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="SectionView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
->>>>>>> Stashed changes
 	</ItemGroup>
 
 </Project>
