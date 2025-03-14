@@ -7,6 +7,7 @@
     Shell.FlyoutBehavior="Disabled"
     Title="SLON" BackgroundColor="#3C3C3C"
     
+    Shell.BackgroundColor="#1c1c1c"
     Shell.ForegroundColor="White"
     Shell.TabBarBackgroundColor="#1c1c1c"
     Shell.TabBarForegroundColor="White"
