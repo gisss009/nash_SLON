@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Categories { get; set; }
+        public List<string> Categories { get; set; }
         public string Info { get; set; }
         public string Place { get; set; }
         public bool IsPublic { get; set; }
@@ -15,7 +15,7 @@
         // Список для хранения добавленных участников
         public List<User> AddedParticipants { get; set; } = new();
 
-        public Event(int id, string name, string categories, string info, string place, bool is_public, bool is_online)
+        public Event(int id, string name, List<string> categories, string info, string place, bool is_public, bool is_online)
         {
             Id = id;
             Name = name;

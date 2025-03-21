@@ -32,17 +32,17 @@ namespace SLON.Models
 
             // Пример: Пользователи, которые уже меня приняли (Accepted)
             // Считаем, что у нас уже есть взаимный лайк (Mutual)
-            var userA = new User(101, "Ivan Petrov", "IT, Business", "DevOps Engineer", "Some info about Ivan", "Docker, Kubernetes")
+            var userA = new User(101, "Ivan Petrov", new List<string> { "IT", "Business" }, "DevOps Engineer", "Some info about Ivan", "Docker, Kubernetes")
             {
                 IsAcceptedMe = true,
                 IsMutual = true      
             };
-            var userB = new User(102, "Anna Kim", "Creation, Education", "Content Writer", "Some info about Anna", "Copywriting, Blogging")
+            var userB = new User(102, "Anna Kim", new List<string> { "Creation", "Education" }, "Content Writer", "Some info about Anna", "Copywriting, Blogging")
             {
                 IsAcceptedMe = true,
                 IsMutual = true
             };
-            var userC = new User(103, "Zoe Carter", "Business", "Marketing Manager", "Some info about Zoe", "SMM, SEO")
+            var userC = new User(103, "Zoe Carter", new List<string> { "Business" }, "Marketing Manager", "Some info about Zoe", "SMM, SEO")
             {
                 IsAcceptedMe = true,
                 IsMutual = true
@@ -58,15 +58,15 @@ namespace SLON.Models
 
             // Пример: Пользователи, которые меня запросили (Requests)
             // Они хотят, чтобы я их принял (Accept).
-            var userR1 = new User(201, "Peter Johnson", "Business, Education", "Project Manager", "Some info about Peter", "Scrum, Agile")
+            var userR1 = new User(201, "Peter Johnson", new List<string> { "Business, Education" }, "Project Manager", "Some info about Peter", "Scrum, Agile")
             {
                 IsILikedHim = false // он меня лайкнул, а я его нет
             };
-            var userR2 = new User(202, "Elena Wilson", "IT, Creation", "UI/UX Designer", "Some info about Elena", "Figma, Photoshop")
+            var userR2 = new User(202, "Elena Wilson", new List<string> { "IT", "Creation" }, "UI/UX Designer", "Some info about Elena", "Figma, Photoshop")
             {
                 IsILikedHim = false
             };
-            var userR3 = new User(203, "Tom Jordan", "IT", "Backend Dev", "Some info about Tom", "C#, .NET, SQL")
+            var userR3 = new User(203, "Tom Jordan", new List<string> { "IT" }, "Backend Dev", "Some info about Tom", "C#, .NET, SQL")
             {
                 IsILikedHim = false
             };

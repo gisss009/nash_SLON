@@ -14,7 +14,7 @@ namespace SLON
         private void BindEvent(Event ev)
         {
             EventNameEntry.Text = ev.Name;
-            CategoriesLabel.Text = ev.Categories;
+            CategoriesLabel.Text = string.Join(", ", ev.Categories); // Преобразование списка в строку
             EventDescriptionEditor.Text = ev.Info;
             StartDateLabel.Text = ev.StartDate.ToString("dd.MM.yyyy");
             EndDateLabel.Text = ev.EndDate.ToString("dd.MM.yyyy");

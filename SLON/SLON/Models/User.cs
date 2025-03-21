@@ -3,8 +3,9 @@
     public class User
     {
         public int Id { get; set; }
-        public string Name { get; set; }       
-        public string Tags { get; set; }       
+        public string Name { get; set; }
+        public List<string> Tags { get; set; }
+        public Dictionary<string, List<string>> Tags_dic { get; set; }
         public string Vocation { get; set; }   
         public string Info { get; set; }     
         public string Skills { get; set; }     
@@ -13,7 +14,7 @@
         public bool IsAcceptedMe { get; set; } // Принял ли он меня
         public bool IsILikedHim { get; set; }  // Лайкнул ли я его
 
-        public User(int id, string name, string tags, string vocation, string info, string skills)
+        public User(int id, string name, List<string> tags, string vocation, string info, string skills)
         {
             Id = id;
             Name = name;

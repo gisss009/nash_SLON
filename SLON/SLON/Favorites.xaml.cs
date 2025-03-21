@@ -8,9 +8,7 @@ namespace SLON
 {
     public partial class Favorites : ContentPage
     {
-        // ����� �����������: Events (true) ��� Profiles (false)
         private bool showingEvents = true;
-        // ��� ��������: All (true) ��� Mutual (false)
         private bool showingAll = true;
 
         private ObservableCollection<LikeItem> LikeItems { get; set; } = new();
@@ -45,7 +43,7 @@ namespace SLON
                         IsEvent = true,
                         EventData = ev,
                         Title = ev.Name,
-                        Subtitle = ev.Categories,
+                        Subtitle = string.Join(", ", ev.Categories), // Преобразование списка в строку
                         IconSource = "calendar_icon.png",
                         LeftSwipeIcon = "add_icon2.png"
                     });
@@ -73,10 +71,6 @@ namespace SLON
             likesCollectionView.ItemsSource = LikeItems;
             UpdateEmptyView();
         }
-
-
-
-        #region �������������
 
         private void OnAllClicked(object sender, EventArgs e)
         {
@@ -110,18 +104,10 @@ namespace SLON
             RefreshLikes();
         }
 
-        #endregion
-
-        #region �����������
-
         private async void OnBellClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new RequestsAcceptedPage());
         }
-
-        #endregion
-
-        #region Swipe Handlers
 
         private void OnDeleteSwipeInvoked(object sender, EventArgs e)
         {
@@ -150,7 +136,7 @@ namespace SLON
                     var ev = item.EventData;
                     if (!ev.IsPublic)
                     {
-                        await DisplayAlert("Event", "����� ���������, ������ �������� ����������", "OK");
+                        await DisplayAlert("Event", "Это приватное событие, добавление невозможно", "OK");
                         return;
                     }
                     var popup = new AddUsersToEventPopup(ev);
@@ -160,7 +146,7 @@ namespace SLON
                 {
                     if (!IsChatAvailable)
                         return;
-                    await DisplayAlert("Chat", $"������ ��� � {item.Title}", "OK");
+                    await DisplayAlert("Chat", $"Открыт чат с {item.Title}", "OK");
                 }
             }
         }
@@ -176,7 +162,7 @@ namespace SLON
                 }
                 else if (!selectedItem.IsEvent && selectedItem.UserData != null)
                 {
-                    await DisplayAlert("User Info", $"�������� �������: {selectedItem.UserData.Name}", "OK");
+                    await DisplayAlert("User Info", $"Информация о пользователе: {selectedItem.UserData.Name}", "OK");
                 }
             }
         }
@@ -187,9 +173,6 @@ namespace SLON
             EmptyViewLayout.IsVisible = isEmpty;
             likesCollectionView.IsVisible = !isEmpty;
         }
-
-
-        #endregion
     }
 
     public class LikeItem
