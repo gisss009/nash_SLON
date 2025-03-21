@@ -22,7 +22,7 @@
 
     <TabBar>
         <ShellContent
-            Icon="Resources/Images/favorite.png"
+            Icon="  Resources/Images/favorite.png"
             ContentTemplate="{DataTemplate local:Favorites}"
             Route="Favorites" />
         
