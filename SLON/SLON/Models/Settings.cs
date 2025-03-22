@@ -8,6 +8,5 @@ namespace SLON.Models;
 
 public class Settings
 {
-    public static HashSet<string> selectedUserCategories { get; set; } = new();
-    public static HashSet<string> selectedEventCategories { get; set; } = new();
+    static public HashSet<string> selectedCategories { get; set; } = new();
 }

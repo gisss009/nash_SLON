@@ -1,223 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-           x:Class="SLON.MainPageSettings"
-           xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
-           Color="Transparent"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SLON.MainPageSettings"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             xmlns:ui="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
+             Color="Transparent"
            CanBeDismissedByTappingOutsideOfPopup="False">
 
-    <Border Stroke="Transparent" BackgroundColor="#292929" Padding="15" WidthRequest="360">
+    <Border Stroke="Transparent" BackgroundColor="#737373" Padding="20" WidthRequest="300">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="20" />
         </Border.StrokeShape>
 
-        <VerticalStackLayout x:Name="verticalStackLayout" Spacing="15" Padding="0">
-
+        <VerticalStackLayout x:Name="verticalStackLayout" Spacing="15">
             <!-- Заголовок -->
             <Label Text="Select the desired categories"
-                   FontSize="20"
+                   FontSize="18"
                    HorizontalOptions="Center"
-                   TextColor="White"
+                   TextColor="Black"
                    FontAttributes="Bold"/>
 
-            <!-- Увеличенная подложка -->
-            <Grid HeightRequest="500">
-                <!-- Можно увеличить до 500 -->
-
-                <FlexLayout x:Name="categoriesContainer"
-                            Wrap="Wrap"
-                            Direction="Row"
-                            JustifyContent="SpaceBetween"
-                            AlignItems="Start"
-                            AlignContent="Start"
-                            Margin="0,5,0,10"/>
-
-
-
-                <VerticalStackLayout x:Name="ForEvent" Spacing="10" Padding="0">
-
-                    <Label Text="Event settings"
-                           FontSize="20"
-                           HorizontalOptions="Center"
-                           TextColor="White"
-                           Margin="0,300,0,0"
-                           FontAttributes="Bold"/>
-
-                    <Grid HorizontalOptions="Center" VerticalOptions="Center" ColumnSpacing="0" RowSpacing="15" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <!-- Кнопка Online -->
-                        <Border Grid.Row="0" Grid.Column="0" Stroke="#FFFFFF">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="15,0,15,0"/>
-                            </Border.StrokeShape>
-                            <Button x:Name="OnlineEvent" 
-                                Text="Online"
-                                BackgroundColor="#292929"
-                                TextColor="White"
-                                Padding="15,8"
-                                Margin="0"
-                                CornerRadius="0"
-                                Clicked="OnEventTypeClicked"/>
-                        </Border>
-
-                        <!-- Кнопка Offline -->
-                        <Border Grid.Row="0" Grid.Column="1" Stroke="#FFFFFF">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="0,15,0,15"/>
-                            </Border.StrokeShape>
-                            <Button x:Name="OfflineEvent" 
-                    Text="Offline"
-                    BackgroundColor="#8E44AD"
+            <!-- Кнопка закрытия -->
+            <Button Text="Close"
+                    BackgroundColor="Black"
                     TextColor="White"
-                    Padding="15,8"
-                    CornerRadius="0"
-                    Clicked="OnEventTypeClicked"/>
-                        </Border>
-
-                        <!-- Кнопка Public -->
-                        <Border Grid.Row="0" Grid.Column="2" Stroke="#FFFFFF">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="15,0,15,0"/>
-                            </Border.StrokeShape>
-                            <Button x:Name="PublicEvent" 
-                                    Text="Public"
-                                    BackgroundColor="#292929"
-                                    TextColor="White"
-                                    Padding="15,8"
-                                    Margin="0"
-                                    CornerRadius="0"
-                                    Clicked="OnEventTypeClicked"/>
-                        </Border>
-
-                        <!-- Кнопка Private -->
-                        <Border Grid.Row="0" Grid.Column="3" Stroke="#FFFFFF">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="0,15,0,15"/>
-                            </Border.StrokeShape>
-                            <Button x:Name="PrivateEvent" 
-                                    Text="Private"
-                                    BackgroundColor="#8E44AD"
-                                    TextColor="White"
-                                    Padding="15,8"
-                                    CornerRadius="0"
-                                    Clicked="OnEventTypeClicked"/>
-                        </Border>
-                    </Grid>
-
-                    <StackLayout>
-                        <!-- Label for "Date" -->
-                        <Label Text="Date"
-                               FontSize="20"
-                               TextColor="White"
-                               HorizontalOptions="Center"
-                               Margin="0,10,0,-10"
-                               FontAttributes="Bold"/>
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <!-- Колонка для изображения -->
-                                <ColumnDefinition Width="*" />
-                                <!-- Колонка для Start Date Picker -->
-                                <ColumnDefinition Width="Auto" />
-                                <!-- Колонка для черточки -->
-                                <ColumnDefinition Width="*" />
-                                <!-- Колонка для End Date Picker -->
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <!-- Изображение -->
-                            <Image Source="Resources/Images/data_time.png"
-                                   WidthRequest="50"
-                                   HeightRequest="50"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="Start"
-                                   Grid.Column="0"
-                                   Grid.Row="0"
-                                   Margin="0,20,-40,0"/>
-
-                            <!-- Start Date Picker -->
-                            <DatePicker x:Name="startDatePicker"
-                BackgroundColor="#292929"
-                TextColor="White"
-                Margin="0,10,0,0"
-                Date="{Binding StartDate}"
-                MinimumDate="{Binding MinimumDate}"
-                MaximumDate="{Binding MaximumDate}"
-                VerticalOptions="Center"
-                Grid.Column="1"
-                Grid.Row="0"
-                HorizontalOptions="End"
-                FontSize="20"/>
-
-                            <!-- Черточка между датами -->
-                            <Label Text="-"
-           FontSize="20"
-           TextColor="White"
-           VerticalOptions="Center"
-           HorizontalOptions="Center"
-           Grid.Column="2"
-           Grid.Row="0"
-           Margin="10,10,10,10"/>
-
-                            <!-- End Date Picker -->
-                            <DatePicker x:Name="endDatePicker"
-                BackgroundColor="#292929"
-                TextColor="White"
-                Margin="0,10,0,0"
-                Date="{Binding EndDate}"
-                MinimumDate="{Binding MinimumDate}"
-                MaximumDate="{Binding MaximumDate}"
-                VerticalOptions="Center"
-                Grid.Column="3"
-                Grid.Row="0"
-                HorizontalOptions="Start"
-                FontSize="20"/>
-                        </Grid>
-
-                    </StackLayout>
-                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                       
-                    </HorizontalStackLayout>
-
-                </VerticalStackLayout>
-            </Grid>
-            <!-- Кнопки управления -->
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" Padding="10,0,0,0">
-                <Button Text="Close"
-                        BackgroundColor="#292929"
-                        TextColor="White"
-                        CornerRadius="15"
-                        BorderColor="White"
-                        BorderWidth="1"
-                        WidthRequest="140"
-                        FontAttributes="Bold"
-                        Clicked="OnCloseClicked" />
-
-                <Button Text="Save"
-                        BackgroundColor="#292929"
-                        TextColor="White"
-                        CornerRadius="15"
-                        BorderColor="White"
-                        BorderWidth="1"
-                        WidthRequest="140"
-                        FontAttributes="Bold"
-                        Clicked="OnCloseClicked"/>
-
-
-            </HorizontalStackLayout>
-
+                    CornerRadius="10"
+                    WidthRequest="140"
+                    FontAttributes="Bold"
+                    Clicked="OnCloseClicked" />
         </VerticalStackLayout>
     </Border>
 </mct:Popup>
