@@ -1,98 +1,224 @@
 using CommunityToolkit.Maui.Views;
-using Microsoft.Maui.Controls;
+using Microsoft.Maui.Layouts;
 using SLON.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Xml;
 
-namespace SLON;
-
-public partial class MainPageSettings : Popup
+namespace SLON
 {
-    public ObservableCollection<string> categories { get; set; } = new();
-    //public HashSet<string> selectedCategories { get; set; } = Settings.selectedCategories;
-    private MainPage mainPage;
-
-    public MainPageSettings(MainPage mainPage)
+    public partial class MainPageSettings : Popup
     {
-        InitializeComponent();
-        this.mainPage = mainPage;
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        private HashSet<string> tempSelectedUserCategories;
+        private HashSet<string> tempSelectedEventCategories;
+        private bool? tempSelectedEventIsOnline;
+        private bool? tempSelectedEventIsPublic;
+        private DateTime tempStartDate;
+        private DateTime tempEndDate;
 
-        categories.Add("IT");
-        categories.Add("Creation");
-        categories.Add("Sport");
-        categories.Add("Science");
-        categories.Add("Business");
-        categories.Add("Education");
+        public ObservableCollection<string> categories { get; set; } = new();
+        private MainPage mainPage;
 
-        var collectionView = new CollectionView
+        public MainPageSettings(MainPage mainPage)
         {
-            ItemsSource = categories,
-            SelectionMode = SelectionMode.None
-        };
+            InitializeComponent();
+            this.mainPage = mainPage;
 
-        collectionView.ItemTemplate = new DataTemplate(() =>
-        {
-            var button = new Button
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            tempSelectedUserCategories = new HashSet<string>(Settings.selectedUserCategories);
+            tempSelectedEventCategories = new HashSet<string>(Settings.selectedEventCategories);
+            tempSelectedEventIsOnline = Settings.SelectedEventIsOnline;
+            tempSelectedEventIsPublic = Settings.SelectedEventIsPublic;
+            tempStartDate = Settings.SelectedEventStartDate ?? DateTime.Today;
+            tempEndDate = Settings.SelectedEventEndDate ?? DateTime.Today;
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+            startDatePicker.Date = tempStartDate;
+            endDatePicker.Date = tempEndDate;
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            ForEvent.IsVisible = (mainPage.ProfilesEventsButtonStatus == 1);
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            categories.Add("IT");
+            categories.Add("Creation");
+            categories.Add("Sport");
+            categories.Add("Science");
+            categories.Add("Business");
+            categories.Add("Education");
+            categories.Add("Social");
+            categories.Add("Health");
+
+            categoriesContainer.Children.Clear();
+            foreach (var category in categories)
             {
-                TextColor = Colors.Black,
-                CornerRadius = 3,
-                HeightRequest = 40,
-                Padding=-5,
-                Margin = new Thickness(0, 5),
-                FontAttributes = FontAttributes.Bold,
-                BorderColor = Colors.Black,
-                BorderWidth = 2,
-                FontSize = 18,
-            };
+                var button = new Button
+                {
+                    Text = category,
+                    TextColor = Colors.White,
+                    FontSize = 16,
+                    FontAttributes = FontAttributes.Bold,
+                    CornerRadius = 20,
+                    HeightRequest = 50,
+                    Padding = new Thickness(10, 5),
+                    Margin = new Thickness(5),
+                    BorderColor = Colors.LightGray,
+                    BorderWidth = 1,
+                    BackgroundColor = (mainPage.ProfilesEventsButtonStatus == 0
+                        ? (tempSelectedUserCategories.Contains(category) ? GetCategoryColor(category) : Color.FromRgb(129, 129, 129))
+                        : (tempSelectedEventCategories.Contains(category) ? GetCategoryColor(category) : Color.FromRgb(129, 129, 129)))
+                };
 
-            button.SetBinding(Button.TextProperty, ".");
-
-            // Обновляем цвет кнопки в зависимости от состояния
-            button.BindingContextChanged += (sender, e) =>
+                button.Clicked += OnCategorySelected;
+                FlexLayout.SetBasis(button, new FlexBasis(0.48f, true));
+                categoriesContainer.Children.Add(button);
+            }
+            if (categories.Count % 2 != 0)
             {
-                if (sender is Button btn)
-                    if (Settings.selectedCategories.Contains((string)btn.BindingContext))
-                        btn.BackgroundColor = Color.FromRgb(61, 61, 61); // Выбранная категория
+                var spacer = new BoxView
+                {
+                    WidthRequest = 0,
+                    HeightRequest = 70,
+                    Margin = new Thickness(5)
+                };
+                FlexLayout.SetBasis(spacer, new FlexBasis(0.48f, true));
+                categoriesContainer.Children.Add(spacer);
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            if (mainPage.ProfilesEventsButtonStatus == 1)
+            {
+                if (tempSelectedEventIsOnline.HasValue)
+                {
+                    if (tempSelectedEventIsOnline.Value)
+                    {
+                        OnlineEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        OfflineEvent.BackgroundColor = Color.FromArgb("#292929");
+                    }
                     else
-                        btn.BackgroundColor = Color.FromRgb(217, 217, 217); // Не выбрана категория
-            };
+                    {
+                        OfflineEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        OnlineEvent.BackgroundColor = Color.FromArgb("#292929");
+                    }
+                }
+                if (tempSelectedEventIsPublic.HasValue)
+                {
+                    if (tempSelectedEventIsPublic.Value)
+                    {
+                        PublicEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        PrivateEvent.BackgroundColor = Color.FromArgb("#292929");
+                    }
+                    else
+                    {
+                        PrivateEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        PublicEvent.BackgroundColor = Color.FromArgb("#292929");
+                    }
+                }
+            }
+        }
 
-            // Добавляем обработчик нажатия
-            button.Clicked += OnCategorySelected;
-
-            return button;
-        });
-
-
-        if (verticalStackLayout != null)
-            verticalStackLayout.Children.Insert(1, collectionView); // Индекс 1 — чтобы добавить CollectionView после заголовка
-    }
-
-    private void OnCloseClicked(object sender, EventArgs e)
-    {
-        // Сохраняем выбранные категории в Settings
-        mainPage.FilterCards();
-        Close();
-    }
-
-    private void OnCategorySelected(object? sender, EventArgs e)
-    {
-        if (sender is Button button)
+        private void OnCancelClicked(object sender, EventArgs e)
         {
-            if (!Settings.selectedCategories.Contains(button.Text))
-            {
-                button.BackgroundColor = Color.FromRgb(61, 61, 61); // Выбранная категория
-                Settings.selectedCategories.Add(button.Text);
-            }
-            else
-            {
-                button.BackgroundColor = Color.FromRgb(217, 217, 217); // Не выбрана категория
-                Settings.selectedCategories.Remove(button.Text);
-            }
+            Close();
+        }
 
-            // Логируем текущее состояние после каждого выбора
-            Debug.WriteLine("Current selected categories: " + string.Join(", ", Settings.selectedCategories));
+        private void OnSaveClicked(object sender, EventArgs e)
+        {
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+            if (mainPage.ProfilesEventsButtonStatus == 1)
+            {
+                Settings.SelectedEventStartDate = startDatePicker.Date;
+                Settings.SelectedEventEndDate = endDatePicker.Date;
+            }
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            Settings.selectedUserCategories = new HashSet<string>(tempSelectedUserCategories);
+            Settings.selectedEventCategories = new HashSet<string>(tempSelectedEventCategories);
+            Settings.SelectedEventIsOnline = tempSelectedEventIsOnline;
+            Settings.SelectedEventIsPublic = tempSelectedEventIsPublic;
+            mainPage.FilterCards();
+            Close();
+        }
+
+        private void OnEventTypeClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                switch (button.Text)
+                {
+                    case "Online":
+                        OnlineEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        OfflineEvent.BackgroundColor = Color.FromArgb("#292929");
+                        tempSelectedEventIsOnline = true;
+                        break;
+                    case "Offline":
+                        OfflineEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        OnlineEvent.BackgroundColor = Color.FromArgb("#292929");
+                        tempSelectedEventIsOnline = false;
+                        break;
+                    case "Public":
+                        PublicEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        PrivateEvent.BackgroundColor = Color.FromArgb("#292929");
+                        tempSelectedEventIsPublic = true;
+                        break;
+                    case "Private":
+                        PrivateEvent.BackgroundColor = Color.FromArgb("#8E44AD");
+                        PublicEvent.BackgroundColor = Color.FromArgb("#292929");
+                        tempSelectedEventIsPublic = false;
+                        break;
+                }
+            }
+        }
+
+        private void OnCategorySelected(object? sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                var category = button.Text;
+                if (mainPage.ProfilesEventsButtonStatus == 0)
+                {
+                    if (!tempSelectedUserCategories.Contains(category))
+                    {
+                        button.BackgroundColor = GetCategoryColor(category);
+                        tempSelectedUserCategories.Add(category);
+                    }
+                    else
+                    {
+                        button.BackgroundColor = Color.FromRgb(129, 129, 129);
+                        tempSelectedUserCategories.Remove(category);
+                    }
+                    Debug.WriteLine("Temp selected user categories: " + string.Join(", ", tempSelectedUserCategories));
+                }
+                else if (mainPage.ProfilesEventsButtonStatus == 1)
+                {
+                    if (!tempSelectedEventCategories.Contains(category))
+                    {
+                        button.BackgroundColor = GetCategoryColor(category);
+                        tempSelectedEventCategories.Add(category);
+                    }
+                    else
+                    {
+                        button.BackgroundColor = Color.FromRgb(129, 129, 129);
+                        tempSelectedEventCategories.Remove(category);
+                    }
+                    Debug.WriteLine("Temp selected event categories: " + string.Join(", ", tempSelectedEventCategories));
+                }
+            }
+        }
+
+        private Color GetCategoryColor(string category)
+        {
+            return category switch
+            {
+                "IT" => Color.FromArgb("#3541DC"),
+                "Creation" => Color.FromArgb("#0A6779"),
+                "Sport" => Color.FromArgb("#A92123"),
+                "Science" => Color.FromArgb("#038756"),
+                "Business" => Color.FromArgb("#640693"),
+                "Education" => Color.FromArgb("#B55E24"),
+                "Social" => Color.FromArgb("#FF6F61"),
+                "Health" => Color.FromArgb("#6B5B95"),
+                _ => Colors.Gray
+            };
         }
     }
 }

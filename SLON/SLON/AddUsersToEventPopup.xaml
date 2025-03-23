@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup 
+    x:Class="SLON.AddUsersToEventPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+
+    <Grid BackgroundColor="#80000000">
+        <VerticalStackLayout Padding="20" Spacing="10" BackgroundColor="#141414">
+            <!-- Заголовок с кнопкой закрытия -->
+            <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+                <ImageButton x:Name="CloseButton"
+                             Source="cancel_icon.png"
+                             WidthRequest="24"
+                             HeightRequest="24"
+                             Clicked="OnCloseButtonClicked"/>
+                <Label Text="Add users to event"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Grid.Column="1"/>
+            </Grid>
+            <!-- Отображение названия ивента -->
+            <Label x:Name="EventNameLabel"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            <!-- Список взаимных пользователей с CheckBox -->
+            <CollectionView x:Name="UsersCollectionView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <HorizontalStackLayout Spacing="10" Padding="5" Margin="5" BackgroundColor="#222222">
+                            <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding IsCheckboxEnabled}" VerticalOptions="Center"/>
+                            <Label Text="{Binding Name}" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        </HorizontalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <!-- Кнопка добавления -->
+            <Button Text="Add"
+                    BackgroundColor="#915AC5"
+                    TextColor="White"
+                    Clicked="OnAddButtonClicked"/>
+        </VerticalStackLayout>
+    </Grid>
+</toolkit:Popup>

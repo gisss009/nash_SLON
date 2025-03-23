@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup 
+    x:Class="SLON.EventReadOnlyPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+
+    <ScrollView BackgroundColor="Gray">
+        <Frame BackgroundColor="#141414" CornerRadius="10" Padding="20" Margin="40">
+            <VerticalStackLayout Spacing="20">
+                <!-- Заголовок: кнопка закрытия и заголовок окна -->
+                <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                    <ImageButton x:Name="CloseButton"
+                                 Source="cancel_icon.png"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="24"
+                                 HeightRequest="24"
+                                 Clicked="OnCloseButtonClicked"/>
+                    <Label Text="Event card"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Grid.Column="1"/>
+                    <!-- Пустой элемент вместо кнопки редактирования -->
+                    <BoxView Grid.Column="2" WidthRequest="24" HeightRequest="24" Opacity="0"/>
+                </Grid>
+
+                <!-- Режим просмотра Public/Private -->
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-5,0,0">
+                    <Border Padding="-15" Margin="0,5,0,0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15,0,15,0"/>
+                        </Border.StrokeShape>
+                        <Button x:Name="PublicButton"
+                                Text="Public"
+                                FontSize="10"
+                                TextColor="White"
+                                BackgroundColor="DarkGray"
+                                CornerRadius="0"
+                                BorderColor="White"
+                                BorderWidth="0.1"
+                                WidthRequest="80"
+                                HeightRequest="60"
+                                IsEnabled="False"/>
+                    </Border>
+                    <Border Padding="-15" Margin="0,5,5,0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="0,15,0,15"/>
+                        </Border.StrokeShape>
+                        <Button x:Name="PrivateButton"
+                                Text="Private"
+                                FontSize="10"
+                                TextColor="White"
+                                BackgroundColor="DarkGray"
+                                CornerRadius="0"
+                                BorderColor="White"
+                                BorderWidth="0.1"
+                                WidthRequest="80"
+                                HeightRequest="60"
+                                IsEnabled="False"/>
+                    </Border>
+                </HorizontalStackLayout>
+
+                <!-- Название ивента -->
+                <Frame BackgroundColor="#292929"
+                       CornerRadius="10"
+                       Padding="10"
+                       BorderColor="Transparent">
+                    <Entry x:Name="EventNameEntry"
+                           Placeholder="Event's name"
+                           TextColor="#FFFFFF"
+                           FontSize="18"
+                           BackgroundColor="Transparent"
+                           IsReadOnly="True"
+                           HorizontalTextAlignment="Center"
+                           MaxLength="40"/>
+                </Frame>
+
+                <VerticalStackLayout>
+                    <Label Text="Categories"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"/>
+                    <Frame BackgroundColor="#3D3D3D"
+                           CornerRadius="10"
+                           Padding="10"
+                           BorderColor="Transparent"
+                           HorizontalOptions="FillAndExpand"
+                           HeightRequest="45">
+                        <Label x:Name="CategoriesLabel"
+                               TextColor="White"
+                               HorizontalOptions="Start"
+                               FontSize="16"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Описание -->
+                <Label Text="Short description"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,-15"/>
+                <Frame BackgroundColor="#3D3D3D"
+                       CornerRadius="10"
+                       Padding="10"
+                       BorderColor="Transparent">
+                    <ScrollView VerticalOptions="FillAndExpand" HeightRequest="120">
+                        <Editor x:Name="EventDescriptionEditor"
+                                Placeholder="Describe the event..."
+                                TextColor="#FFFFFF"
+                                FontSize="16"
+                                AutoSize="TextChanges"
+                                BackgroundColor="Transparent"
+                                IsReadOnly="True"/>
+                    </ScrollView>
+                </Frame>
+
+                <!-- Даты события -->
+                <Label Text="Date"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       Margin="0,-5,0,-15"/>
+                <Frame BackgroundColor="#3D3D3D"
+                       CornerRadius="10"
+                       Padding="10"
+                       BorderColor="Transparent">
+                    <HorizontalStackLayout>
+                        <Image Source="calendar_icon.png"
+                               WidthRequest="24"
+                               HeightRequest="24"
+                               VerticalOptions="Center"/>
+                        <Label x:Name="StartDateLabel"
+                               TextColor="White"
+                               VerticalOptions="Center"
+                               Margin="5,0,5,0"/>
+                        <Label Text=" - "
+                               FontSize="Medium"
+                               TextColor="#FFFFFF"
+                               VerticalOptions="Center"
+                               Margin="5,0,5,0"/>
+                        <Label x:Name="EndDateLabel"
+                               TextColor="White"
+                               VerticalOptions="Center"
+                               Margin="5,0,5,0"/>
+                    </HorizontalStackLayout>
+                </Frame>
+
+                <!-- Местоположение -->
+                <VerticalStackLayout>
+                    <Label Text="Location"
+                           FontSize="16"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"
+                           Margin="0,5,0,5"/>
+                    <Grid VerticalOptions="FillAndExpand" BackgroundColor="Transparent">
+                        <Frame BackgroundColor="#3D3D3D"
+                               CornerRadius="15"
+                               Padding="10"
+                               BorderColor="Transparent">
+                            <ScrollView VerticalOptions="FillAndExpand" HeightRequest="100">
+                                <Editor x:Name="EventLocationEditor"
+                                        Placeholder="Venue..."
+                                        TextColor="#FFFFFF"
+                                        FontSize="16"
+                                        AutoSize="TextChanges"
+                                        BackgroundColor="Transparent"
+                                        IsReadOnly="True"/>
+                            </ScrollView>
+                        </Frame>
+                        <HorizontalStackLayout HorizontalOptions="End">
+                            <Border Padding="-20" Margin="0,5,0,90">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="15,0,15,0"/>
+                                </Border.StrokeShape>
+                                <Button x:Name="OnlineButton"
+                                        Text="online"
+                                        FontSize="10"
+                                        TextColor="White"
+                                        BackgroundColor="DarkGray"
+                                        CornerRadius="0"
+                                        BorderColor="White"
+                                        BorderWidth="0.1"
+                                        WidthRequest="80"
+                                        HeightRequest="40"
+                                        IsEnabled="False"/>
+                            </Border>
+                            <Border Padding="-20" Margin="0,5,5,90">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="0,15,0,15"/>
+                                </Border.StrokeShape>
+                                <Button x:Name="OfflineButton"
+                                        Text="offline"
+                                        FontSize="10"
+                                        TextColor="White"
+                                        BackgroundColor="#915AC5"
+                                        CornerRadius="0"
+                                        BorderColor="White"
+                                        BorderWidth="0.1"
+                                        WidthRequest="80"
+                                        HeightRequest="40"
+                                        IsEnabled="False"/>
+                            </Border>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </ScrollView>
+</toolkit:Popup>
