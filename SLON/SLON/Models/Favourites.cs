@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
-namespace SLON.Models;
+namespace SLON.Models
+{
+    public static class Favourites
+    {
+        // Все пользователи, которых я лайкнул (All)
+        public static ObservableCollection<User> favorites { get; set; } = new();
 
-<<<<<<< HEAD
-class Favourites
-{ 
-    static public HashSet<User> favorites { get; set; } = new();
-=======
         public static ObservableCollection<Event> favoriteEvents { get; set; } = new();
 
         // Список взаимных лайков (Mutual)
@@ -62,7 +58,7 @@ class Favourites
 
             // Пример: Пользователи, которые меня запросили (Requests)
             // Они хотят, чтобы я их принял (Accept).
-            var userR1 = new User(201, "Peter Johnson", new List<string> { "Business, Education" }, "Project Manager", "Some info about Peter", "Scrum, Agile")
+            var userR1 = new User(201, "Peter Johnson", new List<string> { "Business", "Education" }, "Project Manager", "Some info about Peter", "Scrum, Agile")
             {
                 IsILikedHim = false // он меня лайкнул, а я его нет
             };
@@ -80,5 +76,4 @@ class Favourites
             requests.Add(userR3);
         }
     }
->>>>>>> eca5211 (Update Main_Page)
 }

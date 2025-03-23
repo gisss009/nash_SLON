@@ -22,10 +22,8 @@ namespace SLON
                     fonts.AddFont("MaterialSymbolsOutlined-Regular.ttf", "MaterialSymbolsOutlined");
                 });
 
-#if DEBUG
-    		builder.Logging.AddDebug();
-#endif
 
+    		builder.Logging.AddDebug();
             return builder.Build();
         }
     }

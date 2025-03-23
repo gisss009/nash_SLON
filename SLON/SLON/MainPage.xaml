@@ -4,21 +4,14 @@
              xmlns:swipeCardView="clr-namespace:Plugin.Maui.SwipeCardView;assembly=Plugin.Maui.SwipeCardView"
              x:Class="SLON.MainPage"
              xmlns:local="clr-namespace:SLON.Models"
-             Padding="0" BackgroundColor="#3C3C3C">
+             Padding="0" BackgroundColor="Black">
 
-    <!-- Заголовок -->
     <Shell.TitleView>
         <HorizontalStackLayout HorizontalOptions="Center">
-            <Image HorizontalOptions="Center"
-                Source="Resources/Images/slon.png" />
-            <Label 
-                Text="SLON"
-                Padding="10"
-                TextColor="White"
-                FontSize="Title" />
+            <Image HorizontalOptions="Center" Source="Resources/Images/slon.png" />
+            <Label Text="SLON" Padding="10" TextColor="White" FontSize="Title" />
         </HorizontalStackLayout>
     </Shell.TitleView>
-
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -30,169 +23,61 @@
     <StackLayout Padding="10">
         <Grid>
             <ImageButton Source="Resources/Images/lupa.png"
-                     HorizontalOptions="Start"
-                     WidthRequest="36"
-                     HeightRequest="36"
-                     Clicked="OnButtonLupaClicked"/>
+                         HorizontalOptions="Start"
+                         WidthRequest="36"
+                         HeightRequest="36"
+                         Clicked="OnButtonLupaClicked"/>
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="-3">
-                <!-- Левая часть (Events) -->
                 <Border Stroke="Transparent">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15,0,15,0"/>
                     </Border.StrokeShape>
                     <Button x:Name="EventsButton" 
-                        Text="Events"
-                        BackgroundColor="#292929"
-                        TextColor="White"
-                        Padding="15,8"
-                        Margin="0"
-                        CornerRadius="0"
-                        Clicked="OnEventsButtonClicked"/>
+                            Text="Events"
+                            BackgroundColor="#292929"
+                            TextColor="White"
+                            Padding="15,8"
+                            Margin="0"
+                            CornerRadius="0"
+                            Clicked="OnEventsButtonClicked"/>
                 </Border>
-                <!-- Правая часть (Profile) -->
                 <Border Stroke="Transparent">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="0,15,0,15" />
                     </Border.StrokeShape>
                     <Button x:Name="ProfilesButton"
-                        Text="Profile"
-                        BackgroundColor="#8E44AD"
-                        TextColor="White"
-                        Padding="15,8"
-                        CornerRadius="0"
-                        Clicked="OnProfilesButtonClicked"/>
+                            Text="Profile"
+                            BackgroundColor="#8E44AD"
+                            TextColor="White"
+                            Padding="15,8"
+                            CornerRadius="0"
+                            Clicked="OnProfilesButtonClicked"/>
                 </Border>
             </HorizontalStackLayout>
             <ImageButton Source="Resources/Images/settings.png"
-<<<<<<< HEAD
                          HorizontalOptions="End"
                          WidthRequest="36"
-                        HeightRequest="36"
-                        Clicked="OnButtonSettingsClicked">
-                
-            </ImageButton>
+                         HeightRequest="36"
+                         Clicked="OnButtonSettingsClicked"/>
         </Grid>
 
-        <!-- вайп-карты-->
-        <Grid Grid.Row="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
-
-            <!-- Карточки -->
-            <swipeCardView:SwipeCardView x:Name="swipeCardView"
+        <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <!-- SwipeCardView для карточек пользователей -->
+            <swipeCardView:SwipeCardView x:Name="swipeCardView" 
                                          ItemsSource="{Binding Users}" Padding="0"
                                          SupportedSwipeDirections="Left, Right"
-                                         HorizontalOptions="FillAndExpand"
+                                         HorizontalOptions="FillAndExpand" 
                                          VerticalOptions="FillAndExpand"
                                          LoopCards="True"
                                          SwipedCommand="{Binding OnCardSwipedCommand}"
                                          SwipedCommandParameter="{Binding .}"
                                          IsVisible="True">
-
-                <swipeCardView:SwipeCardView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid HorizontalOptions="FillAndExpand"
-                              VerticalOptions="FillAndExpand"
-                              Padding="10">
-                            <Frame BackgroundColor="#1E1E1E"
-                                   CornerRadius="15"
-                                   Padding="20"
-                                   Margin="0,40,0,80"
-                                   InputTransparent="True">
-
-                                <VerticalStackLayout Spacing="15"
-                                                     HorizontalOptions="FillAndExpand"
-                                                     VerticalOptions="FillAndExpand">
-                                    <!-- Аватар -->
-                                    <Grid HorizontalOptions="Center">
-                                        <Ellipse WidthRequest="80"
-                                                 HeightRequest="80">
-                                            <Ellipse.Stroke>
-                                                <SolidColorBrush Color="White"/>
-                                            </Ellipse.Stroke>
-                                            <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
-                                        </Ellipse>
-                                        <Image Aspect="AspectFill"
-                                               HeightRequest="80"
-                                               WidthRequest="80"
-                                               Source="Resources/Images/default_profile_icon.png">
-                                            <Image.Clip>
-                                                <EllipseGeometry Center="40, 40"
-                                                                 RadiusX="40"
-                                                                 RadiusY="40" />
-                                            </Image.Clip>
-                                        </Image>
-                                    </Grid>
-
-                                    <!-- Имя + профессия -->
-                                    <Label Text="{Binding Name}"
-                                           TextColor="White"
-                                           FontSize="16"
-                                           FontAttributes="Bold"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="{Binding Vocation}"
-                                           TextColor="White"
-                                           FontSize="14"
-                                           HorizontalOptions="Center" />
-
-                                    <!-- Заголовок Tags -->
-                                    <Frame BackgroundColor="White"
-                                           CornerRadius="5"
-                                           Padding="5"
-                                           HorizontalOptions="Start">
-                                        <Label Text="Tags"
-                                               TextColor="Black"
-                                               FontSize="14"
-                                               FontAttributes="Bold" />
-                                    </Frame>
-
-                                    <!-- Теги (цвет) -->
-                                    <FlexLayout BindableLayout.ItemsSource="{Binding Tags, Converter={StaticResource TagsConverter}}"
-                                                Direction="Row"
-                                                Wrap="Wrap"
-                                                JustifyContent="Center">
-                                        <BindableLayout.ItemTemplate>
-                                            <DataTemplate>
-                                                <Frame CornerRadius="5" Padding="5" Margin="5">
-                                                    <Frame.Triggers>
-                                                        <DataTrigger TargetType="Frame" Binding="{Binding .}" Value="Creation">
-                                                            <Setter Property="BackgroundColor" Value="#00C4B4" />
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Frame" Binding="{Binding .}" Value="Education">
-                                                            <Setter Property="BackgroundColor" Value="#FF5FE8" />
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Frame" Binding="{Binding .}" Value="Social?">
-                                                            <Setter Property="BackgroundColor" Value="#FF5A5A" />
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Frame" Binding="{Binding .}" Value="IT">
-                                                            <Setter Property="BackgroundColor" Value="#6CB6FF" />
-                                                        </DataTrigger>
-                                                    </Frame.Triggers>
-                                                    <Label Text="{Binding .}" TextColor="White" FontSize="12"/>
-=======
-                     HorizontalOptions="End"
-                     WidthRequest="36"
-                     HeightRequest="36"
-                     Clicked="OnButtonSettingsClicked"/>
-        </Grid>
-
-        <!-- Контейнер для SwipeCardView -->
-        <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <!-- SwipeCardView для карточек пользователей -->
-            <swipeCardView:SwipeCardView x:Name="swipeCardView" 
-                                     ItemsSource="{Binding Users}" Padding="0"
-                                     SupportedSwipeDirections="Left, Right"
-                                     HorizontalOptions="FillAndExpand" 
-                                     VerticalOptions="FillAndExpand"
-                                     LoopCards="True"
-                                     SwipedCommand="{Binding OnCardSwipedCommand}"
-                                     SwipedCommandParameter="{Binding .}"
-                                     IsVisible="True">
                 <swipeCardView:SwipeCardView.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
                             <Frame BackgroundColor="#292929" CornerRadius="15" Padding="20"
-                               Margin="0,20,0,30" InputTransparent="True" BorderColor="#44414B">
+                                   Margin="0,20,0,30" InputTransparent="True" BorderColor="#44414B">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                    <!-- Аватар -->
                                     <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
                                         <Grid>
                                             <Ellipse WidthRequest="100" HeightRequest="100">
@@ -202,8 +87,8 @@
                                                 <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
                                             </Ellipse>
                                             <Image Aspect="AspectFill" HeightRequest="100" 
-                                               Source="Resources/Images/default_profile_icon.png" 
-                                               WidthRequest="100">
+                                                   Source="Resources/Images/default_profile_icon.png" 
+                                                   WidthRequest="100">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="50,50" RadiusX="50" RadiusY="50"/>
                                                 </Image.Clip>
@@ -214,139 +99,93 @@
                                             <Label Text="{Binding Vocation}" TextColor="White" FontSize="20"/>
                                         </VerticalStackLayout>
                                     </HorizontalStackLayout>
-                                    <!-- Теги -->
                                     <Label Text="Tags" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Tags}"
-                                            Wrap="Wrap" Direction="Row"
-                                            JustifyContent="Start" AlignItems="Center" Margin="0,5,0,10">
+                                                Wrap="Wrap" Direction="Row"
+                                                JustifyContent="Start" AlignItems="Center" Margin="0,5,0,10">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate>
                                                 <Frame Padding="10,5"
-                                                   CornerRadius="20"
-                                                   BorderColor="#44414B"
-                                                   HasShadow="False"
-                                                   Margin="1"
-                                                   BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
-                                                   MinimumWidthRequest="100"
-                                                   HorizontalOptions="Start">
+                                                       CornerRadius="20"
+                                                       BorderColor="#44414B"
+                                                       HasShadow="False"
+                                                       Margin="1"
+                                                       BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
+                                                       MinimumWidthRequest="100"
+                                                       HorizontalOptions="Start">
                                                     <Label Text="{Binding}" 
-                                                       TextColor="White" 
-                                                       FontSize="16" 
-                                                       FontAttributes="Bold"
-                                                       HorizontalTextAlignment="Center"
-                                                       VerticalTextAlignment="Center"/>
->>>>>>> eca5211 (Update Main_Page)
+                                                           TextColor="White" 
+                                                           FontSize="16" 
+                                                           FontAttributes="Bold"
+                                                           HorizontalTextAlignment="Center"
+                                                           VerticalTextAlignment="Center"/>
                                                 </Frame>
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </FlexLayout>
-<<<<<<< HEAD
-
-                                    <!-- Info -->
-                                    <Frame BackgroundColor="White"
-                                           CornerRadius="5"
-                                           Padding="5"
-                                           HorizontalOptions="Start">
-                                        <Label Text="Info"
-                                               TextColor="Black"
-                                               FontSize="14"
-                                               FontAttributes="Bold" />
-                                    </Frame>
-
-                                    <Label Text="{Binding Info}"
-                                           TextColor="White"
-                                           FontSize="12"
-                                           LineBreakMode="WordWrap" />
-
-                                    <!-- Skills -->
-                                    <Frame BackgroundColor="White"
-                                           CornerRadius="5"
-                                           Padding="5"
-                                           HorizontalOptions="Start">
-                                        <Label Text="Skills"
-                                               TextColor="Black"
-                                               FontSize="14"
-                                               FontAttributes="Bold" />
-                                    </Frame>
-
-                                    <Label Text="{Binding Place}"
-                                           TextColor="White"
-                                           FontSize="12" />
-=======
-                                    <!-- Навыки -->
                                     <Label Text="Skills" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
                                         <Label Text="{Binding Skills}" TextColor="White" FontSize="16" />
                                     </Frame>
-                                    <!-- Информация -->
                                     <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
                                         <Label Text="{Binding Info}" TextColor="White" FontSize="16" />
                                     </Frame>
->>>>>>> eca5211 (Update Main_Page)
                                 </VerticalStackLayout>
                             </Frame>
                         </Grid>
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
-<<<<<<< HEAD
-        
-=======
 
             <!-- SwipeCardView для карточек событий -->
             <swipeCardView:SwipeCardView x:Name="swipeCardViewEvent" 
-                                     ItemsSource="{Binding Events}" Padding="0"
-                                     SupportedSwipeDirections="Left, Right"
-                                     HorizontalOptions="FillAndExpand" 
-                                     VerticalOptions="FillAndExpand"
-                                     LoopCards="True"
-                                     SwipedCommand="{Binding OnCardSwipedEventCommand}"
-                                     SwipedCommandParameter="{Binding .}"
-                                     IsVisible="False">
+                                         ItemsSource="{Binding Events}" Padding="0"
+                                         SupportedSwipeDirections="Left, Right"
+                                         HorizontalOptions="FillAndExpand" 
+                                         VerticalOptions="FillAndExpand"
+                                         LoopCards="True"
+                                         SwipedCommand="{Binding OnCardSwipedCommand}"
+                                         SwipedCommandParameter="{Binding .}"
+                                         IsVisible="False">
                 <swipeCardView:SwipeCardView.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
                             <Frame BackgroundColor="#292929" CornerRadius="15" Padding="20"
-                               Margin="0,20,0,30" InputTransparent="True" BorderColor="#44414B">
+                                   Margin="0,20,0,30" InputTransparent="True" BorderColor="#44414B">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                    <!-- Заголовок -->
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="22" FontAttributes="Bold"
-                                       HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-                                    <!-- Дата -->
-                                    <Label Text="{Binding Date}" TextColor="White" FontSize="18" FontAttributes="Bold"
-                                       HorizontalOptions="Center" HorizontalTextAlignment="Center" TextDecorations="Underline"/>
-                                    <!-- Теги -->
+                                           HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                                    <!-- Вывод диапазона дат проведения ивента -->
+                                    <Label Text="{Binding DateRange}" TextColor="White" FontSize="18" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
                                     <Label Text="Categories" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Categories}"
-                                            Wrap="Wrap" Direction="Row"
-                                            JustifyContent="Start" AlignItems="Center" Margin="0,5,0,10">
+                                                Wrap="Wrap" Direction="Row"
+                                                JustifyContent="Start" AlignItems="Center" Margin="0,5,0,10">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate>
                                                 <Frame Padding="10,5"
-                                                   CornerRadius="20"
-                                                   BorderColor="#44414B"
-                                                   HasShadow="False"
-                                                   Margin="1"
-                                                   BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
-                                                   MinimumWidthRequest="100"
-                                                   HorizontalOptions="Start">
+                                                       CornerRadius="20"
+                                                       BorderColor="#44414B"
+                                                       HasShadow="False"
+                                                       Margin="1"
+                                                       BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
+                                                       MinimumWidthRequest="100"
+                                                       HorizontalOptions="Start">
                                                     <Label Text="{Binding}" 
-                                                       TextColor="White" 
-                                                       FontSize="16" 
-                                                       FontAttributes="Bold"
-                                                       HorizontalTextAlignment="Center"
-                                                       VerticalTextAlignment="Center"/>
+                                                           TextColor="White" 
+                                                           FontSize="16" 
+                                                           FontAttributes="Bold"
+                                                           HorizontalTextAlignment="Center"
+                                                           VerticalTextAlignment="Center"/>
                                                 </Frame>
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </FlexLayout>
-                                    <!-- Навыки -->
                                     <Label Text="Location" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
                                         <Label Text="{Binding Place}" TextColor="White" FontSize="17" />
                                     </Frame>
-                                    <!-- Информация -->
                                     <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
                                         <Label Text="{Binding Info}" TextColor="White" FontSize="17" />
@@ -357,9 +196,6 @@
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
->>>>>>> eca5211 (Update Main_Page)
         </Grid>
     </StackLayout>
-
-
-</ContentPage>  
+</ContentPage>

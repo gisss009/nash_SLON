@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using Microsoft.Maui.Controls;
-using System;
-using System.Globalization;
 
 namespace SLON.Models
 {
@@ -17,56 +11,23 @@ namespace SLON.Models
             {
                 return category switch
                 {
-                    "Creation" => Color.FromArgb("#FFA36A"),
-                    "Education" => Color.FromArgb("#53DAAF"),
-                    "IT" => Color.FromArgb("#6A8DFF"),
-                    "Social" => Color.FromArgb("#45D62B"),
-                    "Business" => Color.FromArgb("#D6BC2B"),
-                    "Science" => Color.FromArgb("#FF6A6A"),
-
-
-                    //Creation
-                    "Art" => Color.FromArgb("#FFA36A"),
-                    "Design" => Color.FromArgb("#FFA36A"),
-                    "Innovation" => Color.FromArgb("#FFA36A"),
-                    "Creativity" => Color.FromArgb("#FFA36A"),
-                    "Prototyping" => Color.FromArgb("#FFA36A"),
-
-                    //"Education"
-                    "Learning" => Color.FromArgb("#53DAAF"),
-                    "Teaching" => Color.FromArgb("#53DAAF"),
-                    "Courses" => Color.FromArgb("#53DAAF"),
-                    "Workshops"=> Color.FromArgb("#53DAAF"),
-                    "Tutoring" => Color.FromArgb("#53DAAF"),
-
-                    // IT 1
-                    "Programming" => Color.FromArgb("#6A8DFF"),
-                    "Cybersecurity" => Color.FromArgb("#6A8DFF"),
-                    "AI" => Color.FromArgb("#6A8DFF"),
-                    "Cloud Computing" => Color.FromArgb("#6A8DFF"),
-
-                    //Social
-                    "Community"=> Color.FromArgb("#45D62B"),
-                    "Networking"=> Color.FromArgb("#45D62B"),
-                    "Events" => Color.FromArgb("#45D62B"),
-                    "Charity" => Color.FromArgb("#45D62B"),
-                    "Social Media" => Color.FromArgb("#45D62B"),
-
-                    //Business
-
-                    "Entrepreneurship" => Color.FromArgb("#D6BC2B"),
-                    "Management"  => Color.FromArgb("#D6BC2B"),
-                    "Marketing"  => Color.FromArgb("#D6BC2B"),
-                    "Finance"  => Color.FromArgb("#D6BC2B"),
-                    "Startups" => Color.FromArgb("#D6BC2B"),
-
-                    //Science
-                    "Research"  => Color.FromArgb("#FF6A6A"),
-                    "Physics"  => Color.FromArgb("#FF6A6A"),
-                    "Biology" => Color.FromArgb("#FF6A6A"),
-                    "Chemistry" => Color.FromArgb("#FF6A6A"),
-                    "Astronomy" => Color.FromArgb("#FF6A6A"),
-
+                    "IT" => Color.FromArgb("#3541DC"),
+                    "Creation" => Color.FromArgb("#0A6779"),
+                    "Sport" => Color.FromArgb("#A92123"),
+                    "Science" => Color.FromArgb("#038756"),
+                    "Business" => Color.FromArgb("#640693"),
+                    "Education" => Color.FromArgb("#B55E24"),
+                    "Social" => Color.FromArgb("#FF6F61"),
+                    "Health" => Color.FromArgb("#6B5B95"),
+                    // Если подкатегории совпадают с основными – используем тот же цвет:
+                    "Art" or "Design" or "Innovation" or "Creativity" or "Prototyping" => Color.FromArgb("#0A6779"),
+                    "Learning" or "Teaching" or "Courses" or "Workshops" or "Tutoring" => Color.FromArgb("#B55E24"),
+                    "Programming" or "Cybersecurity" or "AI" or "Cloud Computing" => Color.FromArgb("#3541DC"),
+                    "Community" or "Networking" or "Events" or "Charity" or "Social Media" => Color.FromArgb("#FF6F61"),
+                    "Entrepreneurship" or "Management" or "Marketing" or "Finance" or "Startups" => Color.FromArgb("#640693"),
+                    "Research" or "Physics" or "Biology" or "Chemistry" or "Astronomy" => Color.FromArgb("#038756"),
+                    "Football" or "Basketball" or "Tennis" or "Running" or "Cycling" => Color.FromArgb("#A92123"),
+                    "Fitness" or "Nutrition" or "Wellness" or "Yoga" or "Medicine" => Color.FromArgb("#6B5B95"),
                     _ => Colors.Gray
                 };
             }

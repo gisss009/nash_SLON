@@ -16,7 +16,7 @@ public class ColorsPageViewModel : BasePageViewModel
         DraggingCommand = new Command<DraggingCardEventArgs>(OnDraggingCommand);
 
         ClearItemsCommand = new Command(OnClearItemsCommand);
-        //AddItemsCommand = new Command(OnAddItemsCommand);
+        AddItemsCommand = new Command(OnAddItemsCommand);
     }
 
     public ObservableCollection<string> CardItems
@@ -70,11 +70,11 @@ public class ColorsPageViewModel : BasePageViewModel
         CardItems.Clear();
     }
 
-    //private void OnAddItemsCommand()
-    //{
-    //    for (var i = 1; i <= 5; i++)
-    //    {
-    //        CardItems.Add($"Card {i}");
-    //    }
-    //}
+    private void OnAddItemsCommand()
+    {
+        for (var i = 1; i <= 5; i++)
+        {
+            CardItems.Add($"Card {i}");
+        }
+    }
 }

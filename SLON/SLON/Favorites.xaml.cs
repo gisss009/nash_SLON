@@ -1,17 +1,16 @@
-namespace SLON;
+using CommunityToolkit.Maui.Views;
+using SLON.Models;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 
-public partial class Favorites : ContentPage
+namespace SLON
 {
-<<<<<<< HEAD
-	public Favorites()
-	{
-		InitializeComponent();
-	}
-}
-=======
     public partial class Favorites : ContentPage
     {
+        // ����� �����������: Events (true) ��� Profiles (false)
         private bool showingEvents = true;
+        // ��� ��������: All (true) ��� Mutual (false)
         private bool showingAll = true;
 
         private ObservableCollection<LikeItem> LikeItems { get; set; } = new();
@@ -75,6 +74,10 @@ public partial class Favorites : ContentPage
             UpdateEmptyView();
         }
 
+
+
+        #region �������������
+
         private void OnAllClicked(object sender, EventArgs e)
         {
             showingAll = true;
@@ -107,10 +110,18 @@ public partial class Favorites : ContentPage
             RefreshLikes();
         }
 
+        #endregion
+
+        #region �����������
+
         private async void OnBellClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new RequestsAcceptedPage());
         }
+
+        #endregion
+
+        #region Swipe Handlers
 
         private void OnDeleteSwipeInvoked(object sender, EventArgs e)
         {
@@ -139,7 +150,7 @@ public partial class Favorites : ContentPage
                     var ev = item.EventData;
                     if (!ev.IsPublic)
                     {
-                        await DisplayAlert("Event", "Это приватное событие, добавление невозможно", "OK");
+                        await DisplayAlert("Event", "����� ���������, ������ �������� ����������", "OK");
                         return;
                     }
                     var popup = new AddUsersToEventPopup(ev);
@@ -149,7 +160,7 @@ public partial class Favorites : ContentPage
                 {
                     if (!IsChatAvailable)
                         return;
-                    await DisplayAlert("Chat", $"Открыт чат с {item.Title}", "OK");
+                    await DisplayAlert("Chat", $"������ ��� � {item.Title}", "OK");
                 }
             }
         }
@@ -165,7 +176,7 @@ public partial class Favorites : ContentPage
                 }
                 else if (!selectedItem.IsEvent && selectedItem.UserData != null)
                 {
-                    await DisplayAlert("User Info", $"Информация о пользователе: {selectedItem.UserData.Name}", "OK");
+                    await DisplayAlert("User Info", $"�������� �������: {selectedItem.UserData.Name}", "OK");
                 }
             }
         }
@@ -176,6 +187,9 @@ public partial class Favorites : ContentPage
             EmptyViewLayout.IsVisible = isEmpty;
             likesCollectionView.IsVisible = !isEmpty;
         }
+
+
+        #endregion
     }
 
     public class LikeItem
@@ -189,4 +203,3 @@ public partial class Favorites : ContentPage
         public string LeftSwipeIcon { get; set; }
     }
 }
->>>>>>> eca5211 (Update Main_Page)

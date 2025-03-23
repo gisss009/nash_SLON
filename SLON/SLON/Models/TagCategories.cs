@@ -1,10 +1,4 @@
-﻿    using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SLON.Models
+﻿namespace SLON.Models
 {
     internal class TagCategories
     {
@@ -15,7 +9,9 @@ namespace SLON.Models
             { "IT", new List<string> { "Programming", "Cybersecurity", "AI", "Cloud Computing" } },
             { "Social", new List<string> { "Community", "Networking", "Events", "Charity", "Social Media" } },
             { "Business", new List<string> { "Entrepreneurship", "Management", "Marketing", "Finance", "Startups" } },
-            { "Science", new List<string> { "Research", "Physics", "Biology", "Chemistry", "Astronomy" } }
+            { "Science", new List<string> { "Research", "Physics", "Biology", "Chemistry", "Astronomy" } },
+            { "Sport", new List<string> { "Football", "Basketball", "Tennis", "Running", "Cycling" } },
+            { "Health", new List<string> { "Fitness", "Nutrition", "Wellness", "Yoga", "Medicine" } }
         };
     }
 }
