@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SLON.AuthPage"
+             BackgroundColor="#1E1E1E">
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontSize" Value="Medium"/>
+        </Style>
+        <Style TargetType="Entry">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="PlaceholderColor" Value="Gray"/>
+            <Setter Property="BackgroundColor" Value="#3C3C3C"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <StackLayout Padding="20" VerticalOptions="StartAndExpand" BackgroundColor="#292929" Margin="20">
+        <Label x:Name="TitleLabel" Text="HELLO" FontSize="Large" HorizontalTextAlignment="Center"/>
+        <Label x:Name="SubtitleLabel" Text="let's register you!" FontSize="Medium" HorizontalTextAlignment="Center"/>
+
+        <Grid Margin="0,20,0,0" HorizontalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="-3">
+                <Border>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10,0,10,0"/>
+                    </Border.StrokeShape>
+                    <Button x:Name="SignInToggle" Text="SIGN IN" 
+                            CornerRadius="0"
+                            BackgroundColor="Black" 
+                            Clicked="ToggleSignInMode"/>
+                </Border>
+
+                <Border>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="0,10,0,10"/>
+                    </Border.StrokeShape>
+                    <Button x:Name="SignUpToggle" Text="SIGN UP" 
+                            Clicked="ToggleSignUpMode"
+                            TextColor="White"
+                            BackgroundColor="#7B51D3"
+                            CornerRadius="0"/>
+                </Border>
+            </HorizontalStackLayout>
+
+        </Grid>
+
+        <StackLayout Spacing="15">
+            <StackLayout Padding="0" Spacing="0" VerticalOptions="StartAndExpand">
+                <Label Text="Your login" Margin="0"/>
+                <Entry x:Name="UsernameEntry" Placeholder="Login" Margin="0"/>
+            </StackLayout>
+        
+            <StackLayout Padding="0" Spacing="0" VerticalOptions="StartAndExpand">
+                <Label Text="Password" Margin="0"/>
+                <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" Margin="0"/>
+            </StackLayout>
+
+            <StackLayout Padding="0" Spacing="0" VerticalOptions="StartAndExpand">
+                <Label x:Name="ConfirmPasswordLabel" Text="Confirm password" Margin="0"/>
+                <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirm password" IsPassword="True" Margin="0"/>
+            </StackLayout>
+        </StackLayout>
+
+        <Button x:Name="SignInButton" Text="SIGN IN" Clicked="OnSignInClicked" BackgroundColor="#7B51D3" Margin="0,20,0,0" CornerRadius="20"/>
+        <Button x:Name="SignUpButton" Text="SIGN UP" Clicked="OnSignUpClicked" BackgroundColor="#7B51D3" Margin="0,20,0,0" CornerRadius="20"/>
+
+        <Image Source="slon_logo_authorization.png" HorizontalOptions="Center" Margin="0,40,0,0"/>
+    </StackLayout>
+</ContentPage>

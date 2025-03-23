@@ -20,6 +20,8 @@ namespace SLON
             InitializeComponent();
             OnCardSwipedCommand = new Command<SwipedCardEventArgs>(OnCardSwiped);
             BindingContext = this;
+
+            Shell.SetNavBarIsVisible(this, false);
         }
 
         protected override void OnNavigatedTo(NavigatedToEventArgs args)

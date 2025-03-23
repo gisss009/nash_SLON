@@ -75,6 +75,7 @@
 	<ItemGroup>
 	  <None Remove="Models\data_time.png" />
 	  <None Remove="Resources\Images\data_time.png" />
+	  <None Remove="Resources\Images\slon_logo_authorization.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -96,6 +97,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="AddUsersToEventPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="AuthPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="EventReadOnlyPopup.xaml">
