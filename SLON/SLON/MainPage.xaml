@@ -75,8 +75,13 @@
                 <swipeCardView:SwipeCardView.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
-                            <Frame BackgroundColor="#292929" CornerRadius="15" Padding="20"
-                                   Margin="0,20,0,30" InputTransparent="True" BorderColor="#44414B">
+                            <Frame x:Name="CardFrame"
+                                   BackgroundColor="{Binding CardColor}"
+                                   CornerRadius="15"
+                                   Padding="20"
+                                   Margin="0,20,0,30"
+                                   InputTransparent="True"
+                                   BorderColor="#44414B">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
                                         <Grid>
@@ -151,12 +156,16 @@
                 <swipeCardView:SwipeCardView.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10">
-                            <Frame BackgroundColor="#292929" CornerRadius="15" Padding="20"
-                                   Margin="0,20,0,30" InputTransparent="True" BorderColor="#44414B">
+                            <Frame x:Name="CardFrame"
+                                   BackgroundColor="{Binding CardColor}"
+                                   CornerRadius="15"
+                                   Padding="20"
+                                   Margin="0,20,0,30"
+                                   InputTransparent="True"
+                                   BorderColor="#44414B">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="22" FontAttributes="Bold"
                                            HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-                                    <!-- Вывод диапазона дат проведения ивента -->
                                     <Label Text="{Binding DateRange}" TextColor="White" FontSize="18" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
                                     <Label Text="Categories" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Categories}"

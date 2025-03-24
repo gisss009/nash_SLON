@@ -18,12 +18,49 @@ namespace SLON
         public MainPage()
         {
             InitializeComponent();
+
             OnCardSwipedCommand = new Command<SwipedCardEventArgs>(OnCardSwiped);
             BindingContext = this;
 
             Shell.SetNavBarIsVisible(this, false);
+
+            swipeCardView.Dragging += OnDragging;
+            swipeCardViewEvent.Dragging += OnDragging;
         }
 
+        private void OnDragging(object sender, DraggingCardEventArgs e)
+        {
+            if (e.Item is User user)
+            {
+                switch (e.Position)
+                {
+                    case DraggingCardPosition.OverThreshold:
+                        if (e.Direction == SwipeCardDirection.Left)
+                            user.CardColor = Colors.Green;
+                        else if (e.Direction == SwipeCardDirection.Right)
+                            user.CardColor = Colors.Red;
+                        break;
+                    default:
+                        user.CardColor = Color.FromArgb("#292929");
+                        break;
+                }
+            }
+            else if (e.Item is Event ev)
+            {
+                switch (e.Position)
+                {
+                    case DraggingCardPosition.OverThreshold:
+                        if (e.Direction == SwipeCardDirection.Left)
+                            ev.CardColor = Colors.Green;
+                        else if (e.Direction == SwipeCardDirection.Right)
+                            ev.CardColor = Colors.Red;
+                        break;
+                    default:
+                        ev.CardColor = Color.FromArgb("#292929");
+                        break;
+                }
+            }
+        }
         protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
@@ -154,7 +191,7 @@ namespace SLON
 
         public void FilterCards()
         {
-            if (ProfilesEventsButtonStatus == 0) // Фильтрация профилей
+            if (ProfilesEventsButtonStatus == 0)
             {
                 Users.Clear();
                 FillUserCards();
@@ -163,7 +200,6 @@ namespace SLON
                 {
                     List<User> filteredUsers = new List<User>();
 
-                    // Если выбрана только одна категория – реализуем приоритетную сортировку
                     if (Settings.selectedUserCategories.Count == 1)
                     {
                         var selectedCategory = Settings.selectedUserCategories.First();
@@ -174,14 +210,11 @@ namespace SLON
                         }
                         var allowedTags = TagCategories.Categories[selectedCategory];
 
-                        // Первая группа: все теги пользователя принадлежат только выбранной категории
                         var group1 = Users.Where(user =>
                             user.Tags.All(tag => allowedTags.Contains(tag)) &&
                             user.Tags.Any(tag => allowedTags.Contains(tag))
                         ).ToList();
 
-                        // Вторая группа: пользователи, у которых есть хотя бы один тег из выбранной категории,
-                        // но не все теги принадлежат ей
                         var group2 = Users.Where(user =>
                             user.Tags.Any(tag => allowedTags.Contains(tag)) &&
                             user.Tags.Any(tag => !allowedTags.Contains(tag))
@@ -190,7 +223,7 @@ namespace SLON
                         filteredUsers.AddRange(group1);
                         filteredUsers.AddRange(group2);
                     }
-                    else // Если выбрано несколько категорий
+                    else
                     {
                         filteredUsers = Users.Where(user =>
                             user.Tags.Any(tag =>
@@ -227,8 +260,6 @@ namespace SLON
                 }
             }
         }
-
-
 
         private void OnCardSwiped(SwipedCardEventArgs e)
         {

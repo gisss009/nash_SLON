@@ -1,6 +1,8 @@
-﻿namespace SLON.Models
+﻿using System.ComponentModel;
+
+namespace SLON.Models
 {
-    public class Event
+    public class Event : INotifyPropertyChanged
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,6 +18,24 @@
         // Вычисляемое свойство для отображения диапазона дат
         public string DateRange => $"{StartDate:dd.MM.yyyy} - {EndDate:dd.MM.yyyy}";
 
+        private Color _cardColor = Color.FromArgb("#292929"); // исходный цвет
+        public Color CardColor
+        {
+            get => _cardColor;
+            set
+            {
+                if (_cardColor != value)
+                {
+                    _cardColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         public Event(int id, string name, List<string> categories, string info, string place, bool is_public, bool is_online)
         {
             Id = id;
@@ -26,6 +46,8 @@
             IsPublic = is_public;
             IsOnline = is_online;
         }
+
+
     }
 
 }
