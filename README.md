@@ -16,6 +16,12 @@
 
   Дизайн приложения: https://www.figma.com/design/pPzfEcWIxMnS5KpJv0LxZS/SLON?node-id=0-1&t=NzosNv71ZgvXEIeR-1
 
+## Превью дизайна
+
+- Профиль
+
+![Профиль](https://github.com/user-attachments/assets/f258748c-831f-4086-a669-66c3b3c7cf64)
+
 - Экран создания мероприятия
 
 ![Мероприятие с онлайн](https://github.com/user-attachments/assets/f53bdf1d-80b2-48b8-a6a6-aff25b2c78cb)
@@ -32,7 +38,6 @@
 - Дизайн добавления в чат\удаления
 
 ![Добавление в чат\удаление](https://github.com/user-attachments/assets/b8252f35-0592-4ff7-b0a5-a9c8c449a9cd)
-
 
 - Дизайн экрана чатов - Профили(работали Алексей и Никита)
 
