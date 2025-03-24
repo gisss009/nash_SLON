@@ -15,3 +15,7 @@
 - Тестирование и запуск
 
   Дизайн приложения: https://www.figma.com/design/pPzfEcWIxMnS5KpJv0LxZS/SLON?node-id=0-1&t=NzosNv71ZgvXEIeR-1
+
+- Экран создания мероприятия
+
+![Мероприятие с онлайн](https://github.com/user-attachments/assets/f53bdf1d-80b2-48b8-a6a6-aff25b2c78cb)
