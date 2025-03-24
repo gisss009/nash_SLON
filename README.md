@@ -26,35 +26,35 @@
 
 ![Мероприятие с онлайн](https://github.com/user-attachments/assets/f53bdf1d-80b2-48b8-a6a6-aff25b2c78cb)
 
-- Дизайн экрана лайков
+- Экран лайков
 
 ![Общий экран лайков](https://github.com/user-attachments/assets/0e253050-ff57-49f9-afc5-5f99e3ac1141)
 
-- Дизайн экрана с Запросами и Принятыми
+- Запросы и Принятые
 
 ![Экран с запросами](https://github.com/user-attachments/assets/25a93e2b-0109-44e8-9c78-c85aaabb4806)
 ![Экран с принятыми](https://github.com/user-attachments/assets/7fc0525e-0741-40f2-9cff-8a0febab15de)
 
-- Дизайн добавления в чат\удаления
+- Добавление в чат\удаление
 
 ![Добавление в чат\удаление](https://github.com/user-attachments/assets/b8252f35-0592-4ff7-b0a5-a9c8c449a9cd)
 
-- Дизайн экрана чатов - Профили(работали Алексей и Никита)
+- Чаты - Профили
 
 ![Профили](https://github.com/user-attachments/assets/0e518d19-5187-4a0d-85c6-b73bf6da5d8f)
 
-- Дизайн экрана чатов - группы
+- Чаты - группы
 
 ![Группы](https://github.com/user-attachments/assets/928b6c73-69d2-4c27-a27a-819c055b6387)
 
-- Дизайн группы
+- Группы
 
 ![Группа](https://github.com/user-attachments/assets/0bf795ba-e082-48c7-a17d-1ec21b028be1)
 
-- Дизайн чата с человеком
+- Чат с человеком
 
 ![Час с человеком](https://github.com/user-attachments/assets/34127bde-27a9-438f-a6e7-43d29661d048)
 
--Дизайн чата в группе
+- Чат в группе
 
 ![Чат группы](https://github.com/user-attachments/assets/b31de26b-f934-4759-95a2-8ff14991b1a0)
