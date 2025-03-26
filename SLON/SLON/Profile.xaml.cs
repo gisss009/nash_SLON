@@ -28,12 +28,22 @@ namespace SLON
         private DateTime _endDate = DateTime.Today;
         private string _originalEventName = string.Empty;
 
+        private readonly Dictionary<string, (string TagExample, string SkillExample)> categoryExamples = new() {
+            {"IT", ("C# Python DevOps", "Backend Development, Cloud Architecture")},
+            {"Creation", ("Photography Illustration Typography", "Graphic Design, 3D Modeling")},
+            {"Sport", ("Yoga Crossfit Marathon", "Team Coaching, Personal Training")},
+            {"Science", ("Biology Chemistry Physics", "Lab Research, Data Analysis")},
+            {"Business", ("Marketing Finance Startup", "Project Management, Investments")},
+            {"Education", ("Pedagogy STEM E-learning", "Curriculum Development, Tutoring")},
+            {"Social", ("Volunteering NGO EventPlanning", "Community Management, Public Speaking")},
+            {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}};
         public Profile()
         {
             InitializeComponent();
 
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
+            ResumeEditor.Placeholder = "Description is empty";
 
             events.Add(("InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
             events.Add(("InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
@@ -59,6 +69,7 @@ namespace SLON
             EditIcon.IsVisible = !isEditing;
             AddEventIcon.Opacity = isEditing ? 0.5 : 1;
             AddEventIcon.IsEnabled = !isEditing;
+            ResumeEditor.Placeholder = isEditing ? "Write about yourself..." : "Description is empty";
             ToggleDeleteButtons(isEditing);
             RefreshCategoriesUI();
         }
@@ -130,6 +141,13 @@ namespace SLON
             if (!_isEditing) return;
             CategoryPopup.IsVisible = true;
             CategoryNameLabel.Text = categoryName;
+
+            if (categoryExamples.TryGetValue(categoryName, out var examples))
+            {
+                TagsEditor.Placeholder = $"Enter tags... (e.g. {examples.TagExample})";
+                SkillsEditor.Placeholder = $"Describe skills... (e.g. {examples.SkillExample})";
+            }
+
             if (addedCategories.TryGetValue(categoryName, out var data))
             {
                 TagsEditor.Text = data.Tags;
@@ -139,6 +157,14 @@ namespace SLON
             {
                 TagsEditor.Text = SkillsEditor.Text = string.Empty;
             }
+
+            // Установка цвета заголовка
+            CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
+        }
+
+        private void OnCloseCategoryClicked(object sender, EventArgs e)
+        {
+            CategoryPopup.IsVisible = false;
         }
 
         private void OnSaveCategoryClicked(object sender, EventArgs e)

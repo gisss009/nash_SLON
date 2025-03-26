@@ -247,7 +247,7 @@
                      IsVisible="False"
                      BackgroundColor="#80000000">
             <Frame BackgroundColor="#2E2E2E"
-                   CornerRadius="10"
+                   CornerRadius="15"
                    Padding="20"
                    Margin="40">
                 <VerticalStackLayout Spacing="15">
@@ -257,42 +257,71 @@
                            FontAttributes="Bold"
                            TextColor="White"
                            HorizontalOptions="Center"/>
-                    <VerticalStackLayout>
+
+                    <!-- Tags Section -->
+                    <VerticalStackLayout Spacing="5">
                         <Label Text="Tags"
-                               FontSize="16"
+                               FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="White"/>
-                        <ScrollView VerticalOptions="FillAndExpand" HeightRequest="150">
-                            <Editor x:Name="TagsEditor"
-                                    Placeholder="Enter tags... Tag1 Tag2 Tag3"
-                                    BackgroundColor="Gray"
-                                    TextColor="White"
-                                    FontSize="16"
-                                    AutoSize="TextChanges"/>
-                        </ScrollView>
+                               TextColor="White"
+                               HorizontalOptions="Start"/>
+
+                        <Frame BackgroundColor="#3D3D3D" CornerRadius="10" HeightRequest="160" Padding="0">
+                            <ScrollView VerticalOptions="FillAndExpand">
+                                <Editor x:Name="TagsEditor"
+                                        Placeholder="Enter tags... (e.g. C# Python DevOps)"
+                                        PlaceholderColor="#AAAAAA"
+                                        VerticalTextAlignment="Start"
+                                        HorizontalTextAlignment="Start"
+                                        TextColor="White"
+                                        FontSize="16"
+                                        Margin="10,0"
+                                        AutoSize="TextChanges"/>
+                            </ScrollView>
+                        </Frame>
                     </VerticalStackLayout>
-                    <VerticalStackLayout>
+
+                    <!-- Skills Section -->
+                    <VerticalStackLayout Spacing="5">
                         <Label Text="Skills"
-                               FontSize="16"
+                               FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="White"/>
-                        <ScrollView VerticalOptions="FillAndExpand" HeightRequest="150">
-                            <Editor x:Name="SkillsEditor"
-                                    Placeholder="Describe your skills..."
-                                    BackgroundColor="Gray"
-                                    TextColor="White"
-                                    FontSize="16"
-                                    AutoSize="TextChanges"/>
-                        </ScrollView>
+                               TextColor="White"
+                               HorizontalOptions="Start"/>
+
+                        <Frame BackgroundColor="#3D3D3D" CornerRadius="10" HeightRequest="160" Padding="0">
+                            <ScrollView VerticalOptions="FillAndExpand">
+                                <Editor x:Name="SkillsEditor"
+                                        Placeholder="Describe skills... (e.g. Backend Development, Cloud Architecture)"
+                                        PlaceholderColor="#AAAAAA"
+                                        VerticalTextAlignment="Start"
+                                        HorizontalTextAlignment="Start"
+                                        TextColor="White"
+                                        FontSize="16"
+                                        Margin="10,0"
+                                        AutoSize="TextChanges"/>
+                            </ScrollView>
+                        </Frame>
                     </VerticalStackLayout>
-                    <Button Text="Save"
-                            BackgroundColor="#6200EE"
-                            TextColor="White"
-                            Clicked="OnSaveCategoryClicked"/>
+
+                    <!-- Кнопки -->
+                    <HorizontalStackLayout Spacing="15"  HorizontalOptions="Center">
+                        <Button Text="Close"
+                                BackgroundColor="#666666"
+                                TextColor="White"
+                                WidthRequest="100"
+                                CornerRadius="20"
+                                Clicked="OnCloseCategoryClicked"/>
+                        <Button Text="Save"
+                                BackgroundColor="#915AC5"
+                                TextColor="White"
+                                WidthRequest="100"
+                                CornerRadius="20"
+                                Clicked="OnSaveCategoryClicked"/>
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Frame>
         </ContentView>
-
 
         <!-- Окно Show all для списка ивентов -->
         <ContentView x:Name="AllEventsPopup"
