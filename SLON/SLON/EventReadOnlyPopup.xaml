@@ -35,7 +35,7 @@
                         </Border.StrokeShape>
                         <Button x:Name="PublicButton"
                                 Text="Public"
-                                FontSize="10"
+                                FontSize="11"
                                 TextColor="White"
                                 BackgroundColor="DarkGray"
                                 CornerRadius="0"
@@ -51,7 +51,7 @@
                         </Border.StrokeShape>
                         <Button x:Name="PrivateButton"
                                 Text="Private"
-                                FontSize="10"
+                                FontSize="11"
                                 TextColor="White"
                                 BackgroundColor="DarkGray"
                                 CornerRadius="0"
@@ -171,17 +171,18 @@
                                         FontSize="16"
                                         AutoSize="TextChanges"
                                         BackgroundColor="Transparent"
-                                        IsReadOnly="True"/>
+                                        IsReadOnly="True"
+                                        Margin="0,8,0,0"/>
                             </ScrollView>
                         </Frame>
                         <HorizontalStackLayout HorizontalOptions="End">
-                            <Border Padding="-20" Margin="0,5,0,90">
+                            <Border Padding="-20" Margin="0,0,0,92">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="15,0,15,0"/>
                                 </Border.StrokeShape>
                                 <Button x:Name="OnlineButton"
                                         Text="online"
-                                        FontSize="10"
+                                        FontSize="11"
                                         TextColor="White"
                                         BackgroundColor="DarkGray"
                                         CornerRadius="0"
@@ -191,13 +192,13 @@
                                         HeightRequest="40"
                                         IsEnabled="False"/>
                             </Border>
-                            <Border Padding="-20" Margin="0,5,5,90">
+                            <Border Padding="-20" Margin="0,0,0,92">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="0,15,0,15"/>
                                 </Border.StrokeShape>
                                 <Button x:Name="OfflineButton"
                                         Text="offline"
-                                        FontSize="10"
+                                        FontSize="11"
                                         TextColor="White"
                                         BackgroundColor="#915AC5"
                                         CornerRadius="0"
