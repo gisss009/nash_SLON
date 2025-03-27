@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Maui.Controls;
-using Microsoft.Win32;
 using SLON.Services;
 
 namespace SLON
@@ -59,39 +58,32 @@ namespace SLON
                 return;
             }
 
-            bool reg = await AuthService.Register(UsernameEntry.Text, PasswordEntry.Text);
-
-            if (reg) // здесь проверка в базе на корректность введенных данных
-            {
-                AuthService.SetAuthenticated(true);
-                await AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
-                await DisplayAlert("Registration", "User registered successfully!", "OK");
-                Application.Current.MainPage = new AppShell();
-            }
-            else
-            {
-                MainThread.InvokeOnMainThreadAsync(async () =>
-                {
-                    await Application.Current.MainPage.DisplayAlert("Ошибка", "Такой пользователь уже существует!", "ОК");
-                });
-            }
+            //if (!AuthService.IsAuthenticated()) // здесь проверка в базе на корректность введенных данных
+            //{
+            AuthService.SetAuthenticated(true);
+            await AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
+            await DisplayAlert("Registration", "User registered successfully!", "OK");
+            Application.Current.MainPage = new AppShell();
+            //}
+            //else
+            //{
+                //await DisplayAlert("Registration", "Failed to register user.", "OK");
+            //}
         }
 
         private async void OnSignInClicked(object sender, EventArgs e)
         {
-            bool isCorrect = await AuthService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
-
-            if (isCorrect)
-            {
-                AuthService.SetAuthenticated(true);
-                await AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
-                await DisplayAlert("Login", "Successful login", "OK");
-                Application.Current.MainPage = new AppShell();
-            }
-            else
-            {
-                await DisplayAlert("Login", "Failed to log in.", "OK");
-            }
+            //if (AuthUser.AuthenticateUser(UsernameEntry.Text, PasswordEntry.Text)) // здесь тоже проверка на корректность и правильность данных 
+            //{
+            AuthService.SetAuthenticated(true);
+            await AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
+            await DisplayAlert("Login", "User logged in successfully!", "OK");
+            Application.Current.MainPage = new AppShell();
+            //}
+            //else
+            //{
+                //await DisplayAlert("Login", "Failed to log in.", "OK");
+            //}
         }
     }
 }
