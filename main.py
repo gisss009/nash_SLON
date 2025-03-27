@@ -1,16 +1,60 @@
 from flask import Flask, request, jsonify
 from db import *
+import requests
+import os
 
 app = Flask(__name__)
 
+def require_auth(func):
+    def wrapper(*args, **kwargs):
+        username = request.args.get("from_user_username")
+        password = request.args.get("from_user_password")
+
+        if not username or not password:
+            return jsonify({"ok": False, "response": "Missing from_user_username or from_user_password."}), 400
+
+        if not is_user_and_password_correct(username, password):
+            return jsonify({"ok": False, "response": "Invalid from_user_username or from_user_password."}), 401
+
+        return func(*args, **kwargs)
+
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+
+@app.route("/add_username_and_password")
+def add_username_and_password_handler():
+    username = request.args.get('username')
+    password = request.args.get('password')
+
+    if not username or not password:
+        return jsonify({"ok": False, "response": "parameters username or password is missing."})
+
+    if is_exist_username(username):
+        return jsonify({"ok": False, "response": "this username is already exists."})
+
+    add_username_and_password(username, password)
+    return jsonify({"ok": True}), 400
+
+
+@app.route("/is_username_and_password_correct", methods=['POST', 'GET'])
+def is_username_and_password_handler():
+    username = request.args.get('username')
+    password = request.args.get('password')
+
+    if not username or not password:
+        return jsonify({"ok": False, "response": "parameters username or password is missing."})
+
+    return jsonify({"ok": True, "response": is_user_and_password_correct(username, password)}), 400
+
 
 @app.route("/users/find_profile")
+@require_auth
 def find_profile_handler():
     username = request.args.get('username')
 
     if not username:
         return jsonify({"ok": False, "response": "parameter username is missing."})
-    
 
     return jsonify({"ok": True, "response": find_profile(username)}), 400
 

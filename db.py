@@ -34,6 +34,12 @@ c.execute('''CREATE TABLE IF NOT EXISTS events (
 )''')
 db.commit()
 
+c.execute('''CREATE TABLE IF NOT EXISTS users_passwords (
+    username TEXT,
+    password TEXT
+)''')
+db.commit()
+
 def find_profile(username: str):
     user = c.execute("SELECT username FROM profiles WHERE username = (?)", (username,)).fetchone()
     return user != None
@@ -469,6 +475,22 @@ def get_all_events():
     return events_list
 
 
+def is_user_and_password_correct(username: str, password: str):
+    user = c.execute("SELECT * FROM users_passwords WHERE username = ? AND password = ?", (username, password)).fetchone()
+    return user != None
+
+
+def add_username_and_password(username: str, password: str):
+    if not is_exist_username(username):
+        c.execute("INSERT INTO users_passwords VALUES (?, ?)", (username, password))
+        db.commit()
+        add_profile(username)
+
+
+def is_exist_username(username: str):
+    username = c.execute("SELECT * FROM users_passwords WHERE username = ?", (username,)).fetchone()
+    return username != None
+
 # add_event("name", 1, "IT", "desc", "loc", "date_f", "date_t", 1, 1) 
 # add_event("name", 1, "IT,Business", "desc", "loc", "date_f", "date_t", 1, 1) 
 # add_event("name", 1, "Sport", "desc", "loc", "date_f", "date_t", 1, 1) 
@@ -525,3 +547,11 @@ def get_all_events():
 #     swiped_users=json.dumps([]),
 #     mail="charlie@example.com"
 # )
+
+
+# c.execute("INSERT INTO users_passwords VALUES (?, ?)", ("username1", "pas1"))
+# c.execute("INSERT INTO users_passwords VALUES (?, ?)", ("username2", "pas2"))
+# c.execute("INSERT INTO users_passwords VALUES (?, ?)", ("username3", "pas3"))
+# db.commit()
+
+print(is_user_and_password_correct("kdsjfkj2k3jtsd", "sdkfsjdf"))
