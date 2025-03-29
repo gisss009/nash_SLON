@@ -5,6 +5,19 @@ import os
 
 app = Flask(__name__)
 
+
+@app.route("/users/get_all_user_events")
+def get_all_user_events_handler():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({"ok": False, "response": "parameter username is missing."}), 400
+
+    # Проверяем, существует ли профиль пользователя
+    if not find_profile(username):
+        return jsonify({"ok": False, "response": "username with current username not found."}), 404
+
+    return jsonify({"ok": True, "response": get_all_user_events(username)}), 200
+
 def require_auth(func):
     def wrapper(*args, **kwargs):
         username = request.args.get("from_user_username")
@@ -34,7 +47,7 @@ def add_username_and_password_handler():
         return jsonify({"ok": False, "response": "this username is already exists."})
 
     add_username_and_password(username, password)
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/is_username_and_password_correct", methods=['POST', 'GET'])
@@ -45,7 +58,7 @@ def is_username_and_password_handler():
     if not username or not password:
         return jsonify({"ok": False, "response": "parameters username or password is missing."})
 
-    return jsonify({"ok": True, "response": is_user_and_password_correct(username, password)}), 400
+    return jsonify({"ok": True, "response": is_user_and_password_correct(username, password)}), 200
 
 
 @app.route("/users/find_profile")
@@ -56,7 +69,7 @@ def find_profile_handler():
     if not username:
         return jsonify({"ok": False, "response": "parameter username is missing."})
 
-    return jsonify({"ok": True, "response": find_profile(username)}), 400
+    return jsonify({"ok": True, "response": find_profile(username)}), 200
 
 
 @app.route("/users/get_profile")
@@ -66,22 +79,11 @@ def get_profile_handler():
     if not username:
         return jsonify({"ok": False, "response": "parameter username is missing."})
 
-    if not find_profile(username):
-        return jsonify({"ok": False, "response": "username with current username not found."})
-
     profile = get_profile(username)
-    ans = {}
-    ans["username"] = profile[0]
-    ans["name"] = profile[1]
-    ans["categories"] = json.loads(profile[2])
-    ans["tags"] = json.loads(profile[3])
-    ans["own_events"] = json.loads(profile[4])
-    ans["events"] = json.loads(profile[5])
-    ans["resume"] = profile[6]
-    ans["swiped_users"] = json.loads(profile[7])
-    ans["mail"] = profile[8]
+    if not profile:
+        return jsonify({"ok": False, "response": "username with current username not found."}), 404
 
-    return jsonify({"ok": True, "response": ans}), 400
+    return jsonify({"ok": True, "response": profile}), 200
 
 
 @app.route("/users/add_profile")
@@ -96,7 +98,7 @@ def add_profile_handler():
 
     add_profile(username)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/edit_profile_name")
@@ -112,7 +114,23 @@ def edit_profile_name_handler():
 
     edit_profile_name(username, name)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
+
+
+@app.route("/users/edit_profile_surname")
+def edit_profile_surname_handler():
+    username = request.args.get('username')
+    surname = request.args.get('surname')
+
+    if not username or not surname:
+        return jsonify({"ok": False, "response": "parameter username or surname is missing."})
+
+    if not find_profile(username):
+        return jsonify({"ok": False, "response": "current username not found."})
+
+    edit_profile_name(username, surname)
+
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/add_profile_category")
@@ -131,7 +149,30 @@ def add_profile_category_handler():
 
     add_profile_category(username, category)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
+
+
+@app.route("/users/add_category_with_tags", methods=['GET'])
+def add_category_with_tags_handler():
+    username = request.args.get('username')
+    category = request.args.get('category')
+    tags = request.args.get('tags', "")  # "Python SQL DevOps"
+    skills = request.args.get('skills', "")  # "Backend, Cloud"
+    
+    if not username or not category:
+        return jsonify({"ok": False, "response": "Missing username or category"}), 400
+    
+    success = add_profile_category(username, category, tags, skills)
+    return jsonify({"ok": success}), 200 if success else 400
+
+@app.route("/users/get_categories", methods=['GET'])
+def get_categories_handler():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({"ok": False, "response": "Missing username"}), 400
+    
+    categories = get_profile_categories(username)
+    return jsonify({"ok": True, "response": categories}), 200
 
 
 @app.route("/users/delete_profile_category")
@@ -148,30 +189,25 @@ def delete_profile_category_handler():
     if category not in ["IT", "Social", "Business", "Health", "Creation", "Sport", "Education", "Science"]:
         return jsonify({"ok": False, "response": "category not in accessed categories"})
 
-    delete_profile_category(username, category)
+    remove_profile_category(username, category)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/add_profile_event")
 def add_profile_event_handler():
     username = request.args.get('username')
-    id = request.args.get('id')
+    hash = request.args.get('hash')
 
-    if not username or not id:
+    if not username or not hash:
         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
     if not find_profile(username):
         return jsonify({"ok": False, "response": "username with current username not found."})
 
-    try:
-        id = int(id)
-    except ValueError:
-        return jsonify({"ok": False, "response": "parameter id is not integer."})
+    add_profile_event(username, hash)
 
-    add_profile_event(username, id)
-
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/delete_profile_event")
@@ -192,7 +228,7 @@ def delete_profile_event_handler():
 
     delete_profile_event(username, id)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 # @app.route("/users/add_profile_own_event")
@@ -213,7 +249,7 @@ def delete_profile_event_handler():
 
 #     add_profile_own_event(username, id)
 
-#     return jsonify({"ok": True}), 400
+#     return jsonify({"ok": True}), 200
 
 
 # @app.route("/users/delete_profile_own_event")
@@ -234,23 +270,39 @@ def delete_profile_event_handler():
 
 #     delete_profile_own_event(username, id)
 
-#     return jsonify({"ok": True}), 400
+#     return jsonify({"ok": True}), 200
 
 
-@app.route("/users/edit_profile_resume")
-def edit_profile_resume_handler():
+@app.route("/users/edit_profile_description")
+def edit_profile_description_handler():
     username = request.args.get('username')
-    resume = request.args.get('resume')
+    description = request.args.get('description')
 
-    if not username or not resume:
+    if not username or not description:
         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
     if not find_profile(username):
         return jsonify({"ok": False, "response": "username with current username not found."})
 
-    edit_profile_resume(username, resume)
+    edit_profile_description(username, description)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
+
+
+@app.route("/users/edit_profile_vocation")
+def edit_profile_vocation_handler():
+    username = request.args.get('username')
+    vocation = request.args.get('vocation')
+
+    if not username or not vocation:
+        return jsonify({"ok": False, "response": "parameter username or category is missing."})
+
+    if not find_profile(username):
+        return jsonify({"ok": False, "response": "username with current username not found."})
+
+    edit_profile_vocation(username, vocation)
+
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/add_profile_swiped_user")
@@ -271,7 +323,7 @@ def add_profile_swiped_user_handler():
 
     add_profile_swiped_user(username, id)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/delete_profile_swiped_user")
@@ -292,7 +344,7 @@ def delete_profile_swiped_user_handler():
 
     delete_profile_swiped_user(username, id)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/users/edit_profile_mail")
@@ -311,7 +363,7 @@ def edit_profile_mail_handler():
 
     edit_profile_mail(username, mail)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/get_event")
@@ -334,14 +386,14 @@ def get_event_handler():
     ans["date_from"] = event[5]
     ans["date_to"] = event[6]
 
-    return jsonify({"ok": True, "response": ans}), 400
+    return jsonify({"ok": True, "response": ans}), 200
 
 
 @app.route("/events/add_event")
 def add_event_handler():
     args = [
         request.args.get('name'),
-        request.args.get('owner_id'),
+        request.args.get('owner'),
         request.args.get('categories'),
         request.args.get('description'),
         request.args.get('location'),
@@ -351,9 +403,13 @@ def add_event_handler():
         request.args.get('online')
     ]
 
+    i = 0
     for arg in args:
+        
         if not arg:
-            return jsonify({"ok": False, "response": f"One of parameters is missing."})
+            return jsonify({"ok": False, "response": f"One of parameters is missing: {i}"})
+        
+        i += 1
         
     new_event_hash = add_event(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8])
     
@@ -361,7 +417,7 @@ def add_event_handler():
         if category in ["IT", "Social", "Business", "Health", "Creation", "Sport", "Education", "Science"]:
             add_event_category(new_event_hash, category)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True, "response": new_event_hash}), 200
 
 
 @app.route("/events/edit_event_name")
@@ -377,7 +433,7 @@ def edit_event_name_handler():
         
     edit_event_name(hash, name)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/add_event_category")
@@ -393,7 +449,7 @@ def add_event_category_handler():
 
     add_event_category(hash, category)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/delete_event_category")
@@ -409,7 +465,7 @@ def delete_event_category_handler():
 
     delete_event_category(hash, category)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/edit_event_description")
@@ -425,7 +481,7 @@ def edit_event_description_handler():
 
     edit_event_description(hash, description)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/edit_event_location")
@@ -441,7 +497,7 @@ def edit_event_location_handler():
 
     edit_event_location(hash, location)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/edit_event_date")
@@ -458,12 +514,93 @@ def edit_event_date_handler():
 
     edit_event_location(hash, date_from, date_to)
 
-    return jsonify({"ok": True}), 400
+    return jsonify({"ok": True}), 200
+
+
+@app.route("/events/add_event_member")
+def add_event_member_handler():
+    username = request.args.get('username')
+    hash = request.args.get('hash')
+
+    if not hash or not username:
+        return jsonify({"ok": False, "response": "one of the parameters is missing."})
+        
+    if not find_event(hash):
+        return jsonify({"ok": False, "response": "event with current name not found."})
+    
+    if not find_profile(username):
+        return jsonify({"ok": False, "response": "username not found."})
+
+    add_event_member(hash, username)
+
+    return jsonify({"ok": True}), 200
+
+
+@app.route("/events/delete_event")
+def delete_event_handler():
+    hash = request.args.get('hash')
+
+    if not hash:
+        return jsonify({"ok": False, "response": "parameter hash is missing."})
+
+    delete_event(hash)
+
+    return jsonify({"ok": True}), 200
 
 
 @app.route("/events/get_all_events")
 def get_all_events_handler():
-    return jsonify({"ok": True, "response": get_all_events()}), 400
+    return jsonify({"ok": True, "response": get_all_events()}), 200
+
+
+@app.route("/users/update_profile", methods=['GET'])
+def update_profile_handler():
+    try:
+        username = request.args.get('username')
+        if not username:
+            return jsonify({"ok": False, "response": "parameter username is missing."}), 400
+
+        # Получаем все возможные параметры для обновления
+        updates = {
+            'name': request.args.get('name'),
+            'surname': request.args.get('surname'),
+            'vocation': request.args.get('vocation'),
+            'description': request.args.get('description'),
+            'mail': request.args.get('mail'),
+        }
+
+        # Фильтруем None значения
+        updates = {k: v for k, v in updates.items() if v is not None}
+
+        if not updates:
+            return jsonify({"ok": False, "response": "no parameters to update."}), 400
+
+        # Проверяем существование пользователя
+        if not find_profile(username):
+            return jsonify({"ok": False, "response": "username not found."}), 404
+
+        # Обновляем каждое поле
+        if 'name' in updates:
+            edit_profile_name(username, updates['name'])
+        if 'surname' in updates:
+            edit_profile_surname(username, updates['surname'])
+        if 'vocation' in updates:
+            edit_profile_vocation(username, updates['vocation'])
+        if 'description' in updates:
+            edit_profile_description(username, updates['description'])
+        if 'mail' in updates:
+            if is_email_exist(updates['mail']):
+                return jsonify({"ok": False, "response": "email already exists."}), 400
+            edit_profile_mail(username, updates['mail'])
+
+        db.commit()
+        return jsonify({"ok": True}), 200
+
+    except Exception as e:
+        print(f"Error updating profile: {str(e)}")
+        db.rollback()
+        return jsonify({"ok": False, "response": "internal server error"}), 500
+
 
 @app.route("/users")
 def hello_world():
@@ -487,7 +624,7 @@ response: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp; "tags": {str (name of category): list[str] (tags of this category), ...},<br>
 &nbsp;&nbsp;&nbsp;&nbsp; "own_events": list[str],<br>
 &nbsp;&nbsp;&nbsp;&nbsp; "events": list[str],<br>
-&nbsp;&nbsp;&nbsp;&nbsp; "resume": str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "description": str,<br>
 &nbsp;&nbsp;&nbsp;&nbsp; "swiped_users": list[int],<br>
 &nbsp;&nbsp;&nbsp;&nbsp; "mail": str<br>
 &nbsp;&nbsp;&nbsp;&nbsp; }<br>
@@ -508,7 +645,7 @@ add_profile_own_event(username: str, hash: str)<br>
 <hr>
 delete_profile_own_event(username: str, hash: str)<br>
 <hr>
-edit_profile_resume(username: str, resume: str)<br>
+edit_profile_description(username: str, description: str)<br>
 <hr>
 add_profile_swiped_user(username: str, id: int)<br>
 <hr>
@@ -527,7 +664,7 @@ example:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "categories": "IT,Health",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "tags": ["Python", "SQL"],<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "events": "event1,event2",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "resume": "Resume1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "description": "description1",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "swiped_users": "user2,user3",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "mail": "alice@example.com"<br>
 &nbsp;&nbsp;&nbsp;&nbsp; },<br>
@@ -537,7 +674,7 @@ example:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "categories": "Business,Sport",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "tags": ["Football", "Tennis"],<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "events": "event3",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "resume": "Resume2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "description": "description2",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "swiped_users": "user1",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "mail": "bob@example.com"<br>
 &nbsp;&nbsp;&nbsp;&nbsp; },<br>
@@ -561,7 +698,7 @@ response: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp; "date_to": int<br>
 }<br>
 <hr>
-add_event(name: str, owner_id: int, categories: str,str,..., description: str, location: str, date_from: str, date_to: str, public: 0 or 1, online: 0 or 1)<br>
+add_event(name: str, owner: int, categories: str,str,..., description: str, location: str, date_from: str, date_to: str, public: 0 or 1, online: 0 or 1)<br>
 example of categories: IT,Business<br>
 <hr>
 get_events_by_categories(categories: str,str...)<br>
@@ -570,7 +707,7 @@ example:<br>
 [<br>
 &nbsp;&nbsp;&nbsp;&nbsp; {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "hash": "abc123",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "owner_id": 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "owner": 1,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "categories": ["IT","Health","Creation"],<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "name": "Event1",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "description": "Desc1",<br>
@@ -600,7 +737,7 @@ example:<br>
 [<br>
 &nbsp;&nbsp;&nbsp;&nbsp; {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "hash": "3TXKY5",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "owner_id": 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "owner": 1,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "members": ["user1", "user2"],<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "name": "name",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "categories": ["IT"],<br>

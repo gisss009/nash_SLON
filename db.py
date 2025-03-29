@@ -6,22 +6,25 @@ import string
 
 db = sqlite3.connect('slon.db', check_same_thread=False)
 c = db.cursor()
-
 c.execute('''CREATE TABLE IF NOT EXISTS profiles (
     username TEXT,
     name TEXT,
+    surname TEXT,
     categories TEXT,
     tags TEXT,
+    skills TEXT,
     events TEXT,
-    resume TEXT,
+    description TEXT,
     swiped_users TEXT,
-    mail TEXT
+    swiped_events TEXT,
+    mail TEXT,
+    vocation TEXT
 )''')
 db.commit()
 
 c.execute('''CREATE TABLE IF NOT EXISTS events (
     hash TEXT,
-    owner_id INTEGER,
+    owner TEXT,
     members TEXT,
     name TEXT,
     categories TEXT,
@@ -40,51 +43,160 @@ c.execute('''CREATE TABLE IF NOT EXISTS users_passwords (
 )''')
 db.commit()
 
+
 def find_profile(username: str):
     user = c.execute("SELECT username FROM profiles WHERE username = (?)", (username,)).fetchone()
     return user != None
 
 def get_profile(username: str):
     user = c.execute("SELECT * FROM profiles WHERE username = (?)", (username,)).fetchone()
-    return user
+    if user:
+        return {
+            "username": user[0],
+            "name": user[1],
+            "surname": user[2],
+            "categories": safe_json_loads(user[3]),
+            "tags": safe_json_loads(user[4]),
+            "skills": safe_json_loads(user[5]),  # Добавляем навыки
+            "events": safe_json_loads(user[6]),
+            "description": user[7],
+            "swiped_users": safe_json_loads(user[8]),
+            "swiped_events": safe_json_loads(user[9]),
+            "mail": user[10],
+            "vocation": user[11]
+        }
+    return None
 
-def add_profile(username: str, name="", categories="[]", tags="{}", events="[]", resume="", swiped_users="[]", mail=""):
+def add_profile_skills(username: str, category: str, skills: str):
+    """Добавляет навыки для определенной категории"""
     if not find_profile(username):
-        c.execute("INSERT INTO profiles VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-                  (username, name, categories, tags, events, resume, swiped_users, mail))
+        return False
+    
+    profile = get_profile(username)
+    skills_dict = profile.get("skills", {})
+    skills_dict[category] = skills  # Сохраняем навыки как строку
+    
+    c.execute("UPDATE profiles SET skills = ? WHERE username = ?", 
+              (json.dumps(skills_dict), username))
+    db.commit()
+    return True
+
+def get_profile_skills(username: str):
+    """Возвращает все навыки пользователя по категориям"""
+    if not find_profile(username):
+        return {}
+    
+    profile = get_profile(username)
+    return profile.get("skills", {})
+
+def safe_json_loads(json_str):
+    """Безопасно преобразует строку в JSON, возвращает [] или {} при ошибке"""
+    if not json_str or json_str.strip() == '':
+        return []
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError:
+        return []
+
+def add_profile(username: str, name="", surname="", categories="[]", tags="{}", 
+                skills="{}", events="[]", description="", swiped_users="[]", 
+                swiped_events="[]", mail="", vocation=""):
+    if not find_profile(username):
+        c.execute("INSERT INTO profiles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+                  (username, name, surname, categories, tags, skills, events, 
+                   description, swiped_users, swiped_events, mail, vocation))
         db.commit()
 
 def edit_profile_name(username: str, name: str):
     c.execute("UPDATE profiles SET name = ? WHERE username = ?", (name, username))
     db.commit()
 
-def add_profile_category(username: str, category: str):
-    if not find_profile(username):
-        return
-    
-    categories_str = c.execute("SELECT categories FROM profiles WHERE username = ?", (username,)).fetchone()[0]
-    categories_list = json.loads(categories_str) if categories_str else []
-    
-    if category not in categories_list:
-        categories_list.append(category)
-    
-    c.execute("UPDATE profiles SET categories = ? WHERE username = ?", (json.dumps(categories_list), username))
+def edit_profile_surname(username: str, surname: str):
+    c.execute("UPDATE profiles SET surname = ? WHERE username = ?", (surname, username))
     db.commit()
 
-
-def delete_profile_category(username: str, category: str):
-    """Удаляет категорию из профиля."""
+def add_profile_category(username: str, category: str, tags: str = "", skills: str = ""):
+    """Добавляет категорию с тегами и навыками"""
     if not find_profile(username):
-        return
+        return False
     
-    categories_str = c.execute("SELECT categories FROM profiles WHERE username = ?", (username,)).fetchone()[0]
-    categories_list = json.loads(categories_str) if categories_str else []
+    # Обновляем список категорий
+    profile = get_profile(username)
+    categories = profile.get("categories", [])
+    if category not in categories:
+        categories.append(category)
     
-    if category in categories_list:
-        categories_list.remove(category)
+    # Обновляем теги
+    tags_dict = profile.get("tags", {})
+    tags_dict[category] = tags  # Сохраняем теги как строку
     
-    c.execute("UPDATE profiles SET categories = ? WHERE username = ?", (json.dumps(categories_list), username))
+    # Обновляем навыки
+    skills_dict = profile.get("skills", {})
+    skills_dict[category] = skills  # Сохраняем навыки как строку
+    
+    # Сохраняем в БД
+    c.execute("""
+        UPDATE profiles 
+        SET categories = ?, tags = ?, skills = ?
+        WHERE username = ?
+    """, (json.dumps(categories), json.dumps(tags_dict), json.dumps(skills_dict), username))
     db.commit()
+    return True
+
+def get_profile_categories(username: str):
+    """Возвращает категории с тегами и навыками"""
+    if not find_profile(username):
+        return []
+    
+    profile = get_profile(username)
+    result = []
+    
+    for category in profile.get("categories", []):
+        result.append({
+            "name": category,
+            "tags": profile["tags"].get(category, "").split(),  # Теги как список слов
+            "skills": profile["skills"].get(category, "").split(", ")  # Навыки как список
+        })
+    
+    return result
+
+
+def remove_profile_category(username: str, category: str):
+    """Удаляет категорию из профиля пользователя вместе с тегами и навыками"""
+    if not find_profile(username):
+        return False
+    
+    # Получаем текущий профиль
+    profile = get_profile(username)
+    
+    # Удаляем категорию из списка
+    categories = profile.get("categories", [])
+    if category in categories:
+        categories.remove(category)
+    
+    # Удаляем теги для этой категории
+    tags_dict = profile.get("tags", {})
+    if category in tags_dict:
+        del tags_dict[category]
+    
+    # Удаляем навыки для этой категории
+    skills_dict = profile.get("skills", {})
+    if category in skills_dict:
+        del skills_dict[category]
+    
+    # Обновляем запись в базе данных
+    c.execute("""
+        UPDATE profiles 
+        SET categories = ?, tags = ?, skills = ?
+        WHERE username = ?
+    """, (
+        json.dumps(categories),
+        json.dumps(tags_dict),
+        json.dumps(skills_dict),
+        username
+    ))
+    db.commit()
+    return True
 
 
 def get_all_profiles():
@@ -134,13 +246,13 @@ def add_profile_event(username: str, hash: string):
     if not find_profile(username):
         return
     
-    events_str = c.execute("SELECT categories FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+    events_str = c.execute("SELECT events FROM profiles WHERE username = ?", (username,)).fetchone()[0]
     events_list = json.loads(events_str) if events_str else []
     
     if hash not in events_list:
         events_list.append(hash)
     
-    c.execute("UPDATE profiles SET categories = ? WHERE username = ?", (json.dumps(events_list), username))
+    c.execute("UPDATE profiles SET events = ? WHERE username = ?", (json.dumps(events_list), username))
     db.commit()
 
 
@@ -186,8 +298,12 @@ def delete_profile_event(username: str, hash: string):
 #     db.commit()
 
 
-def edit_profile_resume(username: str, resume: str):
-    c.execute("UPDATE profiles SET resume = ? WHERE username = ?", (resume, username))
+def edit_profile_description(username: str, description: str):
+    c.execute("UPDATE profiles SET description = ? WHERE username = ?", (description, username))
+    db.commit()
+
+def edit_profile_vocation(username: str, vocation: str):
+    c.execute("UPDATE profiles SET vocation = ? WHERE username = ?", (vocation, username))
     db.commit()
 
 
@@ -302,13 +418,13 @@ def generate_hash(length=6):
     return hash_value
 
 
-def add_event(name, owner_id, categories, description, location, date_from, date_to, public, online):
+def add_event(name, owner, categories, description, location, date_from, date_to, public, online):
     hash = generate_hash()
     while (find_event(hash)):
         hash = generate_hash()
 
     c.execute("INSERT INTO events VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                (hash, owner_id, "[]", name, categories, description, location, date_from, date_to, public, online))
+                (hash, owner, "[]", name, categories, description, location, date_from, date_to, public, online))
     db.commit()
 
     return hash
@@ -491,67 +607,97 @@ def is_exist_username(username: str):
     username = c.execute("SELECT * FROM users_passwords WHERE username = ?", (username,)).fetchone()
     return username != None
 
-# add_event("name", 1, "IT", "desc", "loc", "date_f", "date_t", 1, 1) 
-# add_event("name", 1, "IT,Business", "desc", "loc", "date_f", "date_t", 1, 1) 
-# add_event("name", 1, "Sport", "desc", "loc", "date_f", "date_t", 1, 1) 
-# add_event("name", 1, "Heath,Creation", "desc", "loc", "date_f", "date_t", 1, 1) 
+
+def get_all_user_events(username: str):
+    """
+    Получает все события пользователя по его username.
+    Возвращает список словарей с данными о событиях.
+    """
+    if not find_profile(username):
+        return []
+    
+    all_events = get_all_events()
+    user_events = []
+
+    for event in all_events:
+        if event["owner"] == username or username in event["members"]:
+            user_events.append(event)
+
+    return user_events
 
 
-# events = get_events_by_categories("IT,Creation")
-# print(events[0]["owner_id"])
-# for i in events:
-    # print(i)
-
-# all_events = get_all_events()
-# for event in all_events:
-#     print(event)
-
-# add_profile(
-#     username="user1",
-#     name="Alice",
-#     categories=json.dumps(["IT", "Health"]),
-#     tags=json.dumps({
-#         "IT": ["Python", "SQL"],
-#         "Health": ["Yoga", "Meditation"]
-#     }),  # Теги в формате JSON
-#     events=json.dumps(["event1", "event2"]),
-#     resume="Experienced software developer",
-#     swiped_users=json.dumps(["user2", "user3"]),
-#     mail="alice@example.com"
-# )
-
-# add_profile(
-#     username="user2",
-#     name="Bob",
-#     categories=json.dumps(["Business", "Sport"]),
-#     tags=json.dumps({
-#         "Business": ["Marketing", "Finance"],
-#         "Sport": ["Football", "Tennis"]
-#     }),
-#     events=json.dumps(["event3"]),
-#     resume="Marketing specialist",
-#     swiped_users=json.dumps(["user1"]),
-#     mail="bob@example.com"
-# )
-
-# add_profile(
-#     username="user3",
-#     name="Charlie",
-#     categories=json.dumps(["Creation", "Art"]),
-#     tags=json.dumps({
-#         "Creation": ["Art", "Music"],
-#         "IT": ["JavaScript"]
-#     }),
-#     events=json.dumps(["event4"]),
-#     resume="Creative artist",
-#     swiped_users=json.dumps([]),
-#     mail="charlie@example.com"
-# )
+def add_swiped_event(username: str, event_hash: str):
+    """Добавляет событие в список свайпнутых событий пользователя"""
+    if not find_profile(username):
+        return False
+    
+    swiped_events_str = c.execute("SELECT swiped_events FROM profiles WHERE username = ?", 
+                                 (username,)).fetchone()[0]
+    swiped_events = json.loads(swiped_events_str) if swiped_events_str else []
+    
+    if event_hash not in swiped_events:
+        swiped_events.append(event_hash)
+    
+    c.execute("UPDATE profiles SET swiped_events = ? WHERE username = ?", 
+              (json.dumps(swiped_events), username))
+    db.commit()
+    return True
 
 
-# c.execute("INSERT INTO users_passwords VALUES (?, ?)", ("username1", "pas1"))
-# c.execute("INSERT INTO users_passwords VALUES (?, ?)", ("username2", "pas2"))
-# c.execute("INSERT INTO users_passwords VALUES (?, ?)", ("username3", "pas3"))
-# db.commit()
+def remove_swiped_event(username: str, event_hash: str):
+    """Удаляет событие из списка свайпнутых событий пользователя"""
+    if not find_profile(username):
+        return False
+    
+    swiped_events_str = c.execute("SELECT swiped_events FROM profiles WHERE username = ?", 
+                                 (username,)).fetchone()[0]
+    swiped_events = json.loads(swiped_events_str) if swiped_events_str else []
+    
+    if event_hash in swiped_events:
+        swiped_events.remove(event_hash)
+    
+    c.execute("UPDATE profiles SET swiped_events = ? WHERE username = ?", 
+              (json.dumps(swiped_events), username))
+    db.commit()
+    return True
 
-print(is_user_and_password_correct("kdsjfkj2k3jtsd", "sdkfsjdf"))
+
+def get_swiped_events(username: str):
+    """Возвращает список свайпнутых событий пользователя"""
+    if not find_profile(username):
+        return []
+    
+    swiped_events_str = c.execute("SELECT swiped_events FROM profiles WHERE username = ?", 
+                                 (username,)).fetchone()[0]
+    return json.loads(swiped_events_str) if swiped_events_str else []
+
+
+# add_profile("test")
+# add_profile("ne_test")
+# hash = add_event("test_event", "ne_test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
+# add_event_member(hash, "test")
+# add_event("test_event", "test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
+# print(get_all_user_events("test"))
+# print(get_profile("test"))
+# add_profile_category("test", "IT")
+# edit_profile_description("test", "test_desc")
+# edit_profile_name("test", "хуесос")
+# edit_profile_surname("test", "петрович")
+def migrate_add_skills_column():
+    try:
+        # Добавляем столбец skills с default значением '{}'
+        c.execute("ALTER TABLE profiles ADD COLUMN skills TEXT DEFAULT '{}'")
+        
+        # Обновляем существующие записи, где значение NULL
+        c.execute("UPDATE profiles SET skills = '{}' WHERE skills IS NULL")
+        
+        db.commit()
+        print("Migration successful: added and initialized skills column")
+    except sqlite3.OperationalError as e:
+        if "duplicate column name" in str(e):
+            print("Column already exists")
+        else:
+            raise e
+
+# Выполнить миграцию при запуске
+migrate_add_skills_column()
