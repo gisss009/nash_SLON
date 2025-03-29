@@ -29,6 +29,14 @@ namespace SLON
             RefreshLikes();
         }
 
+        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+
+            
+
+        }
+
         private void RefreshLikes()
         {
             LikeItems.Clear();

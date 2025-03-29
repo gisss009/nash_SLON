@@ -1,6 +1,8 @@
 ﻿using Microsoft.Maui.Controls;
+using SLON.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SLON
@@ -39,6 +41,7 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
+        private AuthService.UserProfile _currentProfile;
         public Profile()
         {
             InitializeComponent();
@@ -60,14 +63,225 @@ namespace SLON
             RefreshEventsUI();
         }
 
+        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+
+            try
+            {
+                var username = AuthService.GetUsernameAsync();
+                _currentProfile = await AuthService.GetUserProfileAsync(username);
+
+                if (_currentProfile == null)
+                {
+                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK");
+                    return;
+                }
+
+                // Инициализируем оригинальные данные
+                _originalProfileData = new UserProfileEditModel
+                {
+                    Name = _currentProfile.name ?? "",
+                    Surname = _currentProfile.surname ?? "",
+                    Vocation = _currentProfile.vocation ?? "",
+                    Description = _currentProfile.description ?? "",
+                    Categories = _currentProfile.categories ?? new List<string>()
+                };
+
+                UpdateProfileUI(_currentProfile);
+                await LoadAndRefreshEvents(username);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при загрузке данных: {ex}");
+                await DisplayAlert("Ошибка", "Произошла ошибка при загрузке данных", "OK");
+            }
+        }
+
+        private async Task LoadAndRefreshEvents(string username)
+        {
+            try
+            {
+                List<AuthService.EventData> got_events = await AuthService.GetAllUserEventsAsync(username);
+
+                events.Clear();
+                foreach (var eventData in got_events)
+                {
+                    events.Add((
+                        eventData.hash,
+                        eventData.name,
+                        string.Join(", ", eventData.categories),
+                        eventData.description,
+                        eventData.location,
+                        eventData.online == 1,
+                        eventData.@public == 1,
+                        DateTime.ParseExact(eventData.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        DateTime.ParseExact(eventData.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        eventData.owner == username
+                    ));
+                }
+
+                RefreshEventsUI();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при загрузке мероприятий: {ex}");
+                await DisplayAlert("Ошибка", "Не удалось загрузить мероприятия", "OK");
+            }
+        }
+
+        // Модель для хранения оригинальных данных профиля
+        private class UserProfileEditModel
+        {
+            public string Name { get; set; }
+            public string Surname { get; set; }
+            public string Vocation { get; set; }
+            public string Description { get; set; }
+            public List<string> Categories { get; set; }
+        }
+        private UserProfileEditModel _originalProfileData;
+
+        private void UpdateProfileUI(AuthService.UserProfile profile)
+        {
+            UsernameLabel.Text = "@" + (profile?.username ?? "");
+            NameInput.Text = profile?.name ?? "";
+            SurnameInput.Text = profile?.surname ?? "";
+            VocationInput.Text = profile?.vocation ?? "";
+            ResumeEditor.Text = profile?.description ?? "";
+
+            RefreshCategoriesUI(profile);
+        }
+
+        private void RefreshCategoriesUI(AuthService.UserProfile profile = null)
+        {
+            CategoriesGrid.Children.Clear();
+            CategoriesGrid.RowDefinitions.Clear();
+
+            // Используем переданный профиль или текущий
+            var categoriesToShow = profile?.categories ??
+                                 (_currentProfile?.categories ?? new List<string>());
+
+            if (categoriesToShow.Count == 0) return;
+
+            int itemsPerRow = 3;
+            int rows = (int)Math.Ceiling((double)categoriesToShow.Count / itemsPerRow);
+
+            for (int r = 0; r < rows; r++)
+            {
+                CategoriesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            }
+
+            int index = 0;
+            for (int r = 0; r < rows; r++)
+            {
+                for (int c = 0; c < itemsPerRow; c++)
+                {
+                    if (index >= categoriesToShow.Count) break;
+
+                    string categoryName = categoriesToShow[index];
+                    var chip = CreateCategoryChip(categoryName);
+                    CategoriesGrid.Add(chip, c, r);
+                    index++;
+                }
+            }
+        }
+
+
+        // Keep only the async version that actually saves to server
+        private async Task SaveProfileChanges()
+        {
+            try
+            {
+                var username = AuthService.GetUsernameAsync();
+                var updates = new Dictionary<string, string>();
+
+                // Добавляем только измененные поля
+                if (NameInput.Text != _originalProfileData.Name)
+                    updates["name"] = NameInput.Text;
+
+                if (SurnameInput.Text != _originalProfileData.Surname)
+                    updates["surname"] = SurnameInput.Text;
+
+                if (VocationInput.Text != _originalProfileData.Vocation)
+                    updates["vocation"] = VocationInput.Text;
+
+                if (ResumeEditor.Text != _originalProfileData.Description)
+                    updates["description"] = ResumeEditor.Text;
+
+                // Если нет изменений - просто выходим
+                if (updates.Count == 0)
+                {
+                    return;
+                }
+
+                bool success = await AuthService.UpdateUserProfileAsync(username, updates);
+
+                if (success)
+                {
+                    // Обновляем оригинальные данные
+                    _originalProfileData.Name = NameInput.Text;
+                    _originalProfileData.Surname = SurnameInput.Text;
+                    _originalProfileData.Vocation = VocationInput.Text;
+                    _originalProfileData.Description = ResumeEditor.Text;
+
+                    await DisplayAlert("Успех", "Изменения профиля сохранены", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось сохранить изменения", "OK");
+                    RevertProfileChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении профиля: {ex}");
+                await DisplayAlert("Ошибка", "Произошла ошибка при сохранении", "OK");
+                RevertProfileChanges();
+            }
+        }
+
+        private void RevertProfileChanges()
+        {
+            if (_originalProfileData == null) return;
+
+            // Восстанавливаем оригинальные значения
+            NameInput.Text = _originalProfileData.Name;
+            SurnameInput.Text = _originalProfileData.Surname;
+            VocationInput.Text = _originalProfileData.Vocation;
+            ResumeEditor.Text = _originalProfileData.Description;
+
+            // Обновляем UI
+            UpdateProfileUI(_currentProfile);
+        }
+
+        private void AddCategoryProgrammatically(string categoryName)
+        {
+            if (!addedCategories.ContainsKey(categoryName))
+            {
+                // Добавляем категорию с пустыми тегами и навыками
+                addedCategories[categoryName] = (string.Empty, string.Empty);
+
+                // Обновляем интерфейс
+                RefreshCategoriesUI();
+
+                // Добавляем категорию в список всех доступных категорий (если нужно)
+                allCategories.Add(categoryName);
+
+                // Устанавливаем цвет для новой категории
+                Color categoryColor = GetCategoryColor(categoryName);
+                Console.WriteLine($"Category '{categoryName}' has color: {categoryColor}");
+            }
+        }
+
+
         #region Редактирование профиля
 
-        private void OnEditIconClicked(object sender, EventArgs e)
+        private async void OnEditIconClicked(object sender, EventArgs e)
         {
             _isEditing = !_isEditing;
             SetProfileEditMode(_isEditing);
             ToggleEventCardTaps(!_isEditing);
-            if (!_isEditing) SaveProfileChanges();
+            if (!_isEditing) await SaveProfileChanges();
         }
 
         private void SetProfileEditMode(bool isEditing)
@@ -78,8 +292,12 @@ namespace SLON
             AddEventIcon.Opacity = isEditing ? 0.5 : 1;
             AddEventIcon.IsEnabled = !isEditing;
             ResumeEditor.Placeholder = isEditing ? "Write about yourself..." : "Description is empty";
+
+            // Обновляем UI категорий
+            RefreshCategoriesUI(_currentProfile);
+
+            // Включаем/выключаем кнопки удаления
             ToggleDeleteButtons(isEditing);
-            RefreshCategoriesUI();
         }
 
         private void ToggleEventCardTaps(bool enable)
@@ -97,10 +315,10 @@ namespace SLON
             }
         }
 
-        private void SaveProfileChanges()
-        {
-            DisplayAlert("Success", "Profile changes saved!", "OK");
-        }
+        //private void SaveProfileChanges()
+        //{
+        //    DisplayAlert("Success", "Profile changes saved!", "OK");
+        //}
 
         #endregion
 
@@ -129,24 +347,36 @@ namespace SLON
 
         #endregion
 
+
+
         #region Управление категориями
 
         private async void OnAddCategoryIconClicked(object sender, EventArgs e)
         {
-            string[] availableCategories = allCategories.Except(addedCategories.Keys).ToArray();
+            if (!_isEditing) return;
+
+            // Получаем список доступных категорий
+            var availableCategories = allCategories
+                .Except(_currentProfile?.categories ?? new List<string>())
+                .ToArray();
+
             if (availableCategories.Length == 0)
             {
-                await DisplayAlert("Info", "All categories are already added.", "OK");
+                await DisplayAlert("Информация", "Все категории уже добавлены", "OK");
                 return;
             }
+
             string selectedCategory = await DisplayActionSheet("Выберите категорию", "Отмена", null, availableCategories);
-            if (!string.IsNullOrWhiteSpace(selectedCategory) && selectedCategory != "Отмена")
+
+            if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "Отмена")
+            {
+                // Для новой категории передаем пустую строку тегов
                 OpenCategoryPopup(selectedCategory);
+            }
         }
 
         private void OpenCategoryPopup(string categoryName)
         {
-            if (!_isEditing) return;
             CategoryPopup.IsVisible = true;
             CategoryNameLabel.Text = categoryName;
 
@@ -167,6 +397,19 @@ namespace SLON
             }
 
             CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
+
+            if (!_isEditing)
+            {
+                TagsEditor.IsReadOnly = true;
+                SkillsEditor.IsReadOnly = true;
+                SaveCategoryButton.IsVisible = false;
+            }
+            else
+            {
+                TagsEditor.IsReadOnly = false;
+                SkillsEditor.IsReadOnly = false;
+                SaveCategoryButton.IsVisible = true;
+            }
         }
 
         private void OnCloseCategoryClicked(object sender, EventArgs e)
@@ -174,22 +417,27 @@ namespace SLON
             CategoryPopup.IsVisible = false;
         }
 
-        private void OnSaveCategoryClicked(object sender, EventArgs e)
-        {
-            string categoryName = CategoryNameLabel.Text;
-            addedCategories[categoryName] = (TagsEditor.Text, SkillsEditor.Text);
+        //private void OnSaveCategoryClicked(object sender, EventArgs e)
+        //{
+        //    string categoryName = CategoryNameLabel.Text;
+        //    addedCategories[categoryName] = (TagsEditor.Text, SkillsEditor.Text);
 
-            RefreshCategoriesUI();
+        //    RefreshCategoriesUI();
 
-            CategoryPopup.IsVisible = false;
-        }
+        //    CategoryPopup.IsVisible = false;
+        //}
 
         private void ToggleDeleteButtons(bool isVisible)
         {
             foreach (var frame in CategoriesGrid.Children.OfType<Frame>())
             {
-                if ((frame.Content as Grid)?.Children.OfType<ImageButton>().FirstOrDefault() is ImageButton deleteButton)
-                    deleteButton.IsVisible = isVisible;
+                if (frame.Content is Grid grid && grid.Children.Count > 1)
+                {
+                    if (grid.Children[1] is ImageButton deleteButton)
+                    {
+                        deleteButton.IsVisible = isVisible;
+                    }
+                }
             }
         }
 
@@ -322,40 +570,38 @@ namespace SLON
                 HeightRequest = 40
             };
 
-            var grid = new Grid { ColumnDefinitions = { new ColumnDefinition { Width = GridLength.Auto }, new ColumnDefinition { Width = GridLength.Star } } };
-
-            var deleteButton = new ImageButton
-            {
-                Source = "delete_icon.png",
-                BackgroundColor = Colors.Transparent,
-                WidthRequest = 16,
-                HeightRequest = 16,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Center,
-                IsVisible = _isEditing
-            };
-            deleteButton.Clicked += (s, e) =>
-            {
-                addedCategories.Remove(categoryName);
-                RefreshCategoriesUI();
-            };
-
-            var categoryLabel = new Label
+            var label = new Label
             {
                 Text = categoryName,
                 TextColor = Colors.White,
                 FontSize = 14,
                 VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Center,
-                Margin = new Thickness(5, 0, 0, 0)
+                HorizontalOptions = LayoutOptions.Center
             };
 
-            grid.Children.Add(deleteButton);
-            Grid.SetColumn(deleteButton, 0);
-            grid.Children.Add(categoryLabel);
-            Grid.SetColumn(categoryLabel, 1);
+            if (_isEditing)
+            {
+                var grid = new Grid();
+                grid.Children.Add(label);
 
-            frame.Content = grid;
+                var deleteButton = new ImageButton
+                {
+                    Source = "delete_icon.png",
+                    BackgroundColor = Colors.Transparent,
+                    WidthRequest = 16,
+                    HeightRequest = 16,
+                    HorizontalOptions = LayoutOptions.End,
+                    VerticalOptions = LayoutOptions.Center
+                };
+                deleteButton.Clicked += async (s, e) => await DeleteCategory(categoryName);
+                grid.Children.Add(deleteButton);
+
+                frame.Content = grid;
+            }
+            else
+            {
+                frame.Content = label;
+            }
 
             frame.GestureRecognizers.Add(new TapGestureRecognizer
             {
@@ -365,76 +611,212 @@ namespace SLON
             return frame;
         }
 
-        private void OnDeleteEventClicked(object sender, EventArgs e)
+        private async Task DeleteCategory(string categoryName)
         {
-            string eventHash = _originalEventHash;
-            Dispatcher.Dispatch(async () =>
+            bool confirm = await DisplayAlert("Подтверждение",
+                $"Удалить категорию {categoryName}?", "Да", "Нет");
+
+            if (!confirm) return;
+
+            try
             {
-                bool confirm = await DisplayAlert("Удаление мероприятия",
-                    $"Вы уверены, что хотите удалить мероприятие \"{EventNameInput.Text}\"?", "Да", "Нет");
-                if (confirm)
+                var username = AuthService.GetUsernameAsync();
+                bool success = await AuthService.RemoveProfileCategory(username, categoryName);
+
+                if (success)
                 {
-                    events.RemoveAll(ev => ev.Hash == eventHash);
-                    RefreshEventsUI();
-                    EventPopup.IsVisible = false;
+                    // Обновляем профиль после удаления
+                    _currentProfile = await AuthService.GetUserProfileAsync(username);
+                    RefreshCategoriesUI(_currentProfile);
                 }
-            });
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось удалить категорию", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при удалении категории: {ex}");
+                await DisplayAlert("Ошибка", "Произошла ошибка при удалении", "OK");
+            }
         }
 
-        private void SaveEventChanges()
+        private async void OnSaveCategoryClicked(object sender, EventArgs e)
         {
-            string name = EventNameInput.Text;
+            string categoryName = CategoryNameLabel.Text;
+            string tags = TagsEditor.Text?.Trim() ?? "";
+            string skills = SkillsEditor.Text?.Trim() ?? "";
 
-            // Проверка на длину
-            if (!string.IsNullOrWhiteSpace(name) && name.Length > 20)
+            try
             {
-                DisplayAlert("Error", "Event name is too long (max 20 characters).", "OK");
-                return;
-            }
+                var username = AuthService.GetUsernameAsync();
+                bool success = await AuthService.UpdateProfileCategory(username, categoryName, tags, skills);
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                DisplayAlert("Error", "Event name cannot be empty.", "OK");
-                return;
-            }
-
-            // Проверка дат
-            if (_endDate < _startDate)
-            {
-                DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала.", "OK");
-                return;
-            }
-
-            string description = EventDescriptionInput.Text;
-            string location = EventLocationInput.Text;
-            string categories = string.Join(", ", selectedCategories);
-            bool isOnline = _isOnline;
-
-            if (_isCreatingEvent)
-            {
-                if (events.Any(ev => ev.IsMyEvent && ev.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                if (success)
                 {
-                    DisplayAlert("Error", $"Событие с именем \"{name}\" уже существует.", "OK");
+                    // Обновляем UI
+                    _currentProfile = await AuthService.GetUserProfileAsync(username);
+                    RefreshCategoriesUI(_currentProfile);
+                    CategoryPopup.IsVisible = false;
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось сохранить изменения", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении категории: {ex}");
+                await DisplayAlert("Ошибка", "Произошла ошибка при сохранении", "OK");
+            }
+        }
+
+        private async void OnDeleteEventClicked(object sender, EventArgs e)
+        {
+            string eventHash = _originalEventHash;
+            bool confirm = await DisplayAlert("Удаление мероприятия",
+                $"Вы уверены, что хотите удалить мероприятие \"{EventNameInput.Text}\"?", "Да", "Нет");
+
+            if (confirm)
+            {
+                bool success = await AuthService.DeleteEventAsync(eventHash);
+                if (success)
+                {
+                    await DisplayAlert("Успех", "Мероприятие успешно удалено", "OK");
+                    EventPopup.IsVisible = false;
+                    await RefreshEventsFromServer(); // Обновляем данные с сервера
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось удалить мероприятие", "OK");
+                }
+            }
+        }
+
+        private async void SaveEventChanges()
+        {
+            try
+            {
+                // 1. Валидация названия
+                string name = EventNameInput.Text?.Trim();
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    await DisplayAlert("Ошибка", "Название мероприятия не может быть пустым", "OK");
                     return;
                 }
-                events.Add((Guid.NewGuid().ToString(), name, categories, description, location, isOnline, _isPublic, _startDate, _endDate, true));
-            }
-            else
-            {
-                var existingEvent = events.FirstOrDefault(ev => ev.Hash == _originalEventHash);
-                if (existingEvent != default)
+
+                if (name.Length > 50)
                 {
-                    bool wasMyEvent = existingEvent.IsMyEvent;
-                    events.Remove(existingEvent);
-                    events.Add((_originalEventHash, name, categories, description, location, isOnline, _isPublic, _startDate, _endDate, wasMyEvent));
+                    await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
+                    return;
+                }
+
+                // 2. Валидация дат
+                if (_endDate < _startDate)
+                {
+                    await DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала", "OK");
+                    return;
+                }
+
+                // 3. Валидация категорий
+                if (selectedCategories.Count == 0)
+                {
+                    await DisplayAlert("Ошибка", "Выберите хотя бы одну категорию", "OK");
+                    return;
+                }
+
+                // 4. Подготовка данных
+                var username = AuthService.GetUsernameAsync();
+                var eventData = new AuthService.EventData
+                {
+                    name = name,
+                    owner = username,
+                    categories = selectedCategories,
+                    description = EventDescriptionInput.Text?.Trim(),
+                    location = EventLocationInput.Text?.Trim(),
+                    date_from = _startDate.ToString("dd.MM.yyyy"),
+                    date_to = _endDate.ToString("dd.MM.yyyy"),
+                    @public = _isPublic ? 1 : 0,
+                    online = _isOnline ? 1 : 0
+                };
+
+                bool success;
+                string operation;
+
+                // 5. Логика сохранения в зависимости от режима
+                if (_isCreatingEvent)
+                {
+                    // Проверка на дубликаты (только для новых событий)
+                    if (events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsMyEvent))
+                    {
+                        await DisplayAlert("Ошибка", "Мероприятие с таким названием уже существует", "OK");
+                        return;
+                    }
+
+                    operation = "создано";
+                    success = await AuthService.AddEventAsync(eventData);
+                }
+                else
+                {
+                    // Для редактирования подставляем исходный hash
+                    eventData.hash = _originalEventHash;
+                    operation = "обновлено";
+                    success = await AuthService.UpdateEventAsync(eventData); // Предполагается аналогичный метод в AuthService
+                }
+
+                // 6. Обработка результата
+                if (success)
+                {
+                    await DisplayAlert("Успех", $"Мероприятие успешно {operation}!", "OK");
+                    EventPopup.IsVisible = false;
+                    await RefreshEventsFromServer();
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", $"Не удалось {operation} мероприятие", "OK");
                 }
             }
-
-            RefreshEventsUI();
-
-            if (AllEventsPopup.IsVisible)
+            catch (Exception ex)
             {
-                PopulateAllEventsPopup();
+                Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
+                await DisplayAlert("Ошибка", "Произошла непредвиденная ошибка", "OK");
+            }
+            finally
+            {
+                // Можно добавить скрытие индикатора загрузки
+            }
+        }
+
+        private async Task RefreshEventsFromServer()
+        {
+            try
+            {
+                var username = AuthService.GetUsernameAsync();
+                List<AuthService.EventData> got_events = await AuthService.GetAllUserEventsAsync(username);
+
+                events.Clear();
+                foreach (var eventData in got_events)
+                {
+                    events.Add((
+                        eventData.hash,
+                        eventData.name,
+                        string.Join(", ", eventData.categories),
+                        eventData.description,
+                        eventData.location,
+                        eventData.online == 1,
+                        eventData.@public == 1,
+                        DateTime.ParseExact(eventData.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        DateTime.ParseExact(eventData.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        eventData.owner == username
+                    ));
+                }
+
+                RefreshEventsUI();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обновлении мероприятий: {ex}");
+                await DisplayAlert("Ошибка", "Не удалось обновить список мероприятий", "OK");
             }
         }
 

@@ -312,12 +312,14 @@
                                 WidthRequest="100"
                                 CornerRadius="20"
                                 Clicked="OnCloseCategoryClicked"/>
-                        <Button Text="Save"
+                        <Button x:Name="SaveCategoryButton"
+                                Text="Save"
                                 BackgroundColor="#915AC5"
                                 TextColor="White"
                                 WidthRequest="100"
                                 CornerRadius="20"
-                                Clicked="OnSaveCategoryClicked"/>
+                                Clicked="OnSaveCategoryClicked"
+                                />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Frame>
