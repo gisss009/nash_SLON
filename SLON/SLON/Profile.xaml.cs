@@ -12,13 +12,13 @@ namespace SLON
         private bool _isCreatingEvent = false;    // Режим создания нового события
 
         // Переключатель In/My: true – мои события, false – события, где я участвую
-        private bool _showMyEvents = false;
+        private bool _showMyEvents = true;
 
         // Списки категорий и событий
         private readonly List<string> allCategories = new() { "IT", "Creation", "Sport", "Science", "Business", "Education", "Social", "Health" };
         private readonly Dictionary<string, (string Tags, string Skills)> addedCategories = new();
-        // События: (Name, Categories, Description, Location, IsOnline, IsPublic, StartDate, EndDate, IsMyEvent)
-        private readonly List<(string Name, string Categories, string Description, string Location,
+        // События: (Hash, Name, Categories, Description, Location, IsOnline, IsPublic, StartDate, EndDate, IsMyEvent)
+        private readonly List<(string Hash, string Name, string Categories, string Description, string Location,
                                bool IsOnline, bool IsPublic, DateTime StartDate, DateTime EndDate, bool IsMyEvent)> events = new();
         private readonly List<string> selectedCategories = new();
 
@@ -26,7 +26,7 @@ namespace SLON
         private bool _isOnline = false;
         private DateTime _startDate = DateTime.Today;
         private DateTime _endDate = DateTime.Today;
-        private string _originalEventName = string.Empty;
+        private string _originalEventHash = string.Empty; // Хранит хеш редактируемого события
 
         private readonly Dictionary<string, (string TagExample, string SkillExample)> categoryExamples = new() {
             {"IT", ("C# Python DevOps", "Backend Development, Cloud Architecture")},
@@ -36,7 +36,9 @@ namespace SLON
             {"Business", ("Marketing Finance Startup", "Project Management, Investments")},
             {"Education", ("Pedagogy STEM E-learning", "Curriculum Development, Tutoring")},
             {"Social", ("Volunteering NGO EventPlanning", "Community Management, Public Speaking")},
-            {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}};
+            {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
+        };
+
         public Profile()
         {
             InitializeComponent();
@@ -45,10 +47,16 @@ namespace SLON
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
 
-            events.Add(("InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
-            events.Add(("InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
-            events.Add(("InEvent3", "Education", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add(("InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
+            _showMyEvents = true;
+            MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
+            InEventsButton.BackgroundColor = Colors.DarkGray;
+
+            events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
+            events.Add((Guid.NewGuid().ToString(), "InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
+            events.Add((Guid.NewGuid().ToString(), "InEvent3", "Education", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
+            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
+            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
+            events.Add((Guid.NewGuid().ToString(), "In", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
             RefreshEventsUI();
         }
 
@@ -158,7 +166,6 @@ namespace SLON
                 TagsEditor.Text = SkillsEditor.Text = string.Empty;
             }
 
-            // Установка цвета заголовка
             CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
         }
 
@@ -175,7 +182,7 @@ namespace SLON
             RefreshCategoriesUI();
 
             CategoryPopup.IsVisible = false;
-        }       
+        }
 
         private void ToggleDeleteButtons(bool isVisible)
         {
@@ -234,7 +241,7 @@ namespace SLON
 
         private void ResetCategoryButtons()
         {
-            foreach (var button in new[]{CategoryIT, CategoryCreation, CategorySport, CategoryScience,CategoryBusiness, CategoryEducation, CategorySocial, CategoryHealth})
+            foreach (var button in new[] { CategoryIT, CategoryCreation, CategorySport, CategoryScience, CategoryBusiness, CategoryEducation, CategorySocial, CategoryHealth })
             {
                 button.BackgroundColor = Colors.DarkGray;
                 button.BorderColor = Colors.Transparent;
@@ -244,7 +251,7 @@ namespace SLON
 
         private void EnableCategoryButtons(bool isEnabled)
         {
-            foreach (var button in new[]{CategoryIT, CategoryCreation, CategorySport, CategoryScience,CategoryBusiness, CategoryEducation, CategorySocial, CategoryHealth})
+            foreach (var button in new[] { CategoryIT, CategoryCreation, CategorySport, CategoryScience, CategoryBusiness, CategoryEducation, CategorySocial, CategoryHealth })
                 button.IsEnabled = isEnabled;
         }
 
@@ -263,9 +270,7 @@ namespace SLON
 
             if (IsCurrentEventMine())
             {
-                // Переключаем режим редактирования
                 _isEditingEvent = !_isEditingEvent;
-                // Обновляем иконку в зависимости от текущего режима
                 SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
                 UpdateEventPopupUI();
             }
@@ -313,11 +318,11 @@ namespace SLON
                 Margin = new Thickness(5),
                 HasShadow = false,
                 BackgroundColor = GetCategoryColor(categoryName),
-                WidthRequest = 107, // размеры чипов
+                WidthRequest = 107,
                 HeightRequest = 40
             };
 
-            var grid = new Grid{ ColumnDefinitions = { new ColumnDefinition { Width = GridLength.Auto }, new ColumnDefinition { Width = GridLength.Star }}};
+            var grid = new Grid { ColumnDefinitions = { new ColumnDefinition { Width = GridLength.Auto }, new ColumnDefinition { Width = GridLength.Star } } };
 
             var deleteButton = new ImageButton
             {
@@ -327,7 +332,7 @@ namespace SLON
                 HeightRequest = 16,
                 HorizontalOptions = LayoutOptions.Start,
                 VerticalOptions = LayoutOptions.Center,
-                IsVisible = _isEditing // кнопка видна только в режиме редактирования
+                IsVisible = _isEditing
             };
             deleteButton.Clicked += (s, e) =>
             {
@@ -335,7 +340,12 @@ namespace SLON
                 RefreshCategoriesUI();
             };
 
-            var categoryLabel = new Label{Text = categoryName,TextColor = Colors.White,FontSize = 14,VerticalOptions = LayoutOptions.Center,
+            var categoryLabel = new Label
+            {
+                Text = categoryName,
+                TextColor = Colors.White,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
                 Margin = new Thickness(5, 0, 0, 0)
             };
@@ -347,7 +357,6 @@ namespace SLON
 
             frame.Content = grid;
 
-            // Если хотим, чтобы по тапу открывалось окно редактирования Tags/Skills
             frame.GestureRecognizers.Add(new TapGestureRecognizer
             {
                 Command = new Command(() => OpenCategoryPopup(categoryName))
@@ -356,17 +365,16 @@ namespace SLON
             return frame;
         }
 
-
         private void OnDeleteEventClicked(object sender, EventArgs e)
         {
-            string eventName = EventNameInput.Text;
+            string eventHash = _originalEventHash;
             Dispatcher.Dispatch(async () =>
             {
                 bool confirm = await DisplayAlert("Удаление мероприятия",
-                    $"Вы уверены, что хотите удалить мероприятие \"{eventName}\"?", "Да", "Нет");
+                    $"Вы уверены, что хотите удалить мероприятие \"{EventNameInput.Text}\"?", "Да", "Нет");
                 if (confirm)
                 {
-                    events.RemoveAll(ev => ev.Name == eventName);
+                    events.RemoveAll(ev => ev.Hash == eventHash);
                     RefreshEventsUI();
                     EventPopup.IsVisible = false;
                 }
@@ -390,7 +398,7 @@ namespace SLON
                 return;
             }
 
-            // Дальше - ваша логика дат
+            // Проверка дат
             if (_endDate < _startDate)
             {
                 DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала.", "OK");
@@ -404,22 +412,21 @@ namespace SLON
 
             if (_isCreatingEvent)
             {
-                if (events.Any(ev => ev.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                if (events.Any(ev => ev.IsMyEvent && ev.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                 {
                     DisplayAlert("Error", $"Событие с именем \"{name}\" уже существует.", "OK");
                     return;
                 }
-                events.Add((name, categories, description, location, isOnline, _isPublic, _startDate, _endDate, true));
+                events.Add((Guid.NewGuid().ToString(), name, categories, description, location, isOnline, _isPublic, _startDate, _endDate, true));
             }
             else
             {
-                var existingEvent = events.FirstOrDefault(ev => ev.Name == _originalEventName);
+                var existingEvent = events.FirstOrDefault(ev => ev.Hash == _originalEventHash);
                 if (existingEvent != default)
                 {
                     bool wasMyEvent = existingEvent.IsMyEvent;
                     events.Remove(existingEvent);
-                    events.Add((name, categories, description, location, isOnline, _isPublic, _startDate, _endDate, wasMyEvent));
-                    _originalEventName = name;
+                    events.Add((_originalEventHash, name, categories, description, location, isOnline, _isPublic, _startDate, _endDate, wasMyEvent));
                 }
             }
 
@@ -431,23 +438,35 @@ namespace SLON
             }
         }
 
-
         private void RefreshEventsUI()
         {
             EventsContainer.Children.Clear();
-            // Фильтрация по переключателю In/My
             var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
             var displayList = filtered.Take(3).ToList();
             foreach (var ev in displayList)
-                AddEventCard(ev.Name, ev.IsMyEvent);
+                AddEventCard(ev.Hash, ev.Name, ev.IsMyEvent);
             ShowAllEventsButton.IsVisible = true;
         }
 
-        private void AddEventCard(string eventName, bool isMyEvent)
+        private void AddEventCard(string eventHash, string eventName, bool isMyEvent)
         {
-            var frame = new Frame{AutomationId = eventName,BackgroundColor = Color.FromArgb("#353535"),CornerRadius = 10,Padding = 10,Margin = 5,HeightRequest = 40};
+            var frame = new Frame
+            {
+                AutomationId = eventHash,
+                BackgroundColor = Color.FromArgb("#353535"),
+                CornerRadius = 10,
+                Padding = 10,
+                Margin = 5,
+                HeightRequest = 40
+            };
             var grid = new Grid();
-            var label = new Label{Text = eventName,TextColor = Colors.White,FontSize = 16,VerticalOptions = LayoutOptions.Center};
+            var label = new Label
+            {
+                Text = eventName,
+                TextColor = Colors.White,
+                FontSize = 16,
+                VerticalOptions = LayoutOptions.Center
+            };
             grid.Children.Add(label);
             var deleteButton = new ImageButton
             {
@@ -461,7 +480,7 @@ namespace SLON
             };
             deleteButton.Clicked += (s, e) =>
             {
-                events.RemoveAll(ev => ev.Name == eventName);
+                events.RemoveAll(ev => ev.Hash == eventHash);
                 RefreshEventsUI();
             };
             grid.Children.Add(deleteButton);
@@ -472,22 +491,21 @@ namespace SLON
                 frame.GestureRecognizers.Clear();
                 frame.GestureRecognizers.Add(new TapGestureRecognizer
                 {
-                    Command = new Command(() => OpenEventPopup(eventName, false))
+                    Command = new Command(() => OpenEventPopup(eventHash, false))
                 });
             }
         }
 
-        // Открывает окно события
-        private void OpenEventPopup(string eventName, bool isEditing)
+        private void OpenEventPopup(string eventHash, bool isEditing)
         {
-            _isCreatingEvent = string.IsNullOrEmpty(eventName);
-            var eventData = events.FirstOrDefault(e => e.Name == eventName);
+            _isCreatingEvent = string.IsNullOrEmpty(eventHash);
+            var eventData = _isCreatingEvent ? default : events.FirstOrDefault(e => e.Hash == eventHash);
             if (!_isCreatingEvent && string.IsNullOrEmpty(eventData.Name))
             {
                 DisplayAlert("Error", "Event not found.", "OK");
                 return;
             }
-            _originalEventName = _isCreatingEvent ? "" : eventData.Name;
+            _originalEventHash = _isCreatingEvent ? "" : eventData.Hash;
             EventNameInput.Text = _isCreatingEvent ? "" : eventData.Name;
             selectedCategories.Clear();
             if (!_isCreatingEvent)
@@ -536,7 +554,6 @@ namespace SLON
             {
                 SaveEventButton.IsVisible = true;
                 DeleteEventButton.IsVisible = !_isCreatingEvent;
-                // Сброс режима редактирования при открытии собственного мероприятия:
                 _isEditingEvent = false;
                 SaveEventButton.Source = "edit_icon.png";
                 UpdateEventPopupUI();
@@ -545,10 +562,9 @@ namespace SLON
             EventPopup.IsVisible = true;
         }
 
-
         private bool IsCurrentEventMine()
         {
-            var ev = events.FirstOrDefault(e => e.Name == _originalEventName);
+            var ev = events.FirstOrDefault(e => e.Hash == _originalEventHash);
             return ev != default && ev.IsMyEvent;
         }
 
@@ -711,7 +727,6 @@ namespace SLON
             RefreshEventsUI();
         }
 
-        // Кнопка Show all всегда открывает окно со всеми событиями (сортировка по дате – новейшие сверху)
         private void OnShowAllEventsClicked(object sender, EventArgs e)
         {
             PopulateAllEventsPopup();
@@ -727,7 +742,7 @@ namespace SLON
             {
                 var frame = new Frame
                 {
-                    AutomationId = ev.Name,
+                    AutomationId = ev.Hash,
                     BackgroundColor = Color.FromArgb("#353535"),
                     CornerRadius = 10,
                     Padding = 10,
@@ -751,10 +766,9 @@ namespace SLON
                     Command = new Command(() =>
                     {
                         if (ev.IsMyEvent)
-                            OpenEventPopup(ev.Name, true);
+                            OpenEventPopup(ev.Hash, true);
                         else
-                            OpenEventPopup(ev.Name, false);
-                        // Не закрываем автоматически окно Show all – его можно закрыть по кнопке
+                            OpenEventPopup(ev.Hash, false);
                     })
                 });
             }
