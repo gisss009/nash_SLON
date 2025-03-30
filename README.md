@@ -39,22 +39,3 @@
 
 ![Добавление в чат\удаление](https://github.com/user-attachments/assets/b8252f35-0592-4ff7-b0a5-a9c8c449a9cd)
 
-- Чаты - Профили
-
-![Профили](https://github.com/user-attachments/assets/0e518d19-5187-4a0d-85c6-b73bf6da5d8f)
-
-- Чаты - группы
-
-![Группы](https://github.com/user-attachments/assets/928b6c73-69d2-4c27-a27a-819c055b6387)
-
-- Группы
-
-![Группа](https://github.com/user-attachments/assets/0bf795ba-e082-48c7-a17d-1ec21b028be1)
-
-- Чат с человеком
-
-![Час с человеком](https://github.com/user-attachments/assets/34127bde-27a9-438f-a6e7-43d29661d048)
-
-- Чат в группе
-
-![Чат группы](https://github.com/user-attachments/assets/b31de26b-f934-4759-95a2-8ff14991b1a0)
