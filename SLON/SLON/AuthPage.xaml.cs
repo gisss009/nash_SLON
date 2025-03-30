@@ -53,6 +53,12 @@ namespace SLON
                 return;
             }
 
+            if (UsernameEntry.Text.Contains(' ') || UsernameEntry.Text.Count() > 10)
+            {
+                await DisplayAlert("Error", "Please enter correct username.", "OK");
+                return;
+            }
+
             if (PasswordEntry.Text != ConfirmPasswordEntry.Text)
             {
                 await DisplayAlert("Error", "Passwords do not match.", "OK");

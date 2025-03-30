@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Storage;
+using SLON.Models;
 using System.Text;
 using System.Text.Json;
 
@@ -23,7 +24,6 @@ namespace SLON.Services
         // Проверка статуса авторизации
         public static bool IsAuthenticated()
         {
-            //ClearCredentials();
             return Preferences.Get(AuthKey, false);
         }
 
@@ -64,42 +64,43 @@ namespace SLON.Services
         {
             string url = "http://139.28.223.134:5000/is_username_and_password_correct?username=" + username + "&password=" + password;
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
 
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+            var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
-                if (jsonResponse != null)
+            if (jsonResponse != null)
+            {
+                Console.WriteLine($"ok: {jsonResponse.ok}");
+
+                if (jsonResponse.response.HasValue)
                 {
-                    Console.WriteLine($"ok: {jsonResponse.ok}");
-
-                    if (jsonResponse.response.HasValue)
+                    if (jsonResponse.response.Value.ValueKind == JsonValueKind.True ||
+                        jsonResponse.response.Value.ValueKind == JsonValueKind.False)
                     {
-                        if (jsonResponse.response.Value.ValueKind == JsonValueKind.True ||
-                            jsonResponse.response.Value.ValueKind == JsonValueKind.False)
-                        {
-                            Console.WriteLine($"response: {jsonResponse.response.Value}");
-                            return jsonResponse.ok && jsonResponse.response.Value.GetBoolean(); // Возвращаем true только если оба значения true
-                        }
-
                         Console.WriteLine($"response: {jsonResponse.response.Value}");
-                        return false; // Возвращаем true только если оба значения true
+                        return jsonResponse.ok && jsonResponse.response.Value.GetBoolean(); // Возвращаем true только если оба значения true
                     }
 
-                    Console.WriteLine("response is missing or null.");
-                    return false; // Если response null, возвращаем false
+                    Console.WriteLine($"response: {jsonResponse.response.Value}");
+                    return false; // Возвращаем true только если оба значения true
                 }
-                return false;
+
+                Console.WriteLine("response is missing or null.");
+                return false; // Если response null, возвращаем false
+            }
+            return false;
         }
 
         public static async Task<bool> Register(string username, string password)
         {
             string url = "http://139.28.223.134:5000/add_username_and_password?username=" + username + "&password=" + password;
 
+            step:
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
                 string responseBody = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(responseBody);
 
@@ -109,14 +110,16 @@ namespace SLON.Services
             }
             catch (HttpRequestException)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Please wait.", "OK");
-                return false;
+                goto step;
+                //await Application.Current.MainPage.DisplayAlert("Error", $"Please wait.", "OK");
+                //return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Неизвестная ошибка: {ex}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                return false;
+                goto step;
+                //Console.WriteLine($"Неизвестная ошибка: {ex}");
+                //Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                //return false;
             }
         }
 
@@ -131,13 +134,14 @@ namespace SLON.Services
             public List<int> swipedUsers { get; set; }
             public string mail { get; set; }
             public string vocation { get; set; }
-            public Dictionary<string, string> tags { get; set; } // Изменено с List<string> на string
-            public Dictionary<string, string> skills { get; set; } // Аналогично для skills, если нужно
+            public Dictionary<string, string> tags { get; set; }
+            public Dictionary<string, string> skills { get; set; } 
         }
 
         public static async Task<bool> UpdateProfileCategory(string username, string category,
     string tags, string skills)
         {
+            step:
             try
             {
                 string url = $"http://139.28.223.134:5000/users/add_category_with_tags?" +
@@ -146,11 +150,23 @@ namespace SLON.Services
                            $"&skills={Uri.EscapeDataString(skills)}";
 
                 var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                // Явная проверка ответа сервера
+                if (jsonResponse?.ok == true)
+                {
+                    Console.WriteLine("Category updated");
+                    return true;
+                }
+
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error updating category: {ex.Message}");
+                goto step;
                 return false;
             }
         }
@@ -160,7 +176,7 @@ namespace SLON.Services
         {
             string url = $"http://139.28.223.134:5000//users/get_profile?username={username}";
 
-            Stepper:
+            step:
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
@@ -170,12 +186,10 @@ namespace SLON.Services
                     string responseBody = await response.Content.ReadAsStringAsync();
                     Console.WriteLine(responseBody);
 
-                    // Десериализация JSON-ответа в объект UserProfile
                     var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
                     if (jsonResponse != null && jsonResponse.ok && jsonResponse.response.HasValue)
                     {
-                        // Преобразование JSON-данных в UserProfile
                         var userProfile = JsonSerializer.Deserialize<UserProfile>(jsonResponse.response.Value.ToString());
                         Console.WriteLine($"Received JSON: {responseBody}");
                         return userProfile;
@@ -183,20 +197,21 @@ namespace SLON.Services
                     else
                     {
                         Console.WriteLine("Ошибка в ответе API: неверный формат данных.");
+                        goto step;
                         return null;
                     }
                 }
                 else
                 {
                     Console.WriteLine($"Ошибка HTTP: {response.StatusCode}");
+                    goto step;
                     return null;
                 }
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"HttpRequestException: {ex.Message}");
-                goto Stepper;
-                return null;
+                goto step;
             }
         }
 
@@ -240,6 +255,7 @@ namespace SLON.Services
                     else
                     {
                         Console.WriteLine("Ошибка в ответе API: неверный формат данных.");
+                        goto Step;
                         return null;
                     }
                 }
@@ -248,6 +264,7 @@ namespace SLON.Services
                     Console.WriteLine($"Ошибка HTTP: {response.StatusCode}");
                     var errorContent = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"Error Content: {errorContent}");
+                    goto Step;
                     return null;
                 }
             }
@@ -260,17 +277,20 @@ namespace SLON.Services
             catch (JsonException jsonEx)
             {
                 Console.WriteLine($"Ошибка десериализации JSON: {jsonEx.Message}");
+                goto Step;
                 return null;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Произошла неизвестная ошибка: {ex.Message}");
+                goto Step;
                 return null;
             }
         }
 
         public static async Task<bool> AddEventAsync(EventData eventData)
         {
+            Step:
             try
             {
                 string url = $"http://139.28.223.134:5000/events/add_event?" +
@@ -285,32 +305,59 @@ namespace SLON.Services
                             $"&online={eventData.online}";
 
                 var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                // Явная проверка ответа сервера
+                if (jsonResponse?.ok == true)
+                {
+                    Console.WriteLine("Event successfully created");
+                    return true;
+                }
+
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error adding event: {ex.Message}");
+                goto Step;
                 return false;
             }
         }
 
         public static async Task<bool> DeleteEventAsync(string eventHash)
         {
+            step:
             try
             {
                 string url = $"http://139.28.223.134:5000/events/delete_event?hash={eventHash}";
+
                 var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                // Явная проверка ответа сервера
+                if (jsonResponse?.ok == true)
+                {
+                    Console.WriteLine("Event successfully created");
+                    return true;
+                }
+
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error deleting event: {ex.Message}");
+                goto step;
                 return false;
             }
         }
 
         public static async Task<bool> UpdateUserProfileAsync(string username, Dictionary<string, string> updates)
         {
+            step:
             try
             {
                 var url = $"http://139.28.223.134:5000/users/update_profile?username={username}";
@@ -330,24 +377,22 @@ namespace SLON.Services
 
                 var response = await _httpClient.GetAsync(url);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-                    return jsonResponse?.ok ?? false;
-                }
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+                return jsonResponse?.ok ?? false;
 
-                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error updating profile: {ex.Message}");
+                goto step;
                 return false;
             }
         }
 
         public static async Task<bool> UpdateEventAsync(EventData eventData)
         {
+            step:
             try
             {
                 string url = $"http://139.28.223.134:5000/events/edit_event?" +
@@ -362,17 +407,30 @@ namespace SLON.Services
                             $"&online={eventData.online}";
 
                 var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                // Явная проверка ответа сервера
+                if (jsonResponse?.ok == true)
+                {
+                    Console.WriteLine("Event successfully created");
+                    return true;
+                }
+
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error updating event: {ex.Message}");
+                goto step;
                 return false;
             }
         }
 
         public static async Task<bool> RemoveProfileCategory(string username, string category)
         {
+            step:
             try
             {
                 string url = $"http://139.28.223.134:5000/users/delete_profile_category?" +
@@ -387,8 +445,136 @@ namespace SLON.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Error removing category: {ex.Message}");
+                goto step;
                 return false;
             }
+        }
+
+        public static async Task<bool> AddSwipedUser(string username, string username_to)
+        {
+            step:
+            try
+            {
+                string url = $"http://139.28.223.134:5000/users/add_profile_swiped_user?" +
+                           $"username={username}" +
+                           $"&username_to={username_to}";
+
+                var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+                Console.WriteLine(responseBody);
+
+                return jsonResponse?.ok ?? false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding swiped user: {ex.Message}");
+                goto step;
+                return false;
+            }
+        }
+
+        public static async Task<bool> AddSwipedEvent(string username, string eventHash)
+        {
+            step:
+            try
+            {
+                string url = $"http://139.28.223.134:5000/users/add_swiped_event?" +
+                           $"username={Uri.EscapeDataString(username)}" +
+                           $"&event_hash={Uri.EscapeDataString(eventHash)}";
+
+                var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                return jsonResponse?.ok ?? false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding swiped event: {ex.Message}");
+                goto step;
+                return false;
+            }
+        }
+
+        public static async Task<List<UserProfile>> GetAllUsersAsync()
+        {
+            step:
+            try
+            {
+                string url = "http://139.28.223.134:5000/users/get_all_profiles";
+
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode) return null;
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                if (jsonResponse?.ok == true && jsonResponse.response.HasValue)
+                {
+                    return JsonSerializer.Deserialize<List<UserProfile>>(jsonResponse.response.Value.ToString());
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting all users: {ex.Message}");
+                goto step;
+                return null;
+            }
+        }
+
+        public static async Task<List<User>> GetSwipedUsersAsync(string username)
+        {
+            step:
+            try
+            {
+                string url = $"http://139.28.223.134:5000/users/get_swiped_users?username={Uri.EscapeDataString(username)}";
+
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode) return new List<User>();
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                if (jsonResponse?.ok == true && jsonResponse.response.HasValue)
+                {
+                    var usersData = JsonSerializer.Deserialize<List<UserData>>(jsonResponse.response.Value.GetRawText());
+                    return usersData.Select(u => new User(
+                        username: u.username,
+                        name: u.name,
+                        tags: default(List<string>), // tak kak eto zdez ne vazhno
+                        vocation: u.vocation,
+                        info: u.info,
+                        skills: default(string) // tak kak eto zdez ne vazhno
+                    )
+                    {
+                        IsMutual = u.is_mutual,
+                        IsAcceptedMe = u.is_accepted_me,
+                        IsILikedHim = u.is_i_liked_him
+                    }).ToList();
+                }
+
+                return new List<User>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting swiped users: {ex.Message}");
+                goto step;
+                return new List<User>();
+            }
+        }
+
+        public class UserData
+        {
+            public string username { get; set; }
+            public string name { get; set; }
+            public string vocation { get; set; }
+            public string info { get; set; }
+            public bool is_mutual { get; set; }
+            public bool is_accepted_me { get; set; }
+            public bool is_i_liked_him { get; set; }
         }
     }
 }

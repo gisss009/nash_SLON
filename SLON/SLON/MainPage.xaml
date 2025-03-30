@@ -205,6 +205,7 @@
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
+            
         </Grid>
     </StackLayout>
 </ContentPage>

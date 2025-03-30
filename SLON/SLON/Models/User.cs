@@ -4,6 +4,7 @@ namespace SLON.Models
 {
     public class User : INotifyPropertyChanged
     {
+        public string Username { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }       
         public new List<string> Tags { get; set; }       
@@ -32,9 +33,9 @@ namespace SLON.Models
         void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        public User(int id, string name, List<string> tags, string vocation, string info, string skills)
+        public User(string username, string name, List<string> tags, string vocation, string info, string skills)
         {
-            Id = id;
+            Username = username;
             Name = name;
             Tags = tags;
             Vocation = vocation;

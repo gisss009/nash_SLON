@@ -186,7 +186,6 @@ namespace SLON
             }
         }
 
-
         // Keep only the async version that actually saves to server
         private async Task SaveProfileChanges()
         {
@@ -370,7 +369,6 @@ namespace SLON
 
             if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "Отмена")
             {
-                // Для новой категории передаем пустую строку тегов
                 OpenCategoryPopup(selectedCategory);
             }
         }
@@ -380,24 +378,36 @@ namespace SLON
             CategoryPopup.IsVisible = true;
             CategoryNameLabel.Text = categoryName;
 
+            // Устанавливаем цвет категории
+            CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
+
+            // Получаем примеры для подсказок
             if (categoryExamples.TryGetValue(categoryName, out var examples))
             {
                 TagsEditor.Placeholder = $"Enter tags... (e.g. {examples.TagExample})";
                 SkillsEditor.Placeholder = $"Describe skills... (e.g. {examples.SkillExample})";
             }
 
-            if (addedCategories.TryGetValue(categoryName, out var data))
+            // Получаем текущие теги и навыки для этой категории из профиля
+            if (_currentProfile?.tags != null && _currentProfile.tags.TryGetValue(categoryName, out var currentTags))
             {
-                TagsEditor.Text = data.Tags;
-                SkillsEditor.Text = data.Skills;
+                TagsEditor.Text = currentTags;
             }
             else
             {
-                TagsEditor.Text = SkillsEditor.Text = string.Empty;
+                TagsEditor.Text = string.Empty;
             }
 
-            CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
+            if (_currentProfile?.skills != null && _currentProfile.skills.TryGetValue(categoryName, out var currentSkills))
+            {
+                SkillsEditor.Text = currentSkills;
+            }
+            else
+            {
+                SkillsEditor.Text = string.Empty;
+            }
 
+            // Настройка режима редактирования
             if (!_isEditing)
             {
                 TagsEditor.IsReadOnly = true;
@@ -646,6 +656,13 @@ namespace SLON
             string categoryName = CategoryNameLabel.Text;
             string tags = TagsEditor.Text?.Trim() ?? "";
             string skills = SkillsEditor.Text?.Trim() ?? "";
+
+            // Проверка
+            if (string.IsNullOrWhiteSpace(tags) || string.IsNullOrWhiteSpace(skills))
+            {
+                await DisplayAlert("Error", "Both Tags and Skills fields must be filled.", "OK");
+                return;
+            }
 
             try
             {
