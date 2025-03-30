@@ -74,7 +74,7 @@ def add_profile_skills(username: str, category: str, skills: str):
     
     profile = get_profile(username)
     skills_dict = profile.get("skills", {})
-    skills_dict[category] = skills  # Сохраняем навыки как строку
+    skills_dict[category] = skills 
     
     c.execute("UPDATE profiles SET skills = ? WHERE username = ?", 
               (json.dumps(skills_dict), username))
@@ -200,6 +200,7 @@ def remove_profile_category(username: str, category: str):
 
 
 def get_all_profiles():
+    """Возвращает список профилей (словарей с данными каждого профиля)"""
     c.execute("SELECT * FROM profiles")
     rows = c.fetchall()
     
@@ -208,10 +209,19 @@ def get_all_profiles():
     profiles_list = []
     for row in rows:
         profile_dict = {column_names[i]: row[i] for i in range(len(column_names))}
+        
+        # Преобразуем JSON-строки в Python-объекты
+        for field in ['categories', 'events', 'swiped_users', 'swiped_events', 'tags', 'skills']:
+            if profile_dict.get(field):
+                try:
+                    profile_dict[field] = json.loads(profile_dict[field])
+                except (json.JSONDecodeError, TypeError):
+                    profile_dict[field] = [] if field in ['categories', 'events', 'swiped_users', 'swiped_events'] else {}
+        
+        # Добавляем профиль в список
         profiles_list.append(profile_dict)
     
     return profiles_list
-
 
 def get_profiles_by_categories(categories: str):
     categories_list = [cat.strip() for cat in categories.split(",")]
@@ -307,29 +317,67 @@ def edit_profile_vocation(username: str, vocation: str):
     db.commit()
 
 
-def add_profile_swiped_user(username: str, id: int):
+def add_profile_swiped_user(username: str, user_name_to: str):
     if not find_profile(username):
         return
     
     users_str = c.execute("SELECT swiped_users FROM profiles WHERE username = ?", (username,)).fetchone()[0]
     users_list = json.loads(users_str) if users_str else []
 
-    if id not in users_list:
-        users_list.append(id)
+    if user_name_to not in users_list:
+        users_list.append(user_name_to)
     
     c.execute("UPDATE profiles SET swiped_users = ? WHERE username = ?", (json.dumps(users_list), username))
     db.commit()
 
 
-def delete_profile_swiped_user(username: str, id: int):
+def add_profile_swiped_event(username: str, hash: str):
+    """Добавляет событие в список свайпнутых событий пользователя"""
+    if not find_profile(username):
+        return False
+    
+    swiped_events_str = c.execute("SELECT swiped_events FROM profiles WHERE username = ?", 
+                                 (username,)).fetchone()[0]
+    swiped_events = json.loads(swiped_events_str) if swiped_events_str else []
+    
+    if hash not in swiped_events:
+        swiped_events.append(hash)
+    
+    c.execute("UPDATE profiles SET swiped_events = ? WHERE username = ?", 
+              (json.dumps(swiped_events), username))
+    db.commit()
+    return True
+
+
+def get_profile_swiped_users(username: str):
+    """Возвращает список свайпнутых пользователей"""
+    if not find_profile(username):
+        return []
+    
+    swiped_users_str = c.execute("SELECT swiped_users FROM profiles WHERE username = ?", 
+                                (username,)).fetchone()[0]
+    return json.loads(swiped_users_str) if swiped_users_str else []
+
+
+def get_profile_swiped_events(username: str):
+    """Возвращает список свайпнутых событий пользователя"""
+    if not find_profile(username):
+        return []
+    
+    swiped_events_str = c.execute("SELECT swiped_events FROM profiles WHERE username = ?", 
+                                 (username,)).fetchone()[0]
+    return json.loads(swiped_events_str) if swiped_events_str else []
+
+
+def delete_profile_swiped_user(username: str, hash: int):
     if not find_profile(username):
         return
     
     users_str = c.execute("SELECT swiped_users FROM profiles WHERE username = ?", (username,)).fetchone()[0]
     users_list = json.loads(users_str) if users_str else []
     
-    if id in users_list:
-        users_list.remove(id)
+    if hash in users_list:
+        users_list.remove(hash)
     
     c.execute("UPDATE profiles SET swiped_users = ? WHERE username = ?", (json.dumps(users_list), username))
     db.commit()
@@ -672,7 +720,7 @@ def get_swiped_events(username: str):
     return json.loads(swiped_events_str) if swiped_events_str else []
 
 
-# add_profile("test")
+add_profile("test")
 # add_profile("ne_test")
 # hash = add_event("test_event", "ne_test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
 # add_event_member(hash, "test")
@@ -683,21 +731,21 @@ def get_swiped_events(username: str):
 # edit_profile_description("test", "test_desc")
 # edit_profile_name("test", "хуесос")
 # edit_profile_surname("test", "петрович")
-def migrate_add_skills_column():
-    try:
-        # Добавляем столбец skills с default значением '{}'
-        c.execute("ALTER TABLE profiles ADD COLUMN skills TEXT DEFAULT '{}'")
+# def migrate_add_skills_column():
+#     try:
+#         # Добавляем столбец skills с default значением '{}'
+#         c.execute("ALTER TABLE profiles ADD COLUMN skills TEXT DEFAULT '{}'")
         
-        # Обновляем существующие записи, где значение NULL
-        c.execute("UPDATE profiles SET skills = '{}' WHERE skills IS NULL")
+#         # Обновляем существующие записи, где значение NULL
+#         c.execute("UPDATE profiles SET skills = '{}' WHERE skills IS NULL")
         
-        db.commit()
-        print("Migration successful: added and initialized skills column")
-    except sqlite3.OperationalError as e:
-        if "duplicate column name" in str(e):
-            print("Column already exists")
-        else:
-            raise e
+#         db.commit()
+#         print("Migration successful: added and initialized skills column")
+#     except sqlite3.OperationalError as e:
+#         if "duplicate column name" in str(e):
+#             print("Column already exists")
+#         else:
+#             raise e
 
-# Выполнить миграцию при запуске
-migrate_add_skills_column()
+# # Выполнить миграцию при запуске
+# migrate_add_skills_column()

@@ -6,6 +6,11 @@ import os
 app = Flask(__name__)
 
 
+@app.route("/users/get_all_profiles")
+def get_all_profiles_handler():
+    return jsonify({"ok": True, "response": get_all_profiles()}), 200
+
+
 @app.route("/users/get_all_user_events")
 def get_all_user_events_handler():
     username = request.args.get('username')
@@ -133,23 +138,23 @@ def edit_profile_surname_handler():
     return jsonify({"ok": True}), 200
 
 
-@app.route("/users/add_profile_category")
-def add_profile_category_handler():
-    username = request.args.get('username')
-    category = request.args.get('category')
+# @app.route("/users/add_profile_category")
+# def add_profile_category_handler():
+#     username = request.args.get('username')
+#     category = request.args.get('category')
 
-    if not username or not category:
-        return jsonify({"ok": False, "response": "parameter username or category is missing."})
+#     if not username or not category:
+#         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
-    if not find_profile(username):
-        return jsonify({"ok": False, "response": "username with current username not found."})
+#     if not find_profile(username):
+#         return jsonify({"ok": False, "response": "username with current username not found."})
 
-    if category not in ["IT", "Social", "Business", "Health", "Creation", "Sport", "Education", "Science"]:
-        return jsonify({"ok": False, "response": "category not in accessed categories"})
+#     if category not in ["IT", "Social", "Business", "Health", "Creation", "Sport", "Education", "Science"]:
+#         return jsonify({"ok": False, "response": "category not in accessed categories"})
 
-    add_profile_category(username, category)
+#     add_profile_category(username, category)
 
-    return jsonify({"ok": True}), 200
+#     return jsonify({"ok": True}), 200
 
 
 @app.route("/users/add_category_with_tags", methods=['GET'])
@@ -220,11 +225,6 @@ def delete_profile_event_handler():
 
     if not find_profile(username):
         return jsonify({"ok": False, "response": "username with current username not found."})
-
-    try:
-        id = int(id)
-    except ValueError:
-        return jsonify({"ok": False, "response": "parameter id is not integer."})
 
     delete_profile_event(username, id)
 
@@ -308,20 +308,15 @@ def edit_profile_vocation_handler():
 @app.route("/users/add_profile_swiped_user")
 def add_profile_swiped_user_handler():
     username = request.args.get('username')
-    id = request.args.get('id')
+    username_to = request.args.get('username_to')
 
-    if not username or not id:
+    if not username or not username_to:
         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
     if not find_profile(username):
         return jsonify({"ok": False, "response": "username with current username not found."})
 
-    try:
-        id = int(id)
-    except ValueError:
-        return jsonify({"ok": False, "response": "parameter id is not integer."})
-
-    add_profile_swiped_user(username, id)
+    add_profile_swiped_user(username, username_to)
 
     return jsonify({"ok": True}), 200
 
@@ -329,22 +324,56 @@ def add_profile_swiped_user_handler():
 @app.route("/users/delete_profile_swiped_user")
 def delete_profile_swiped_user_handler():
     username = request.args.get('username')
-    id = request.args.get('id')
+    username_to = request.args.get('username_to')
 
-    if not username or not id:
+    if not username or not username_to:
         return jsonify({"ok": False, "response": "parameter username or category is missing."})
 
-    if not find_profile(username):
+    if not find_profile(username) or not find_profile(username_to):
         return jsonify({"ok": False, "response": "username with current username not found."})
-
-    try:
-        id = int(id)
-    except ValueError:
-        return jsonify({"ok": False, "response": "parameter id is not integer."})
-
-    delete_profile_swiped_user(username, id)
+    
+    delete_profile_swiped_user(username, username_to)
 
     return jsonify({"ok": True}), 200
+
+
+@app.route('/users/get_swiped_users', methods=['GET'])
+def get_swiped_users_handler():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({'ok': False, 'error': 'Username is required'}), 400
+    
+    swiped_users = get_profile_swiped_users(username)
+    user_profiles = []
+    
+    for user in swiped_users:
+        profile = get_profile(user) 
+        if profile:
+            user_profiles.append({
+                'username': profile['username'],
+                'name': profile['name'],
+                'tags': profile.get('tags', []),
+                'vocation': profile.get('vocation', ''),
+                'info': profile.get('description', ''),
+                'skills': profile.get('skills', ''),
+                'is_mutual': check_if_mutual(username, user),
+                'is_accepted_me': check_if_accepted(username, user),
+                'is_i_liked_him': True
+            })
+    
+    return jsonify({'ok': True, 'response': user_profiles})
+
+def check_if_mutual(user1, user2):
+    """Check if both users swiped each other"""
+    user1_swiped = get_profile_swiped_users(user1)
+    user2_swiped = get_profile_swiped_users(user2)
+    return user2 in user1_swiped and user1 in user2_swiped
+
+def check_if_accepted(me, other_user):
+    """Check if the other user has swiped me"""
+    other_swiped = get_profile_swiped_users(other_user)
+    return me in other_swiped
+
 
 
 @app.route("/users/edit_profile_mail")
