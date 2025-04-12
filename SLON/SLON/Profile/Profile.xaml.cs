@@ -41,7 +41,7 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
-        private AuthService.UserProfile _currentProfile;
+        private ResponseService.UserProfile _currentProfile;
         public Profile()
         {
             InitializeComponent();
@@ -69,8 +69,8 @@ namespace SLON
 
             try
             {
-                var username = AuthService.GetUsernameAsync();
-                _currentProfile = await AuthService.GetUserProfileAsync(username);
+                var username = ResponseService.GetUsernameAsync();
+                _currentProfile = await ResponseService.GetUserProfileAsync(username);
 
                 if (_currentProfile == null)
                 {
@@ -102,7 +102,7 @@ namespace SLON
         {
             try
             {
-                List<AuthService.EventData> got_events = await AuthService.GetAllUserEventsAsync(username);
+                List<ResponseService.EventData> got_events = await ResponseService.GetAllUserEventsAsync(username);
 
                 events.Clear();
                 foreach (var eventData in got_events)
@@ -141,7 +141,7 @@ namespace SLON
         }
         private UserProfileEditModel _originalProfileData;
 
-        private void UpdateProfileUI(AuthService.UserProfile profile)
+        private void UpdateProfileUI(ResponseService.UserProfile profile)
         {
             UsernameLabel.Text = "@" + (profile?.username ?? "");
             NameInput.Text = profile?.name ?? "";
@@ -152,7 +152,7 @@ namespace SLON
             RefreshCategoriesUI(profile);
         }
 
-        private void RefreshCategoriesUI(AuthService.UserProfile profile = null)
+        private void RefreshCategoriesUI(ResponseService.UserProfile profile = null)
         {
             CategoriesGrid.Children.Clear();
             CategoriesGrid.RowDefinitions.Clear();
@@ -191,7 +191,7 @@ namespace SLON
         {
             try
             {
-                var username = AuthService.GetUsernameAsync();
+                var username = ResponseService.GetUsernameAsync();
                 var updates = new Dictionary<string, string>();
 
                 // Добавляем только измененные поля
@@ -213,7 +213,7 @@ namespace SLON
                     return;
                 }
 
-                bool success = await AuthService.UpdateUserProfileAsync(username, updates);
+                bool success = await ResponseService.UpdateUserProfileAsync(username, updates);
 
                 if (success)
                 {
@@ -630,13 +630,13 @@ namespace SLON
 
             try
             {
-                var username = AuthService.GetUsernameAsync();
-                bool success = await AuthService.RemoveProfileCategory(username, categoryName);
+                var username = ResponseService.GetUsernameAsync();
+                bool success = await ResponseService.RemoveProfileCategory(username, categoryName);
 
                 if (success)
                 {
                     // Обновляем профиль после удаления
-                    _currentProfile = await AuthService.GetUserProfileAsync(username);
+                    _currentProfile = await ResponseService.GetUserProfileAsync(username);
                     RefreshCategoriesUI(_currentProfile);
                 }
                 else
@@ -666,13 +666,13 @@ namespace SLON
 
             try
             {
-                var username = AuthService.GetUsernameAsync();
-                bool success = await AuthService.UpdateProfileCategory(username, categoryName, tags, skills);
+                var username = ResponseService.GetUsernameAsync();
+                bool success = await ResponseService.UpdateProfileCategory(username, categoryName, tags, skills);
 
                 if (success)
                 {
                     // Обновляем UI
-                    _currentProfile = await AuthService.GetUserProfileAsync(username);
+                    _currentProfile = await ResponseService.GetUserProfileAsync(username);
                     RefreshCategoriesUI(_currentProfile);
                     CategoryPopup.IsVisible = false;
                 }
@@ -696,7 +696,7 @@ namespace SLON
 
             if (confirm)
             {
-                bool success = await AuthService.DeleteEventAsync(eventHash);
+                bool success = await ResponseService.DeleteEventAsync(eventHash);
                 if (success)
                 {
                     await DisplayAlert("Успех", "Мероприятие успешно удалено", "OK");
@@ -743,8 +743,8 @@ namespace SLON
                 }
 
                 // 4. Подготовка данных
-                var username = AuthService.GetUsernameAsync();
-                var eventData = new AuthService.EventData
+                var username = ResponseService.GetUsernameAsync();
+                var eventData = new ResponseService.EventData
                 {
                     name = name,
                     owner = username,
@@ -771,14 +771,14 @@ namespace SLON
                     }
 
                     operation = "создано";
-                    success = await AuthService.AddEventAsync(eventData);
+                    success = await ResponseService.AddEventAsync(eventData);
                 }
                 else
                 {
                     // Для редактирования подставляем исходный hash
                     eventData.hash = _originalEventHash;
                     operation = "обновлено";
-                    success = await AuthService.UpdateEventAsync(eventData); // Предполагается аналогичный метод в AuthService
+                    success = await ResponseService.UpdateEventAsync(eventData); // Предполагается аналогичный метод в AuthService
                 }
 
                 // 6. Обработка результата
@@ -808,8 +808,8 @@ namespace SLON
         {
             try
             {
-                var username = AuthService.GetUsernameAsync();
-                List<AuthService.EventData> got_events = await AuthService.GetAllUserEventsAsync(username);
+                var username = ResponseService.GetUsernameAsync();
+                List<ResponseService.EventData> got_events = await ResponseService.GetAllUserEventsAsync(username);
 
                 events.Clear();
                 foreach (var eventData in got_events)
