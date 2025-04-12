@@ -63,7 +63,10 @@ namespace SLON
             {
                 AllMutualStack.IsVisible = true;
                 var userCollection = showingAll ? Favourites.favorites.OfType<User>() : Favourites.mutual;
-
+                var currentTheme = AppInfo.RequestedTheme;
+                string Icon;
+                if (currentTheme == AppTheme.Dark) Icon = "default_profile_icon1.png";
+                else Icon = "default_icon_light.png";
                 foreach (var user in userCollection)
                 {
                     LikeItems.Add(new LikeItem
@@ -72,7 +75,7 @@ namespace SLON
                         UserData = user,
                         Title = user.Name,
                         Subtitle = user.Vocation,
-                        IconSource = "default_profile_icon1.png",
+                        IconSource = Icon,
                         LeftSwipeIcon = "chat_icon.png"
                     });
                 }

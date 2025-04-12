@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SLON.Themes.LightTheme">
+    <!-- Для файла Favorites-->
+    <Color x:Key="BackGroundColor">#FDE8E5</Color>
+    <Color x:Key="TextColor">Black</Color>
+    <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
+    <Color x:Key="BorderColor">Black</Color>
+    <Color x:Key="BackGroundColorButtonGray">DarkGray</Color>
+    <Color x:Key="BackGroundColorSwapRed">Red</Color>
+    <Color x:Key="BackGroundColorSwapGreen">Green</Color>
+    <Color x:Key="BackGroundColorCardInfo">#C36FCE</Color>
+    <x:String x:Key="LogoImage">slon_light.png</x:String>
+</ResourceDictionary>

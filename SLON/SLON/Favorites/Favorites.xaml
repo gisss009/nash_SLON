@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="FavoritesPage"
-    BackgroundColor="Black">
+    BackgroundColor="{DynamicResource BackGroundColor}">
 
     <Grid RowDefinitions="Auto, *">
         <!-- Верхняя часть (заголовок + переключатели) -->
@@ -13,7 +13,7 @@
             <Label Text="Your likes"
                    FontSize="24"
                    FontAttributes="Bold"
-                   TextColor="White"
+                   TextColor="{DynamicResource TextColor}"
                    HorizontalOptions="Center" />
 
             <!-- Верхняя панель с переключателями -->
@@ -43,10 +43,10 @@
                             <Button x:Name="EventsButton"
                                     Text="Events"
                                     FontSize="12"
-                                    TextColor="White"
-                                    BackgroundColor="#915AC5"
+                                    TextColor= "{DynamicResource TextColor}"
+                                    BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                                     CornerRadius="0"
-                                    BorderColor="White"
+                                    BorderColor="{DynamicResource BorderColor}"
                                     BorderWidth="0.1"
                                     WidthRequest="90"
                                     HeightRequest="40"
@@ -59,10 +59,10 @@
                             <Button x:Name="ProfilesButton"
                                     Text="Profile"
                                     FontSize="12"
-                                    TextColor="White"
-                                    BackgroundColor="DarkGray"
+                                    TextColor="{DynamicResource TextColor}"
+                                    BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                     CornerRadius="0"
-                                    BorderColor="White"
+                                    BorderColor="{DynamicResource BorderColor}"
                                     BorderWidth="0.1"
                                     WidthRequest="90"
                                     HeightRequest="40"
@@ -89,10 +89,10 @@
                             <Button x:Name="AllButton"
                                     Text="All"
                                     FontSize="10"
-                                    TextColor="White"
-                                    BackgroundColor="#915AC5"
+                                    TextColor="{DynamicResource TextColor}"
+                                    BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                                     CornerRadius="0"
-                                    BorderColor="White"
+                                    BorderColor="{DynamicResource BorderColor}"
                                     BorderWidth="0.1"
                                     WidthRequest="75"
                                     HeightRequest="55"
@@ -106,10 +106,10 @@
                             <Button x:Name="MutualButton"
                                     Text="Mutual"
                                     FontSize="10"
-                                    TextColor="White"
-                                    BackgroundColor="DarkGray"
+                                    TextColor="{DynamicResource TextColor}"
+                                    BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                     CornerRadius="0"
-                                    BorderColor="White"
+                                    BorderColor="{DynamicResource BorderColor}"
                                     BorderWidth="0.1"
                                     WidthRequest="75"
                                     HeightRequest="55"
@@ -127,13 +127,13 @@
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"
                                  IsVisible="False">
-                <Image Source="slon.png"
+                <Image Source="{DynamicResource LogoImage}"
                        WidthRequest="400"
                        HeightRequest="400"/>
                 <Label Text="Your likes will appear here"
                        FontSize="Large"
                        FontAttributes="Bold"
-                       TextColor="White"
+                       TextColor="{DynamicResource TextColor}"
                        HorizontalOptions="Center"/>
             </VerticalStackLayout>
 
@@ -147,7 +147,7 @@
                             <!-- Свайп влево (удаление) -->
                             <SwipeView.LeftItems>
                                 <SwipeItems Mode="Execute">
-                                    <SwipeItem BackgroundColor="Red"
+                                    <SwipeItem BackgroundColor="{DynamicResource BackGroundColorSwapRed}"
                                                IconImageSource="trash_icon.png"
                                                Invoked="OnDeleteSwipeInvoked"/>
                                 </SwipeItems>
@@ -156,14 +156,14 @@
                             <!-- Свайп вправо (чат или добавление) -->
                             <SwipeView.RightItems>
                                 <SwipeItems Mode="Execute">
-                                    <SwipeItem BackgroundColor="Green"
+                                    <SwipeItem BackgroundColor="{DynamicResource BackGroundColorSwapGreen}"
                                                IconImageSource="{Binding LeftSwipeIcon}"
                                                Invoked="OnRightSwipeInvoked"/>
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
                             <!-- Карточка с информацией -->
-                            <Frame BackgroundColor="#222222"
+                            <Frame BackgroundColor="{DynamicResource BackGroundColorCardInfo}"
                                    CornerRadius="10"
                                    Padding="10"
                                    Margin="5"
@@ -174,11 +174,11 @@
                                            HeightRequest="50"/>
                                     <VerticalStackLayout>
                                         <Label Text="{Binding Title}" 
-                                               TextColor="White"
+                                               TextColor="{DynamicResource TextColor}"
                                                FontSize="16"
                                                FontAttributes="Bold"/>
                                         <Label Text="{Binding Subtitle}" 
-                                               TextColor="White" 
+                                               TextColor="{DynamicResource TextColor}" 
                                                FontSize="14"/>
                                     </VerticalStackLayout>
                                 </StackLayout>
