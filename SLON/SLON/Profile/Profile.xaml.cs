@@ -1135,41 +1135,79 @@ namespace SLON
         private void PopulateAllEventsPopup()
         {
             AllEventsContainer.Children.Clear();
-            var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
+
+            var filtered = _showMyEvents? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
+
             var sorted = filtered.OrderByDescending(ev => ev.StartDate).ToList();
-            foreach (var ev in sorted)
+
+            if (sorted.Count == 0)
             {
-                var frame = new Frame
+                var emptyLayout = new VerticalStackLayout
                 {
-                    AutomationId = ev.Hash,
-                    BackgroundColor = Color.FromArgb("#353535"),
-                    CornerRadius = 10,
-                    Padding = 10,
-                    Margin = 5,
-                    HeightRequest = 40
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center,
+                    Spacing = 20
                 };
-                var grid = new Grid();
-                var label = new Label
+
+                var elephantImage = new Image
                 {
-                    Text = ev.Name,
+                    Source = "slon.png",
+                    WidthRequest = 350,
+                    HeightRequest = 350,
+                    Aspect = Aspect.AspectFit
+                };
+
+                // Добавляем текстовую метку
+                var messageLabel = new Label
+                {
+                    Text = _showMyEvents
+                        ? "Create an event in profile!"
+                        : "Swipe events to participate!",
                     TextColor = Colors.White,
-                    FontSize = 16,
-                    VerticalOptions = LayoutOptions.Center
+                    FontSize = 20,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    FontAttributes = FontAttributes.Bold
                 };
-                grid.Children.Add(label);
-                frame.Content = grid;
-                AllEventsContainer.Children.Add(frame);
-                frame.GestureRecognizers.Clear();
-                frame.GestureRecognizers.Add(new TapGestureRecognizer
+
+                emptyLayout.Children.Add(elephantImage);
+                emptyLayout.Children.Add(messageLabel);
+                AllEventsContainer.Children.Add(emptyLayout);
+            }
+            else
+            {
+                foreach (var ev in sorted)
                 {
-                    Command = new Command(() =>
+                    if (AllEventsContainer.Children.Any(child => child is Frame frame && frame.AutomationId == ev.Hash))
+                        continue;
+
+                    var frame = new Frame
                     {
-                        if (ev.IsMyEvent)
-                            OpenEventPopup(ev.Hash, true);
-                        else
-                            OpenEventPopup(ev.Hash, false);
-                    })
-                });
+                        AutomationId = ev.Hash,
+                        BackgroundColor = Color.FromArgb("#353535"),
+                        CornerRadius = 10,
+                        Padding = 10,
+                        Margin = 5,
+                        HeightRequest = 40
+                    };
+
+                    var label = new Label
+                    {
+                        Text = ev.Name,
+                        TextColor = Colors.White,
+                        FontSize = 16,
+                        VerticalOptions = LayoutOptions.Center
+                    };
+
+                    frame.Content = label;
+
+                    frame.GestureRecognizers.Add(new TapGestureRecognizer
+                    {
+                        Command = new Command(() =>
+                            OpenEventPopup(ev.Hash, ev.IsMyEvent))
+                    });
+
+                    AllEventsContainer.Children.Add(frame);
+                }
             }
         }
 
