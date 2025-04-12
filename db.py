@@ -43,6 +43,18 @@ c.execute('''CREATE TABLE IF NOT EXISTS users_passwords (
 )''')
 db.commit()
 
+c.execute('''CREATE TABLE IF NOT EXISTS notifications (
+    username TEXT,
+    username_from TEXT,
+    is_request_or_accepted BOOLEAN
+)''')
+db.commit()
+
+c.execute('''CREATE TABLE IF NOT EXISTS mutual (
+    pair TEXT   /* в виде username1,username2 */
+)''')
+db.commit()
+
 
 def find_profile(username: str):
     user = c.execute("SELECT username FROM profiles WHERE username = (?)", (username,)).fetchone()
@@ -749,3 +761,28 @@ add_profile("test")
 
 # # Выполнить миграцию при запуске
 # migrate_add_skills_column()
+
+
+def create_notification(username: str, username_from: str):
+    c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 0))
+    db.commit()
+
+def delete_notification(username: str, username_from: str):
+    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
+    db.commit()
+
+def create_accepted_request(username: str, username_from: str):
+    c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 1))
+    db.commit()
+
+def delete_accepted_request(username: str, username_from: str):
+    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
+    db.commit()
+
+def add_mutual_user(username_one: str, username_two: str):
+    c.execute("INSERT INTO mutual VALUES (?,)", (username_one + "," + username_two,))
+    db.commit()
+
+def delete_mutual_user(username_one: str, username_two: str):
+    c.execute("DELETE FROM mutual WHERE pair = ?", (username_one + "," + username_two,))
+    db.commit()

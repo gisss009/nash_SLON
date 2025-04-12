@@ -397,3 +397,4 @@ _repo.*/
 .DS_Store
 
 SLON/.vs
+*.db
