@@ -334,16 +334,13 @@
                    Padding="20"
                    Margin="40">
                 <Grid>
-                    <ScrollView VerticalOptions="FillAndExpand">
-                        <VerticalStackLayout x:Name="AllEventsContainer" 
-                                             Spacing="10" 
-                                             Margin="0,30,0,0"
-                                             VerticalOptions="FillAndExpand"/>
+                    <ScrollView>
+                        <VerticalStackLayout x:Name="AllEventsContainer" Spacing="10" Margin="0,30,0,0"/>
                     </ScrollView>
                     <ImageButton Source="delete_icon.png"
                                  WidthRequest="24"
                                  HeightRequest="24"
-                                 HorizontalOptions="Start"
+                                 HorizontalOptions="End"
                                  VerticalOptions="Start"
                                  Clicked="OnCloseAllEventsClicked"/>
                 </Grid>

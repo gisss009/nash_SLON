@@ -1135,79 +1135,41 @@ namespace SLON
         private void PopulateAllEventsPopup()
         {
             AllEventsContainer.Children.Clear();
-
-            var filtered = _showMyEvents? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
-
+            var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
             var sorted = filtered.OrderByDescending(ev => ev.StartDate).ToList();
-
-            if (sorted.Count == 0)
+            foreach (var ev in sorted)
             {
-                var emptyLayout = new VerticalStackLayout
+                var frame = new Frame
                 {
-                    VerticalOptions = LayoutOptions.Center,
-                    HorizontalOptions = LayoutOptions.Center,
-                    Spacing = 20
+                    AutomationId = ev.Hash,
+                    BackgroundColor = Color.FromArgb("#353535"),
+                    CornerRadius = 10,
+                    Padding = 10,
+                    Margin = 5,
+                    HeightRequest = 40
                 };
-
-                var elephantImage = new Image
+                var grid = new Grid();
+                var label = new Label
                 {
-                    Source = "slon.png",
-                    WidthRequest = 350,
-                    HeightRequest = 350,
-                    Aspect = Aspect.AspectFit
-                };
-
-                // Добавляем текстовую метку
-                var messageLabel = new Label
-                {
-                    Text = _showMyEvents
-                        ? "Create an event in profile!"
-                        : "Swipe events to participate!",
+                    Text = ev.Name,
                     TextColor = Colors.White,
-                    FontSize = 20,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    FontAttributes = FontAttributes.Bold
+                    FontSize = 16,
+                    VerticalOptions = LayoutOptions.Center
                 };
-
-                emptyLayout.Children.Add(elephantImage);
-                emptyLayout.Children.Add(messageLabel);
-                AllEventsContainer.Children.Add(emptyLayout);
-            }
-            else
-            {
-                foreach (var ev in sorted)
+                grid.Children.Add(label);
+                frame.Content = grid;
+                AllEventsContainer.Children.Add(frame);
+                frame.GestureRecognizers.Clear();
+                frame.GestureRecognizers.Add(new TapGestureRecognizer
                 {
-                    if (AllEventsContainer.Children.Any(child => child is Frame frame && frame.AutomationId == ev.Hash))
-                        continue;
-
-                    var frame = new Frame
+                    Command = new Command(() =>
                     {
-                        AutomationId = ev.Hash,
-                        BackgroundColor = Color.FromArgb("#353535"),
-                        CornerRadius = 10,
-                        Padding = 10,
-                        Margin = 5,
-                        HeightRequest = 40
-                    };
-
-                    var label = new Label
-                    {
-                        Text = ev.Name,
-                        TextColor = Colors.White,
-                        FontSize = 16,
-                        VerticalOptions = LayoutOptions.Center
-                    };
-
-                    frame.Content = label;
-
-                    frame.GestureRecognizers.Add(new TapGestureRecognizer
-                    {
-                        Command = new Command(() =>
-                            OpenEventPopup(ev.Hash, ev.IsMyEvent))
-                    });
-
-                    AllEventsContainer.Children.Add(frame);
-                }
+                        if (ev.IsMyEvent)
+                            OpenEventPopup(ev.Hash, true);
+                        else
+                            OpenEventPopup(ev.Hash, false);
+                    })
+                });
             }
         }
 
