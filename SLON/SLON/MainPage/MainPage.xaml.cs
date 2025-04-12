@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui.Views;
 using Plugin.Maui.SwipeCardView.Core;
 using SLON.Models;
+using SLON.Themes;
 using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -473,6 +474,30 @@ namespace SLON
         public void OnButtonLupaClicked(object sender, EventArgs e)
         {
             Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
+        }
+
+        public void OnDarkClicked(object sender, EventArgs e)
+        {
+            ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
+            if (mergedDictionaries != null)
+            {
+                mergedDictionaries.Clear();
+                mergedDictionaries.Add(new DarkTheme());
+                BattonThemeDark.BackgroundColor = Color.FromArgb("#915AC5");
+                BattonThemeLight.BackgroundColor = Colors.DarkGray;
+            }
+        }
+
+        public void OnLightClicked(object sender, EventArgs e)
+        {
+            ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
+            if (mergedDictionaries != null)
+            {
+                mergedDictionaries.Clear();
+                mergedDictionaries.Add(new LightTheme());
+                BattonThemeLight.BackgroundColor = Color.FromArgb("#915AC5");
+                BattonThemeDark.BackgroundColor = Colors.DarkGray;
+            }
         }
     }
 }

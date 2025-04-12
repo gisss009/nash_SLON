@@ -69,7 +69,7 @@
                                     Clicked="OnProfilesClicked"/>
                         </Border>
                     </HorizontalStackLayout>
-
+                
                     <!-- Иконка колокольчика -->
                     <ImageButton Grid.Column="1"
                                  Source="bell_icon.png"

@@ -56,9 +56,39 @@
             </HorizontalStackLayout>
             <ImageButton Source="Resources/Images/settings.png"
                          HorizontalOptions="End"
-                         WidthRequest="36"
-                         HeightRequest="36"
+                         WidthRequest="65"
+                         HeightRequest="35"
                          Clicked="OnButtonSettingsClicked"/>
+            <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Start" Margin="0,10,0,0">
+                <Border  Padding="-15" Margin="5,0,0,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10,0,10,0"/>
+                    </Border.StrokeShape>
+                    <Button x:Name="BattonThemeDark"
+                            Text="Dark"
+                            FontSize="10"
+                            TextColor="White"
+                            BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
+                            CornerRadius="10"
+                            WidthRequest="65"
+                            HeightRequest="35"
+                            Clicked="OnDarkClicked"/>
+                </Border>
+                <Border Padding="-15" Margin="0,0,0,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="0,10,0,10"/>
+                    </Border.StrokeShape>
+                    <Button x:Name="BattonThemeLight"
+                            Text="Light"
+                            FontSize="10"
+                            TextColor="White"
+                            BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
+                            CornerRadius="10"
+                            WidthRequest="65"
+                            HeightRequest="35"
+                            Clicked="OnLightClicked"/>
+                </Border>
+            </HorizontalStackLayout>
         </Grid>
 
         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
