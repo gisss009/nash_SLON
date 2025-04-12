@@ -14,11 +14,9 @@ namespace SLON.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<User> AddedParticipants { get; set; } = new();
-
-        // Вычисляемое свойство для отображения диапазона дат
         public string DateRange => $"{StartDate:dd.MM.yyyy} - {EndDate:dd.MM.yyyy}";
 
-        private Color _cardColor = Color.FromArgb("#292929"); // исходный цвет
+        private Color _cardColor = Color.FromArgb("#292929");
         public Color CardColor
         {
             get => _cardColor;

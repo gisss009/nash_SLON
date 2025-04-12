@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SLON.Models
 {
+    
     public class WidthConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -24,6 +25,6 @@ namespace SLON.Models
         {
             return value; // Обратное преобразование не требуется
         }
-    }
+    } 
 }
 
