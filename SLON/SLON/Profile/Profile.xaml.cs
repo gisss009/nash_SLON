@@ -270,26 +270,6 @@ namespace SLON
             UpdateProfileUI(_currentProfile);
         }
 
-        private void AddCategoryProgrammatically(string categoryName)
-        {
-            if (!addedCategories.ContainsKey(categoryName))
-            {
-                // Добавляем категорию с пустыми тегами и навыками
-                addedCategories[categoryName] = (string.Empty, string.Empty);
-
-                // Обновляем интерфейс
-                RefreshCategoriesUI();
-
-                // Добавляем категорию в список всех доступных категорий (если нужно)
-                allCategories.Add(categoryName);
-
-                // Устанавливаем цвет для новой категории
-                Color categoryColor = GetCategoryColor(categoryName);
-                Console.WriteLine($"Category '{categoryName}' has color: {categoryColor}");
-            }
-        }
-
-
         #region Редактирование профиля
 
         private async void OnEditIconClicked(object sender, EventArgs e)
@@ -348,10 +328,6 @@ namespace SLON
             }
         }
 
-        //private void SaveProfileChanges()
-        //{
-        //    DisplayAlert("Success", "Profile changes saved!", "OK");
-        //}
 
         #endregion
 
@@ -574,39 +550,6 @@ namespace SLON
             }
         }
 
-
-        private void RefreshCategoriesUI()
-        {
-            CategoriesGrid.Children.Clear();
-            CategoriesGrid.RowDefinitions.Clear();
-
-            var catList = addedCategories.Keys.ToList();
-            int itemsPerRow = 3;
-            int totalCategories = catList.Count;
-            int rows = (int)Math.Ceiling((double)totalCategories / itemsPerRow);
-
-            for (int r = 0; r < rows; r++)
-            {
-                CategoriesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            }
-
-            int index = 0;
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < itemsPerRow; c++)
-                {
-                    if (index >= totalCategories)
-                        break;
-
-                    string categoryName = catList[index];
-                    var chip = CreateCategoryChip(categoryName);
-                    CategoriesGrid.Add(chip, c, r);
-
-                    index++;
-                }
-            }
-        }
-
         private View CreateCategoryChip(string categoryName)
         {
             var frame = new Frame
@@ -751,8 +694,14 @@ namespace SLON
             }
         }
 
+        private DateTime _lastSaveTime = DateTime.MinValue;
+
         private async void SaveEventChanges()
         {
+            if ((DateTime.Now - _lastSaveTime).TotalSeconds < 1)
+                return;
+
+            _lastSaveTime = DateTime.Now;
             try
             {
                 // 1. Валидация названия
@@ -762,7 +711,6 @@ namespace SLON
                     await DisplayAlert("Ошибка", "Название мероприятия не может быть пустым", "OK");
                     return;
                 }
-
                 if (name.Length > 50)
                 {
                     await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
@@ -789,7 +737,7 @@ namespace SLON
                 {
                     name = name,
                     owner = username,
-                    categories = selectedCategories,
+                    categories = new List<string>(selectedCategories),
                     description = EventDescriptionInput.Text?.Trim(),
                     location = EventLocationInput.Text?.Trim(),
                     date_from = _startDate.ToString("dd.MM.yyyy"),
@@ -804,22 +752,25 @@ namespace SLON
                 // 5. Логика сохранения в зависимости от режима
                 if (_isCreatingEvent)
                 {
-                    // Проверка на дубликаты (только для новых событий)
                     if (events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsMyEvent))
                     {
                         await DisplayAlert("Ошибка", "Мероприятие с таким названием уже существует", "OK");
                         return;
                     }
 
+                    if (string.IsNullOrEmpty(_originalEventHash))
+                    {
+                        _originalEventHash = Guid.NewGuid().ToString();
+                    }
+                    eventData.hash = _originalEventHash;
                     operation = "создано";
                     success = await AuthService.AddEventAsync(eventData);
                 }
                 else
                 {
-                    // Для редактирования подставляем исходный hash
                     eventData.hash = _originalEventHash;
                     operation = "обновлено";
-                    success = await AuthService.UpdateEventAsync(eventData); // Предполагается аналогичный метод в AuthService
+                    success = await AuthService.UpdateEventAsync(eventData);
                 }
 
                 // 6. Обработка результата
@@ -839,11 +790,8 @@ namespace SLON
                 Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
                 await DisplayAlert("Ошибка", "Произошла непредвиденная ошибка", "OK");
             }
-            finally
-            {
-                // Можно добавить скрытие индикатора загрузки
-            }
         }
+
 
         private async Task RefreshEventsFromServer()
         {
