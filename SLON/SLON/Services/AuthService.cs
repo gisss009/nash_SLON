@@ -46,13 +46,14 @@ namespace SLON.Services
             return SecureStorage.GetAsync(PasswordKey).Result ?? string.Empty;
         }
 
-        // Очистка данных при выходе
-        public static void ClearCredentials()
+        public static Task ClearCredentialsAsync()
         {
             SecureStorage.Remove(UsernameKey);
             SecureStorage.Remove(PasswordKey);
             Preferences.Clear();
+            return Task.CompletedTask;
         }
+
 
         public class JsonResponse
         {
@@ -62,36 +63,42 @@ namespace SLON.Services
 
         public static async Task<bool> IsUsernameAndPasswordCorrect(string username, string password)
         {
-            string url = "http://139.28.223.134:5000/is_username_and_password_correct?username=" + username + "&password=" + password;
-
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseBody);
-
-            var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-
-            if (jsonResponse != null)
+            const int maxRetries = 3;
+            int retries = 0;
+            while (retries < maxRetries)
             {
-                Console.WriteLine($"ok: {jsonResponse.ok}");
-
-                if (jsonResponse.response.HasValue)
+                try
                 {
-                    if (jsonResponse.response.Value.ValueKind == JsonValueKind.True ||
-                        jsonResponse.response.Value.ValueKind == JsonValueKind.False)
+                    string url = $"http://139.28.223.134:5000/is_username_and_password_correct?username={username}&password={password}";
+                    HttpResponseMessage response = await _httpClient.GetAsync(url);
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseBody);
+
+                    var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+                    if (jsonResponse != null && jsonResponse.response.HasValue)
                     {
-                        Console.WriteLine($"response: {jsonResponse.response.Value}");
-                        return jsonResponse.ok && jsonResponse.response.Value.GetBoolean(); // Возвращаем true только если оба значения true
+                        // Если response имеет тип логического значения, возвращаем результат
+                        if (jsonResponse.response.Value.ValueKind == JsonValueKind.True ||
+                            jsonResponse.response.Value.ValueKind == JsonValueKind.False)
+                        {
+                            return jsonResponse.ok && jsonResponse.response.Value.GetBoolean();
+                        }
+                        return false;
                     }
-
-                    Console.WriteLine($"response: {jsonResponse.response.Value}");
-                    return false; // Возвращаем true только если оба значения true
+                    return false;
                 }
-
-                Console.WriteLine("response is missing or null.");
-                return false; // Если response null, возвращаем false
+                catch (Exception ex)
+                {
+                    retries++;
+                    Console.WriteLine($"IsUsernameAndPasswordCorrect: Попытка {retries} из {maxRetries} завершилась ошибкой: {ex.Message}");
+                    if (retries >= maxRetries)
+                        throw; // пробрасываем исключение, если попытки исчерпаны
+                    await Task.Delay(1000); // ждем 1 секунду перед новой попыткой
+                }
             }
             return false;
         }
+
 
         public static async Task<bool> Register(string username, string password)
         {
@@ -174,46 +181,58 @@ namespace SLON.Services
         // Получение профиля пользователя
         public static async Task<UserProfile> GetUserProfileAsync(string username)
         {
-            string url = $"http://139.28.223.134:5000//users/get_profile?username={username}";
+            const int maxRetries = 3;
+            int retries = 0;
 
-            step:
-            try
+            while (retries < maxRetries)
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
+                    string url = $"http://139.28.223.134:5000/users/get_profile?username={username}";
+                    HttpResponseMessage response = await _httpClient.GetAsync(url);
 
-                    var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-
-                    if (jsonResponse != null && jsonResponse.ok && jsonResponse.response.HasValue)
+                    if (response.IsSuccessStatusCode)
                     {
-                        var userProfile = JsonSerializer.Deserialize<UserProfile>(jsonResponse.response.Value.ToString());
-                        Console.WriteLine($"Received JSON: {responseBody}");
-                        return userProfile;
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine(responseBody);
+
+                        var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                        if (jsonResponse != null && jsonResponse.ok && jsonResponse.response.HasValue)
+                        {
+                            var userProfile = JsonSerializer.Deserialize<UserProfile>(jsonResponse.response.Value.ToString());
+                            Console.WriteLine($"Received JSON: {responseBody}");
+                            return userProfile;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Ошибка в ответе API: неверный формат данных.");
+                            // Здесь можно либо сразу выбросить исключение, либо повторить попытку
+                            throw new Exception("Неверный формат данных в ответе API.");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Ошибка в ответе API: неверный формат данных.");
-                        goto step;
-                        return null;
+                        Console.WriteLine($"Ошибка HTTP: {response.StatusCode}");
+                        throw new HttpRequestException($"Ошибка HTTP: {response.StatusCode}");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Ошибка HTTP: {response.StatusCode}");
-                    goto step;
-                    return null;
+                    retries++;
+                    Console.WriteLine($"Попытка {retries} из {maxRetries} завершилась ошибкой: {ex.Message}");
+                    if (retries >= maxRetries)
+                    {
+                        throw; // Если попытки закончились, пробрасываем исключение дальше
+                    }
+                    await Task.Delay(1000); // Ждём 1 секунду перед следующей попыткой
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"HttpRequestException: {ex.Message}");
-                goto step;
-            }
+
+            // Если цикл завершился без возврата (этого формально быть не должно), возвращаем null или генерируем исключение
+            return null;
         }
+
 
         public class EventData
         {

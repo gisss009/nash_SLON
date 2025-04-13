@@ -85,19 +85,26 @@ namespace SLON
 
         private async void OnSignInClicked(object sender, EventArgs e)
         {
-            bool isCorrect = await AuthService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
-
-            if (isCorrect)
+            try
             {
-                AuthService.SetAuthenticated(true);
-                AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
-                await DisplayAlert("Login", "Successful login", "OK");
-                Application.Current.MainPage = new AppShell();
+                bool isCorrect = await AuthService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
+                if (isCorrect)
+                {
+                    AuthService.SetAuthenticated(true);
+                    AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
+                    await DisplayAlert("Login", "Successful login", "OK");
+                    Application.Current.MainPage = new AppShell();
+                }
+                else
+                {
+                    await DisplayAlert("Login", "Failed to log in.", "OK");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await DisplayAlert("Login", "Failed to log in.", "OK");
+                await DisplayAlert("Ошибка", $"При входе произошла ошибка: {ex.Message}", "OK");
             }
         }
+
     }
 }

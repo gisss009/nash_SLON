@@ -98,6 +98,23 @@ namespace SLON
             }
         }
 
+        private async void OnUsernameTapped(object sender, EventArgs e)
+        {
+            string username = UsernameLabel.Text;
+
+            bool confirm = await DisplayAlert("Подтверждение",
+                 $"Вы уверены, что хотите выйти из аккаунта {username}?", "Да", "Нет");
+
+            if (!confirm)
+                return;
+
+            await AuthService.ClearCredentialsAsync();
+            AuthService.SetAuthenticated(false);
+
+            Application.Current.MainPage = new NavigationPage(new AuthPage());
+        }
+
+
         private async Task LoadAndRefreshEvents(string username)
         {
             try
@@ -143,7 +160,7 @@ namespace SLON
 
         private void UpdateProfileUI(AuthService.UserProfile profile)
         {
-            UsernameLabel.Text = "@" + (profile?.username ?? "");
+            UsernameLabel.Text = profile?.username ?? "";
             NameInput.Text = profile?.name ?? "";
             SurnameInput.Text = profile?.surname ?? "";
             VocationInput.Text = profile?.vocation ?? "";
@@ -443,16 +460,6 @@ namespace SLON
         {
             CategoryPopup.IsVisible = false;
         }
-
-        //private void OnSaveCategoryClicked(object sender, EventArgs e)
-        //{
-        //    string categoryName = CategoryNameLabel.Text;
-        //    addedCategories[categoryName] = (TagsEditor.Text, SkillsEditor.Text);
-
-        //    RefreshCategoriesUI();
-
-        //    CategoryPopup.IsVisible = false;
-        //}
 
         private void ToggleDeleteButtons(bool isVisible)
         {
