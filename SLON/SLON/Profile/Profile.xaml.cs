@@ -750,18 +750,9 @@ namespace SLON
                 }
             }
         }
-        private bool _isSavingEvent = false;
 
         private async void SaveEventChanges()
         {
-            // Если процесс сохранения уже запущен – выходим, чтобы повторный вызов не обрабатывался.
-            if (_isSavingEvent)
-                return;
-
-            _isSavingEvent = true;
-            // Отключаем кнопку сохранения, чтобы пользователь случайно не нажал повторно.
-            SaveEventButton.IsEnabled = false;
-
             try
             {
                 // 1. Валидация названия
@@ -771,6 +762,7 @@ namespace SLON
                     await DisplayAlert("Ошибка", "Название мероприятия не может быть пустым", "OK");
                     return;
                 }
+
                 if (name.Length > 50)
                 {
                     await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
@@ -791,43 +783,43 @@ namespace SLON
                     return;
                 }
 
-                // 4. Подготовка данных для запроса
-                string username = AuthService.GetUsernameAsync();
+                // 4. Подготовка данных
+                var username = AuthService.GetUsernameAsync();
                 var eventData = new AuthService.EventData
                 {
                     name = name,
                     owner = username,
-                    categories = new List<string>(selectedCategories),
-                    description = EventDescriptionInput.Text?.Trim() ?? "",
-                    location = EventLocationInput.Text?.Trim() ?? "",
+                    categories = selectedCategories,
+                    description = EventDescriptionInput.Text?.Trim(),
+                    location = EventLocationInput.Text?.Trim(),
                     date_from = _startDate.ToString("dd.MM.yyyy"),
                     date_to = _endDate.ToString("dd.MM.yyyy"),
                     @public = _isPublic ? 1 : 0,
                     online = _isOnline ? 1 : 0
                 };
 
-                bool success = false;
-                string operation = "";
+                bool success;
+                string operation;
 
-                // 5. Определение режима (создание или редактирование)
+                // 5. Логика сохранения в зависимости от режима
                 if (_isCreatingEvent)
                 {
-                    // UI‑проверка на дубликат (можно улучшить: дополнительно добавить серверную проверку)
+                    // Проверка на дубликаты (только для новых событий)
                     if (events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsMyEvent))
                     {
                         await DisplayAlert("Ошибка", "Мероприятие с таким названием уже существует", "OK");
                         return;
                     }
-                    // Генерируем уникальный идентификатор для нового события, который служит idempotency key (если сервер его поддерживает)
-                    eventData.hash = Guid.NewGuid().ToString();
+
                     operation = "создано";
                     success = await AuthService.AddEventAsync(eventData);
                 }
                 else
                 {
+                    // Для редактирования подставляем исходный hash
                     eventData.hash = _originalEventHash;
                     operation = "обновлено";
-                    success = await AuthService.UpdateEventAsync(eventData);
+                    success = await AuthService.UpdateEventAsync(eventData); // Предполагается аналогичный метод в AuthService
                 }
 
                 // 6. Обработка результата
@@ -849,12 +841,9 @@ namespace SLON
             }
             finally
             {
-                // Независимо от результата восстанавливаем возможность повторного нажатия
-                _isSavingEvent = false;
-                SaveEventButton.IsEnabled = true;
+                // Можно добавить скрытие индикатора загрузки
             }
         }
-
 
         private async Task RefreshEventsFromServer()
         {
