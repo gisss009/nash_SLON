@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="ThisPage"
     Title="      Requests / Accepted"
-    BackgroundColor="#141414">
+    BackgroundColor="{DynamicResource BackGroundColor}">
 
     <VerticalStackLayout>
         <Grid Padding="10">
@@ -24,10 +24,10 @@
                     <Button x:Name="RequestsButton"
                             Text="Requests"
                             FontSize="12"
-                            TextColor="White"
-                            BackgroundColor="#915AC5"
+                            TextColor="{DynamicResource TextColor}"
+                            BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                             CornerRadius="0"
-                            BorderColor="White"
+                            BorderColor="{DynamicResource BorderColor}"
                             BorderWidth="0.1"
                             WidthRequest="85"
                             HeightRequest="55"
@@ -41,10 +41,10 @@
                     <Button x:Name="AcceptedButton"
                             Text="Accepted"
                             FontSize="12"
-                            TextColor="White"
-                            BackgroundColor="DarkGray"
+                            TextColor="{DynamicResource TextColor}"
+                            BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                             CornerRadius="0"
-                            BorderColor="White"
+                            BorderColor="{DynamicResource BorderColor}"
                             BorderWidth="0.1"
                             WidthRequest="85"
                             HeightRequest="55"
@@ -59,20 +59,20 @@
                     <StackLayout Orientation="Horizontal"
                                  Padding="5"
                                  Margin="5"
-                                 BackgroundColor="#222222">
+                                 BackgroundColor="{DynamicResource BackGroundColorCardInfo}">
 
                         <!-- Тап по профилю -->
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnUserTapped" />
                         </StackLayout.GestureRecognizers>
 
-                        <Image Source="default_profile_icon1.png"
+                        <Image Source="{DynamicResource ImageProfile}"
                                WidthRequest="50"
                                HeightRequest="50"
                                VerticalOptions="Center"/>
                         <VerticalStackLayout Spacing="2" Margin="10,5,0,0">
-                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="16"/>
-                            <Label Text="{Binding Vocation}" TextColor="White" FontSize="14"/>
+                            <Label Text="{Binding Name}" TextColor="{DynamicResource TextColor}" FontAttributes="Bold" FontSize="16"/>
+                            <Label Text="{Binding Vocation}" TextColor="{DynamicResource TextColor}" FontSize="14"/>
                         </VerticalStackLayout>
 
                         <!-- Кнопки Accept/Decline только в режиме Requests -->
@@ -83,8 +83,8 @@
                             </Grid.ColumnDefinitions>
 
                             <Button Text="Decline"
-                                    TextColor="White"
-                                    BackgroundColor="Red"
+                                    TextColor="{DynamicResource TextColor}"
+                                    BackgroundColor="{DynamicResource BackGroundColorSwapRed}"
                                     Grid.Column="0"
                                     IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
                                     Clicked="OnDeclineClicked"
@@ -92,8 +92,8 @@
                                     WidthRequest="80"
                                     HeightRequest="40"/>
                             <Button Text="Accept"
-                                    TextColor="White"
-                                    BackgroundColor="Green"
+                                    TextColor="{DynamicResource TextColor}"
+                                    BackgroundColor="{DynamicResource BackGroundColorSwapGreen}"
                                     Grid.Column="1"
                                     IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
                                     Clicked="OnAcceptClicked"

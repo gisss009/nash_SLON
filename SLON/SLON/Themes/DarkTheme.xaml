@@ -11,5 +11,11 @@
     <Color x:Key="BackGroundColorSwapRed">Red</Color>
     <Color x:Key="BackGroundColorSwapGreen">Green</Color>
     <Color x:Key="BackGroundColorCardInfo">#222222</Color>
+    <Color x:Key="BackGroundColorHeader">#80000000</Color>
+    <Color x:Key="BackGroundColorHeaderStack">#141414</Color>
+    <Color x:Key="BackGroundColorDesc">#292929</Color>
+    <Color x:Key="BackGroundColorDescName">#292929</Color>
+    <Color x:Key="BackGroundColorEvent">#3D3D3D</Color>
     <x:String x:Key="LogoImage">slon.png</x:String>
+    <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
 </ResourceDictionary>

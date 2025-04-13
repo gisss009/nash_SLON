@@ -484,7 +484,7 @@ namespace SLON
                 mergedDictionaries.Clear();
                 mergedDictionaries.Add(new DarkTheme());
                 BattonThemeDark.BackgroundColor = Color.FromArgb("#915AC5");
-                BattonThemeLight.BackgroundColor = Colors.DarkGray;
+                BattonThemeLight.BackgroundColor = Color.FromArgb("#292929");
             }
         }
 
@@ -496,7 +496,7 @@ namespace SLON
                 mergedDictionaries.Clear();
                 mergedDictionaries.Add(new LightTheme());
                 BattonThemeLight.BackgroundColor = Color.FromArgb("#915AC5");
-                BattonThemeDark.BackgroundColor = Colors.DarkGray;
+                BattonThemeDark.BackgroundColor = Color.FromArgb("#292929");
             }
         }
     }

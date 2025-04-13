@@ -66,7 +66,7 @@
                     </Border.StrokeShape>
                     <Button x:Name="BattonThemeDark"
                             Text="Dark"
-                            FontSize="10"
+                            FontSize="11"
                             TextColor="White"
                             BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                             CornerRadius="10"
@@ -80,9 +80,9 @@
                     </Border.StrokeShape>
                     <Button x:Name="BattonThemeLight"
                             Text="Light"
-                            FontSize="10"
+                            FontSize="11"
                             TextColor="White"
-                            BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
+                            BackgroundColor="#292929"
                             CornerRadius="10"
                             WidthRequest="65"
                             HeightRequest="35"
