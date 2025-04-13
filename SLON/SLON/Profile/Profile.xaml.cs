@@ -292,6 +292,23 @@ namespace SLON
             AddEventIcon.IsEnabled = !isEditing;
             ResumeEditor.Placeholder = isEditing ? "Write about yourself..." : "Description is empty";
 
+            if (isEditing)
+            {
+                NameInput.TextColor = Colors.LightGray;
+                SurnameInput.TextColor = Colors.LightGray;
+                VocationInput.TextColor = Colors.LightGray;
+                ResumeEditor.TextColor = Colors.LightGray;
+            }
+            else
+            {
+                NameInput.TextColor = Colors.White;
+                SurnameInput.TextColor = Colors.White;
+                VocationInput.TextColor = Colors.White;
+                ResumeEditor.TextColor = Colors.White;
+            }
+
+            AvatarButton.Source = isEditing ? "edit_profile_avatar.png" : "default_profile_icon.png";
+
             // Обновляем UI категорий
             RefreshCategoriesUI(_currentProfile);
 
@@ -495,7 +512,14 @@ namespace SLON
             EnableCategoryButtons(true);
             StartDatePicker.IsEnabled = true;
             EndDatePicker.IsEnabled = true;
+
+            _isCreatingEvent = true;
+            _isEditingEvent = false;
+            _originalEventHash = string.Empty;  
+
+            EventPopupHeaderLabel.Text = "Create event card";
         }
+
 
         private void ResetCategoryButtons()
         {
@@ -530,9 +554,19 @@ namespace SLON
             {
                 _isEditingEvent = !_isEditingEvent;
                 SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
+                if (_isEditingEvent)
+                {
+                    EventPopupHeaderLabel.Text = "Edit event card";
+                }
+                else
+                {
+                    EventPopupHeaderLabel.Text = "Event card";
+                }
+
                 UpdateEventPopupUI();
             }
         }
+
 
         private void RefreshCategoriesUI()
         {
@@ -897,14 +931,32 @@ namespace SLON
 
         private void OpenEventPopup(string eventHash, bool isEditing)
         {
+            // Если eventHash пустой, значит это режим создания.
             _isCreatingEvent = string.IsNullOrEmpty(eventHash);
+
+            if (_isCreatingEvent)
+            {
+                // Если создаем новое событие, устанавливаем заголовок:
+                EventPopupHeaderLabel.Text = "Create Event card";
+            }
+            else if (_isEditingEvent)
+            {
+                EventPopupHeaderLabel.Text = "Edit Event card";
+            }
+            else
+            {
+                EventPopupHeaderLabel.Text = "Event card";
+            }
+
             var eventData = _isCreatingEvent ? default : events.FirstOrDefault(e => e.Hash == eventHash);
             if (!_isCreatingEvent && string.IsNullOrEmpty(eventData.Name))
             {
                 DisplayAlert("Error", "Event not found.", "OK");
                 return;
             }
-            _originalEventHash = _isCreatingEvent ? "" : eventData.Hash;
+            _originalEventHash = _isCreatingEvent ? string.Empty : eventData.Hash;
+
+            // Заполняем поля данными или очищаем для создания нового события.
             EventNameInput.Text = _isCreatingEvent ? "" : eventData.Name;
             selectedCategories.Clear();
             if (!_isCreatingEvent)
@@ -960,6 +1012,7 @@ namespace SLON
             UpdateCategoryButtons();
             EventPopup.IsVisible = true;
         }
+
 
         private bool IsCurrentEventMine()
         {
@@ -1137,6 +1190,50 @@ namespace SLON
             AllEventsContainer.Children.Clear();
             var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
             var sorted = filtered.OrderByDescending(ev => ev.StartDate).ToList();
+
+            if (sorted.Count == 0)
+            {
+                var emptyLayout = new VerticalStackLayout
+                {
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    Spacing = 20
+                };
+
+                var emptyImage = new Image
+                {
+                    Source = "slon.png",
+                    WidthRequest = 350,
+                    HeightRequest = 350,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center
+                };
+
+                var messageLabel = new Label
+                {
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    TextColor = Colors.White,
+                    FontAttributes = FontAttributes.Bold,
+                    FontSize = 21 
+                };
+
+                if (_showMyEvents)
+                {
+                    messageLabel.Text = "Create an event in profile!";
+                }
+                else
+                {
+                    messageLabel.Text = "Swipe events to participate!";
+                }
+
+                emptyLayout.Children.Add(emptyImage);
+                emptyLayout.Children.Add(messageLabel);
+
+                AllEventsContainer.Children.Add(emptyLayout);
+                return;
+            }
+
             foreach (var ev in sorted)
             {
                 var frame = new Frame

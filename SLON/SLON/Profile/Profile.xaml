@@ -38,7 +38,6 @@
                         <Entry x:Name="NameInput"
                                TextColor="White"
                                Placeholder="Name"
-                               PlaceholderColor="White"
                                FontSize="28"
                                FontAttributes="Bold"
                                IsReadOnly="True"
@@ -48,7 +47,6 @@
                         <Entry x:Name="SurnameInput"
                                TextColor="White"
                                Placeholder="Surname"
-                               PlaceholderColor="White"
                                FontSize="28"
                                FontAttributes="Bold"
                                IsReadOnly="True"
@@ -58,7 +56,6 @@
                         <Entry x:Name="VocationInput"
                                TextColor="White"
                                Placeholder="Vocation"
-                               PlaceholderColor="White"
                                FontSize="18"
                                IsReadOnly="True"
                                HorizontalTextAlignment="Start"
@@ -231,9 +228,9 @@
                     <ScrollView>
                         <Editor x:Name="ResumeEditor"
                                 Placeholder="Write about yourself..."
-                                PlaceholderColor="White"
-                                BackgroundColor="#1E1E1E"
+                                BackgroundColor="Transparent"
                                 TextColor="White"
+                                FontAttributes="Bold"
                                 FontSize="16"
                                 AutoSize="TextChanges"
                                 IsReadOnly="True"/>
@@ -340,7 +337,7 @@
                     <ImageButton Source="delete_icon.png"
                                  WidthRequest="24"
                                  HeightRequest="24"
-                                 HorizontalOptions="End"
+                                 HorizontalOptions="Start"
                                  VerticalOptions="Start"
                                  Clicked="OnCloseAllEventsClicked"/>
                 </Grid>
@@ -362,7 +359,8 @@
                                          WidthRequest="24"
                                          HeightRequest="24"
                                          Clicked="OnCancelEventClicked"/>
-                            <Label Text="Create event card"
+                            <Label x:Name="EventPopupHeaderLabel"
+                                   Text="Create event card"
                                    FontSize="20"
                                    FontAttributes="Bold"
                                    TextColor="White"
