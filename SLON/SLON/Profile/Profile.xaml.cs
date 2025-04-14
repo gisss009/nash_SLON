@@ -845,7 +845,7 @@ namespace SLON
                 CornerRadius = 10,
                 Padding = 10,
                 Margin = 5,
-                HeightRequest = 40
+                // HeightRequest = 40
             };
             var grid = new Grid();
             var label = new Label
