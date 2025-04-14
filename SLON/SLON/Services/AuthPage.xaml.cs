@@ -65,12 +65,12 @@ namespace SLON
                 return;
             }
 
-            bool reg = await ResponseService.Register(UsernameEntry.Text, PasswordEntry.Text);
+            bool reg = await AuthService.Register(UsernameEntry.Text, PasswordEntry.Text);
 
             if (reg) // здесь проверка в базе на корректность введенных данных
             {
-                ResponseService.SetAuthenticated(true);
-                ResponseService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
+                AuthService.SetAuthenticated(true);
+                AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
                 await DisplayAlert("Registration", "User registered successfully!", "OK");
                 Application.Current.MainPage = new AppShell();
             }
@@ -85,12 +85,12 @@ namespace SLON
 
         private async void OnSignInClicked(object sender, EventArgs e)
         {
-            bool isCorrect = await ResponseService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
+            bool isCorrect = await AuthService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
 
             if (isCorrect)
             {
-                ResponseService.SetAuthenticated(true);
-                ResponseService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
+                AuthService.SetAuthenticated(true);
+                AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
                 await DisplayAlert("Login", "Successful login", "OK");
                 Application.Current.MainPage = new AppShell();
             }

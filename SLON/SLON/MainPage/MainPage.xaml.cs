@@ -93,10 +93,10 @@ namespace SLON
             {
                 Users.Clear();
 
-                var currentUsername = ResponseService.GetUsernameAsync();
+                var currentUsername = AuthService.GetUsernameAsync();
 
                 // Получаем всех пользователей из базы
-                var allUsers = await ResponseService.GetAllUsersAsync();
+                var allUsers = await AuthService.GetAllUsersAsync();
                 if (allUsers == null || !allUsers.Any())
                 {
                     Debug.WriteLine("No users found in database");
@@ -132,7 +132,7 @@ namespace SLON
             }
         }
 
-        private User CreateUserModel(ResponseService.UserProfile profile)
+        private User CreateUserModel(AuthService.UserProfile profile)
         {
             var selectedCategories = Settings.selectedUserCategories.ToList();
             bool noCategorySelected = selectedCategories.Count == 0; // Проверяем, выбраны ли категории
@@ -198,7 +198,7 @@ namespace SLON
             };
         }
 
-        private List<ResponseService.UserProfile> FilterUsersByCategories( List<ResponseService.UserProfile> users, List<string> selectedCategories)
+        private List<AuthService.UserProfile> FilterUsersByCategories( List<AuthService.UserProfile> users, List<string> selectedCategories)
         {
             return users.Where(user =>
             {
@@ -406,9 +406,9 @@ namespace SLON
                     Debug.WriteLine($"Liked: {swipedUser.Name}");
 
                     // Сохраняем в базу данных
-                    string my_username = ResponseService.GetUsernameAsync();
+                    string my_username = AuthService.GetUsernameAsync();
                         
-                    bool success = await ResponseService.AddSwipedUser(my_username, swipedUser.Username);
+                    bool success = await AuthService.AddSwipedUser(my_username, swipedUser.Username);
                     if (!success)
                     {
                         Debug.WriteLine("Failed to save swiped user to server");

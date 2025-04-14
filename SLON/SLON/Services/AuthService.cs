@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace SLON.Services
 {
-    public static class ResponseService
+    public static class AuthService
     {
         private const string AuthKey = "IsAuthenticated";
         private const string UsernameKey = "Username";

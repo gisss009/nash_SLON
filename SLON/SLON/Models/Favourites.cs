@@ -28,7 +28,7 @@ namespace SLON.Models
 
         private async static void InitializeTestData()
         {
-            favorites = await ResponseService.GetSwipedUsersAsync(ResponseService.GetUsernameAsync());
+            favorites = await AuthService.GetSwipedUsersAsync(AuthService.GetUsernameAsync());
 
             if (_initialized) return;
             _initialized = true;

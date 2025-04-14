@@ -10,7 +10,7 @@ namespace SLON
             InitializeComponent();
 
             // Стартовая страница на основе состояния авторизации
-            MainPage = ResponseService.IsAuthenticated()
+            MainPage = AuthService.IsAuthenticated()
                 ? new AppShell()
                 : new NavigationPage(new AuthPage());
         }
