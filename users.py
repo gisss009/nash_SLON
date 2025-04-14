@@ -117,26 +117,6 @@ def edit_profile_surname_handler():
 
     return jsonify({"ok": True}), 200
 
-
-# @bp1.route("/users/add_profile_category")
-# def add_profile_category_handler():
-#     username = request.args.get('username')
-#     category = request.args.get('category')
-
-#     if not username or not category:
-#         return jsonify({"ok": False, "response": "parameter username or category is missing."})
-
-#     if not find_profile(username):
-#         return jsonify({"ok": False, "response": "username with current username not found."})
-
-#     if category not in ["IT", "Social", "Business", "Health", "Creation", "Sport", "Education", "Science"]:
-#         return jsonify({"ok": False, "response": "category not in accessed categories"})
-
-#     add_profile_category(username, category)
-
-#     return jsonify({"ok": True}), 200
-
-
 @bp1.route("/users/add_category_with_tags", methods=['GET'])
 def add_category_with_tags_handler():
     username = request.args.get('username')
@@ -209,49 +189,6 @@ def delete_profile_event_handler():
     delete_profile_event(username, id)
 
     return jsonify({"ok": True}), 200
-
-
-# @bp1.route("/users/add_profile_own_event")
-# def add_profile_own_event_handler():
-#     username = request.args.get('username')
-#     id = request.args.get('id')
-
-#     if not username or not id:
-#         return jsonify({"ok": False, "response": "parameter username or category is missing."})
-
-#     if not find_profile(username):
-#         return jsonify({"ok": False, "response": "username with current username not found."})
-
-#     try:
-#         id = int(id)
-#     except ValueError:
-#         return jsonify({"ok": False, "response": "parameter id is not integer."})
-
-#     add_profile_own_event(username, id)
-
-#     return jsonify({"ok": True}), 200
-
-
-# @bp1.route("/users/delete_profile_own_event")
-# def delete_profile_own_event_handler():
-#     username = request.args.get('username')
-#     id = request.args.get('id')
-
-#     if not username or not id:
-#         return jsonify({"ok": False, "response": "parameter username or category is missing."})
-
-#     if not find_profile(username):
-#         return jsonify({"ok": False, "response": "username with current username not found."})
-
-#     try:
-#         id = int(id)
-#     except ValueError:
-#         return jsonify({"ok": False, "response": "parameter id is not integer."})
-
-#     delete_profile_own_event(username, id)
-
-#     return jsonify({"ok": True}), 200
-
 
 @bp1.route("/users/edit_profile_description")
 def edit_profile_description_handler():
@@ -329,9 +266,10 @@ def get_swiped_users_handler():
     for user in swiped_users:
         profile = get_profile(user) 
         if profile:
-            user_profiles.bp1end({
+            user_profiles.append({
                 'username': profile['username'],
                 'name': profile['name'],
+                'surname': profile["surname"],
                 'tags': profile.get('tags', []),
                 'vocation': profile.get('vocation', ''),
                 'info': profile.get('description', ''),

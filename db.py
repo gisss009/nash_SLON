@@ -733,6 +733,8 @@ def get_swiped_events(username: str):
 
 
 add_profile("test")
+edit_profile_surname("test", "surrr")
+print(get_profile("test"))
 # add_profile("ne_test")
 # hash = add_event("test_event", "ne_test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
 # add_event_member(hash, "test")
