@@ -307,43 +307,71 @@ namespace SLON.Services
             }
         }
 
+        private static string _lastSentHash = string.Empty;
+
         public static async Task<bool> AddEventAsync(EventData eventData)
         {
-            Step:
             try
             {
-                string url = $"http://139.28.223.134:5000/events/add_event?" +
-                            $"name={Uri.EscapeDataString(eventData.name)}" +
-                            $"&owner={Uri.EscapeDataString(eventData.owner)}" +
-                            $"&categories={Uri.EscapeDataString(string.Join(",", eventData.categories))}" +
-                            $"&description={Uri.EscapeDataString(eventData.description)}" +
-                            $"&location={Uri.EscapeDataString(eventData.location)}" +
-                            $"&date_from={Uri.EscapeDataString(eventData.date_from)}" +
-                            $"&date_to={Uri.EscapeDataString(eventData.date_to)}" +
-                            $"&public={eventData.@public}" +
-                            $"&online={eventData.online}";
+                // Уникальный хеш на основе ключевых данных — чтобы не отправлять повторно
+                string currentHash = $"{eventData.name}_{eventData.date_from}_{eventData.owner}";
+                if (_lastSentHash == currentHash)
+                {
+                    Console.WriteLine("[DOTNET] Duplicate create request suppressed.");
+                    return false;
+                }
 
+                // Собираем URL
+                string url = $"http://139.28.223.134:5000/events/add_event?" +
+                             $"name={Uri.EscapeDataString(eventData.name)}" +
+                             $"&owner={Uri.EscapeDataString(eventData.owner)}" +
+                             $"&categories={Uri.EscapeDataString(string.Join(",", eventData.categories))}" +
+                             $"&description={Uri.EscapeDataString(eventData.description)}" +
+                             $"&location={Uri.EscapeDataString(eventData.location)}" +
+                             $"&date_from={Uri.EscapeDataString(eventData.date_from)}" +
+                             $"&date_to={Uri.EscapeDataString(eventData.date_to)}" +
+                             $"&public={eventData.@public}" +
+                             $"&online={eventData.online}";
+
+                Console.WriteLine("[DOTNET] Sending request to create event...");
                 var response = await _httpClient.GetAsync(url);
+
+                Console.WriteLine($"[DOTNET] Status: {(int)response.StatusCode} - {response.ReasonPhrase}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("[DOTNET] Request failed before reading response body.");
+                    return false;
+                }
+
                 var responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"[DOTNET] Server Response: {responseBody}");
 
                 var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
-                // Явная проверка ответа сервера
                 if (jsonResponse?.ok == true)
                 {
-                    Console.WriteLine("Event successfully created");
+                    Console.WriteLine("[DOTNET] Event successfully created.");
+                    _lastSentHash = currentHash;
                     return true;
                 }
 
-                return response.IsSuccessStatusCode;
+                Console.WriteLine("[DOTNET] Server responded with ok = false.");
+                return false;
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"[DOTNET] HttpRequestException: {httpEx.Message}");
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding event: {ex.Message}");
-                goto Step;
+                Console.WriteLine($"[DOTNET] Unexpected error: {ex.Message}");
                 return false;
             }
         }
+
+
 
         public static async Task<bool> DeleteEventAsync(string eventHash)
         {
