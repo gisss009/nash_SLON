@@ -18,4 +18,5 @@
     <Color x:Key="BackGroundColorEvent">#3D3D3D</Color>
     <x:String x:Key="LogoImage">slon.png</x:String>
     <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
+    <x:String x:Key="ImageButton">loon_dark_theme.png</x:String>
 </ResourceDictionary>

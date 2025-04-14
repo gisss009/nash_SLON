@@ -59,35 +59,14 @@
                          WidthRequest="65"
                          HeightRequest="35"
                          Clicked="OnButtonSettingsClicked"/>
-            <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Start" Margin="0,10,0,0">
-                <Border  Padding="-15" Margin="5,0,0,0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10,0,10,0"/>
-                    </Border.StrokeShape>
-                    <Button x:Name="BattonThemeDark"
-                            Text="Dark"
-                            FontSize="11"
-                            TextColor="White"
-                            BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
-                            CornerRadius="10"
-                            WidthRequest="65"
-                            HeightRequest="35"
-                            Clicked="OnDarkClicked"/>
-                </Border>
-                <Border Padding="-15" Margin="0,0,0,0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="0,10,0,10"/>
-                    </Border.StrokeShape>
-                    <Button x:Name="BattonThemeLight"
-                            Text="Light"
-                            FontSize="11"
-                            TextColor="White"
-                            BackgroundColor="#292929"
-                            CornerRadius="10"
-                            WidthRequest="65"
-                            HeightRequest="35"
-                            Clicked="OnLightClicked"/>
-                </Border>
+            <HorizontalStackLayout HorizontalOptions="Start">
+                <ImageButton Source="{DynamicResource ImageButton}"
+                         HeightRequest="45"
+                         WidthRequest="55"
+                         CornerRadius="0"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Clicked="OnImageButtonClicked"/>
             </HorizontalStackLayout>
         </Grid>
 

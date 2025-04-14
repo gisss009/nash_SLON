@@ -6,6 +6,7 @@ using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using Microsoft.Maui.Layouts;
 
 namespace SLON
 {
@@ -476,27 +477,24 @@ namespace SLON
             Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
         }
 
-        public void OnDarkClicked(object sender, EventArgs e)
+        bool theme = true;
+        public void OnImageButtonClicked(object sender, EventArgs e)
         {
             ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
             if (mergedDictionaries != null)
             {
-                mergedDictionaries.Clear();
-                mergedDictionaries.Add(new DarkTheme());
-                BattonThemeDark.BackgroundColor = Color.FromArgb("#915AC5");
-                BattonThemeLight.BackgroundColor = Color.FromArgb("#292929");
-            }
-        }
-
-        public void OnLightClicked(object sender, EventArgs e)
-        {
-            ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
-            if (mergedDictionaries != null)
-            {
-                mergedDictionaries.Clear();
-                mergedDictionaries.Add(new LightTheme());
-                BattonThemeLight.BackgroundColor = Color.FromArgb("#915AC5");
-                BattonThemeDark.BackgroundColor = Color.FromArgb("#292929");
+                if (theme)
+                {
+                    mergedDictionaries.Clear();
+                    mergedDictionaries.Add(new LightTheme());
+                    theme = false;
+                }
+                else
+                {
+                    mergedDictionaries.Clear();
+                    mergedDictionaries.Add(new DarkTheme());
+                    theme = true;
+                }
             }
         }
     }

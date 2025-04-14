@@ -18,4 +18,6 @@
     <Color x:Key="BackGroundColorEvent">#C36FCE</Color>
     <x:String x:Key="LogoImage">slon_light.png</x:String>
     <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
+    <x:String x:Key="ImageButton">sun_light_theme.png</x:String>
+    
 </ResourceDictionary>
