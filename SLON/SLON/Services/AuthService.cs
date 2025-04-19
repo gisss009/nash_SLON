@@ -72,7 +72,6 @@ namespace SLON.Services
                     string url = $"http://139.28.223.134:5000/is_username_and_password_correct?username={username}&password={password}";
                     HttpResponseMessage response = await _httpClient.GetAsync(url);
                     string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
 
                     var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
                     if (jsonResponse != null && jsonResponse.response.HasValue)
@@ -109,7 +108,6 @@ namespace SLON.Services
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
 
                 var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
@@ -194,14 +192,13 @@ namespace SLON.Services
                     if (response.IsSuccessStatusCode)
                     {
                         string responseBody = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine(responseBody);
 
                         var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
                         if (jsonResponse != null && jsonResponse.ok && jsonResponse.response.HasValue)
                         {
                             var userProfile = JsonSerializer.Deserialize<UserProfile>(jsonResponse.response.Value.ToString());
-                            Console.WriteLine($"Received JSON: {responseBody}");
+                            //Console.WriteLine($"Received JSON: {responseBody}");
                             return userProfile;
                         }
                         else
@@ -260,7 +257,7 @@ namespace SLON.Services
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Server Response: {responseBody}");
+                    //Console.WriteLine($"Server Response: {responseBody}");
 
                     var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 

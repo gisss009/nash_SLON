@@ -1,14 +1,21 @@
 ﻿using Microsoft.Maui.Controls;
+using SLON.Models;
 using SLON.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SLON
 {
-    public partial class Profile : ContentPage
+    public partial class Profile : ContentPage, IQueryAttributable
     {
+        private string _fromPage = string.Empty;
+        private string _requestedUsername = string.Empty;
+        private AuthService.UserProfile _currentProfile;
+        private UserProfileEditModel _originalProfileData;
+
         private bool _isEditing = false;          // Режим редактирования профиля
         private bool _isEditingEvent = false;     // Режим редактирования события
         private bool _isCreatingEvent = false;    // Режим создания нового события
@@ -41,11 +48,15 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
-        private AuthService.UserProfile _currentProfile;
         public Profile()
         {
             InitializeComponent();
+            InitializePage();
+            
+        }
 
+        public void InitializePage()
+        {
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
@@ -54,48 +65,114 @@ namespace SLON
             MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
             InEventsButton.BackgroundColor = Colors.DarkGray;
 
-            events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent3", "Education", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
-            events.Add((Guid.NewGuid().ToString(), "In", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
+            //events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
             RefreshEventsUI();
         }
 
-        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("fromPage", out var fromPageObj))
+                _fromPage = fromPageObj?.ToString() ?? string.Empty;
+
+            if (query.TryGetValue("username", out var userObj))
+                _requestedUsername = userObj?.ToString() ?? string.Empty;
+        }
+
+        // Этот метод вызовется при каждом заходе на страницу через Shell
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
-
-            try
+            if (_fromPage == "FavoritesPage")
             {
-                var username = AuthService.GetUsernameAsync();
-                _currentProfile = await AuthService.GetUserProfileAsync(username);
+                UsernameLabel.GestureRecognizers.Clear();
+                EditIcon.IsVisible = false;
+                AddEventIcon.IsVisible = false;
+                EventsToggleLayout.IsVisible = false;
 
-                if (_currentProfile == null)
+                Shell.SetTabBarIsVisible(this, false);
+                var titleGrid = new Grid
                 {
-                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK");
-                    return;
-                }
-
-                // Инициализируем оригинальные данные
-                _originalProfileData = new UserProfileEditModel
-                {
-                    Name = _currentProfile.name ?? "",
-                    Surname = _currentProfile.surname ?? "",
-                    Vocation = _currentProfile.vocation ?? "",
-                    Description = _currentProfile.description ?? "",
-                    Categories = _currentProfile.categories ?? new List<string>()
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    VerticalOptions = LayoutOptions.FillAndExpand,
                 };
 
-                UpdateProfileUI(_currentProfile);
-                await LoadAndRefreshEvents(username);
+                titleGrid.Children.Add(new Label
+                {
+                    Text = $"@{_requestedUsername}",
+                    FontSize = 20,
+                    TextColor = Colors.White,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center
+                });
+
+                Shell.SetTitleView(this, titleGrid);
             }
-            catch (Exception ex)
+
+            _ = LoadProfileAsync();
+        }
+
+        private async Task LoadProfileAsync()
+        {
+            // 1) Решаем, кого грузим:
+            string usernameToLoad =
+                _fromPage == "FavoritesPage" && !string.IsNullOrWhiteSpace(_requestedUsername)
+                ? _requestedUsername
+                : AuthService.GetUsernameAsync();
+
+            // 2) Получаем профиль
+            var profile = await AuthService.GetUserProfileAsync(usernameToLoad);
+            _currentProfile = profile;
+
+            foreach (var item in profile.categories)
             {
-                Console.WriteLine($"Ошибка при загрузке данных: {ex}");
-                await DisplayAlert("Ошибка", "Произошла ошибка при загрузке данных", "OK");
+                Console.WriteLine(item);
             }
+            if (profile == null)
+            {
+                // Показ ошибки тоже в UI-потоке
+                MainThread.BeginInvokeOnMainThread(async () =>
+                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK"));
+                return;
+            }
+
+            Console.WriteLine(profile.username);
+            // 3) Получаем события (только данные, не трогаем UI)
+            var eventsData = await AuthService.GetAllUserEventsAsync(usernameToLoad);
+
+            // 4) Всё готово — разово обновляем UI на главном потоке:
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                // Back‑кнопка
+                NavigationPage.SetBackButtonTitle(this, "@" + usernameToLoad);
+
+                // Профиль
+                ExitAccIcon.IsVisible = usernameToLoad == AuthService.GetUsernameAsync();
+                UsernameLabel.Text = profile.username;
+                NameInput.Text = profile.name;
+                SurnameInput.Text = profile.surname;
+                VocationInput.Text = profile.vocation;
+                ResumeEditor.Text = profile.description;
+
+                _originalProfileData = new UserProfileEditModel
+                {
+                    Name = profile.name,
+                    Surname = profile.surname,
+                    Vocation = profile.vocation,
+                    Description = profile.description,
+                    Categories = profile.categories ?? new()
+                };
+
+                UpdateProfileUI(profile);
+                LoadAndRefreshEvents(usernameToLoad);
+            });
+
+        }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            Console.WriteLine(_fromPage);
+            bool isForeign = _fromPage == "FavoritesPage";
+            Shell.SetTabBarIsVisible(this, !isForeign);
         }
 
         private async void OnUsernameTapped(object sender, EventArgs e)
@@ -156,16 +233,15 @@ namespace SLON
             public string Description { get; set; }
             public List<string> Categories { get; set; }
         }
-        private UserProfileEditModel _originalProfileData;
 
         private void UpdateProfileUI(AuthService.UserProfile profile)
         {
             UsernameLabel.Text = profile?.username ?? "";
-            NameInput.Text = profile?.name ?? "";
-            SurnameInput.Text = profile?.surname ?? "";
-            VocationInput.Text = profile?.vocation ?? "";
-            ResumeEditor.Text = profile?.description ?? "";
-
+            NameInput.Text = profile?.name ?? "Is empty :(";
+            SurnameInput.Text = profile?.surname ?? "Is empty :(";
+            VocationInput.Text = profile?.vocation ?? "Is empty :(";
+            ResumeEditor.Text = profile?.description ?? "Is empty :(";
+            
             RefreshCategoriesUI(profile);
         }
 
@@ -462,10 +538,14 @@ namespace SLON
             _isEditingEvent = false;
             ResetEventPopup();
             EventPopup.IsVisible = true;
+
+            
         }
 
         private void ResetEventPopup()
         {
+            bool _isMyEvent = _fromPage == "FavoritesPage";
+
             EventNameInput.Text = string.Empty;
             EventDescriptionInput.Text = string.Empty;
             EventLocationInput.Text = string.Empty;
@@ -501,6 +581,7 @@ namespace SLON
             _originalEventHash = string.Empty;  
 
             EventPopupHeaderLabel.Text = "Create event card";
+
         }
 
 
@@ -958,8 +1039,11 @@ namespace SLON
             }
             else
             {
-                SaveEventButton.IsVisible = true;
-                DeleteEventButton.IsVisible = !_isCreatingEvent;
+                // костыль?
+                bool isForeign = _fromPage == "FavoritesPage";
+
+                SaveEventButton.IsVisible = !isForeign;
+                DeleteEventButton.IsVisible = isForeign ? false : !_isCreatingEvent;
                 _isEditingEvent = false;
                 SaveEventButton.Source = "edit_icon.png";
                 UpdateEventPopupUI();

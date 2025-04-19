@@ -29,7 +29,11 @@
                             <!-- Горизонтальный контейнер с иконкой и именем пользователя -->
                             <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
                                 <!-- Иконка выхода -->
-                                <Image Source="exit_acc_icon.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
+                                <Image x:Name="ExitAccIcon" 
+                                        Source="exit_acc_icon.png" 
+                                        HeightRequest="16" 
+                                        WidthRequest="16" 
+                                        VerticalOptions="Center">
                                     <Image.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnUsernameTapped"/>
                                     </Image.GestureRecognizers>
@@ -171,8 +175,8 @@
                                    TextColor="White"
                                    VerticalOptions="Center"
                                    HorizontalOptions="Start"/>
-                            
-                            <HorizontalStackLayout HorizontalOptions="End" Grid.Column="1">
+
+                            <HorizontalStackLayout x:Name ="EventsToggleLayout" HorizontalOptions="End" Grid.Column="1">
                                 <Border Padding="-10" Margin="0,5,0,0">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
