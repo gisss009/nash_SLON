@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Microsoft.Maui.Controls;
 
 namespace SLON.Models
 {
@@ -16,7 +17,7 @@ namespace SLON.Models
         public List<User> AddedParticipants { get; set; } = new();
         public string DateRange => $"{StartDate:dd.MM.yyyy} - {EndDate:dd.MM.yyyy}";
 
-        private Color _cardColor = Color.FromArgb("#292929");
+        private Color _cardColor;
         public Color CardColor
         {
             get => _cardColor;
@@ -31,8 +32,6 @@ namespace SLON.Models
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public Event(int id, string name, List<string> categories, string info, string place, bool is_public, bool is_online)
         {
@@ -43,9 +42,29 @@ namespace SLON.Models
             Place = place;
             IsPublic = is_public;
             IsOnline = is_online;
+
+            UpdateCardColor();
+            Application.Current.RequestedThemeChanged += (s, e) => UpdateCardColor();
         }
 
+        private void UpdateCardColor()
+        {
+            if (Application.Current.Resources.TryGetValue("CardBackgroundColor", out var color))
+            {
+                CardColor = (Color)color;
+            }
+            else
+            {
+                // Fallback цвета если ресурс не найден
+                CardColor = Application.Current.UserAppTheme == AppTheme.Dark
+                    ? Color.FromArgb("#292929")
+                    : Colors.White;
+            }
+        }
 
+        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
-
 }

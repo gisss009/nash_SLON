@@ -19,5 +19,13 @@
     <x:String x:Key="LogoImage">slon_light.png</x:String>
     <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
     <x:String x:Key="ImageButton">sun_light_theme.png</x:String>
-    
+
+    <!-- Для файла Main-->
+    <Color x:Key="BackGroundColorMain">#F5F5F5</Color>
+    <Color x:Key="TextColorMain">#333333</Color>
+    <Color x:Key="ButtonColorMain">#CFCFCF</Color>
+    <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
+    <Color x:Key="ButtonTextColorMain">White</Color>
+    <Color x:Key="CardColorMain">White</Color>
+
 </ResourceDictionary>

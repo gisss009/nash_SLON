@@ -19,4 +19,13 @@
     <x:String x:Key="LogoImage">slon.png</x:String>
     <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
     <x:String x:Key="ImageButton">loon_dark_theme.png</x:String>
+
+    <!-- Для файла Main-->
+    <Color x:Key="BackGroundColorMain">Black</Color>
+    <Color x:Key="TextColorMain">White</Color>
+    <Color x:Key="ButtonColorMain">#292929</Color>
+    <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
+    <Color x:Key="ButtonTextColorMain">White</Color>
+    <Color x:Key="CardColorMain">#292929</Color>
+
 </ResourceDictionary>
