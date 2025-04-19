@@ -20,7 +20,6 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    
     <StackLayout Padding="10">
         <Grid>
             <ImageButton Source="Resources/Images/lupa.png"
@@ -77,7 +76,6 @@
             </HorizontalStackLayout>
         </Grid>
 
-        
         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
             <!-- SwipeCardView для карточек пользователей -->
             <swipeCardView:SwipeCardView x:Name="swipeCardView" 
@@ -98,7 +96,7 @@
                                    Padding="20"
                                    Margin="0,20,0,30"
                                    InputTransparent="True"
-                                   BorderColor="#44414B">
+                                   BorderColor="{DynamicResource CardBorderColor}">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
                                         <Grid>
@@ -129,14 +127,13 @@
                                             <DataTemplate>
                                                 <Frame Padding="10,5"
                                                        CornerRadius="20"
-                                                       BorderColor="#44414B"
                                                        HasShadow="False"
                                                        Margin="1"
                                                        BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
                                                        MinimumWidthRequest="100"
                                                        HorizontalOptions="Start">
                                                     <Label Text="{Binding}" 
-                                                           TextColor="{DynamicResource TextColorMain}" 
+                                                           TextColor="{DynamicResource ButtonTextColorMain}" 
                                                            FontSize="16" 
                                                            FontAttributes="Bold"
                                                            HorizontalTextAlignment="Center"
@@ -146,11 +143,11 @@
                                         </BindableLayout.ItemTemplate>
                                     </FlexLayout>
                                     <Label Text="Skills" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}">
                                         <Label Text="{Binding Skills}" TextColor="{DynamicResource TextColorMain}" FontSize="16" />
                                     </Frame>
                                     <Label Text="Info" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}">
                                         <Label Text="{Binding Info}" TextColor="{DynamicResource TextColorMain}" FontSize="16" />
                                     </Frame>
                                 </VerticalStackLayout>
@@ -179,7 +176,7 @@
                                    Padding="20"
                                    Margin="0,20,0,30"
                                    InputTransparent="True"
-                                   BorderColor="#44414B">
+                                   BorderColor="{DynamicResource CardBorderColor}">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <Label Text="{Binding Name}" TextColor="{DynamicResource TextColorMain}" FontSize="22" FontAttributes="Bold"
                                            HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
@@ -192,14 +189,13 @@
                                             <DataTemplate>
                                                 <Frame Padding="10,5"
                                                        CornerRadius="20"
-                                                       BorderColor="#44414B"
                                                        HasShadow="False"
                                                        Margin="1"
                                                        BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
                                                        MinimumWidthRequest="100"
                                                        HorizontalOptions="Start">
                                                     <Label Text="{Binding}" 
-                                                           TextColor="{DynamicResource TextColorMain}" 
+                                                           TextColor="{DynamicResource ButtonTextColorMain}" 
                                                            FontSize="16" 
                                                            FontAttributes="Bold"
                                                            HorizontalTextAlignment="Center"
@@ -209,11 +205,11 @@
                                         </BindableLayout.ItemTemplate>
                                     </FlexLayout>
                                     <Label Text="Location" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}">
                                         <Label Text="{Binding Place}" TextColor="{DynamicResource TextColorMain}" FontSize="17" />
                                     </Frame>
                                     <Label Text="Info" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}">
                                         <Label Text="{Binding Info}" TextColor="{DynamicResource TextColorMain}" FontSize="17" />
                                     </Frame>
                                 </VerticalStackLayout>

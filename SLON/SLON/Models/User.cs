@@ -6,16 +6,16 @@ namespace SLON.Models
     {
         public string Username { get; set; }
         public int Id { get; set; }
-        public string Name { get; set; }       
-        public new List<string> Tags { get; set; }       
-        public string Vocation { get; set; }   
-        public string Info { get; set; }     
-        public string Skills { get; set; }     
+        public string Name { get; set; }
+        public new List<string> Tags { get; set; }
+        public string Vocation { get; set; }
+        public string Info { get; set; }
+        public string Skills { get; set; }
         public bool IsMutual { get; set; }     // Если true - во "взаимных"
         public bool IsAcceptedMe { get; set; } // Принял ли он меня
         public bool IsILikedHim { get; set; }  // Лайкнул ли я его
 
-        private Color _cardColor = Color.FromArgb("#292929"); // исходный цвет
+        private Color _cardColor = (Color)Application.Current.Resources["CardBackgroundColor"]; // исходный цвет
         public Color CardColor
         {
             get => _cardColor;
@@ -28,6 +28,7 @@ namespace SLON.Models
                 }
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
@@ -44,7 +45,26 @@ namespace SLON.Models
             IsMutual = false;
             IsAcceptedMe = false;
             IsILikedHim = false;
+
+            // Инициализация цвета карточки
+            UpdateCardColor();
+
+            // Подписка на смену темы
+            Application.Current.RequestedThemeChanged += (s, e) => UpdateCardColor();
         }
 
+        public void UpdateCardColor()
+        {
+            // Используем TryGetValue для безопасного получения ресурса
+            if (Application.Current.Resources.TryGetValue("CardBackgroundColor", out var color))
+            {
+                CardColor = (Color)color;
+            }
+            else
+            {
+                // Fallback-цвет, если ресурс не найден
+                CardColor = Color.FromArgb("#292929");
+            }
+        }
     }
 }

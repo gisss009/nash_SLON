@@ -26,6 +26,8 @@
     <Color x:Key="ButtonColorMain">#292929</Color>
     <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
     <Color x:Key="ButtonTextColorMain">White</Color>
-    <Color x:Key="CardColorMain">#292929</Color>
+    <Color x:Key="CardBackgroundColor">#292929</Color>
+    <Color x:Key="CardBorderColor">#44414B</Color>
+    <Color x:Key="BoxesColor">#44414B</Color>
 
 </ResourceDictionary>

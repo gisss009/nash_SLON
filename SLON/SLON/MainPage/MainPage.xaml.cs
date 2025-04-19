@@ -33,7 +33,7 @@ namespace SLON
 
         private void OnDragging(object sender, DraggingCardEventArgs e)
         {
-            var defaultCardColor = (Color)Application.Current.Resources["CardColorMain"];
+            var defaultCardColor = (Color)Application.Current.Resources["CardBackgroundColor"];
 
             if (e.Item is User user)
             {
@@ -457,6 +457,8 @@ namespace SLON
             Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
         }
 
+        
+
         bool theme = true;
 
         public void OnImageButtonClicked(object sender, EventArgs e)
@@ -475,8 +477,19 @@ namespace SLON
                 }
                 theme = !theme;
 
-                // Обновляем кнопки после смены темы
-                UpdateActiveButton();
+                // Задержка для применения темы
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    //await Task.Delay(10); // Даём время на обновление ресурсов
+                    foreach (var user in Users)
+                    {
+                        user.UpdateCardColor();
+                    }
+                    foreach (var ev in Events)
+                    {
+                        ev.UpdateCardColor();
+                    }
+                });
             }
         }
 
