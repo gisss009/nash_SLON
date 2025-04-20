@@ -457,7 +457,7 @@ namespace SLON
             Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
         }
 
-        
+
 
         bool theme = true;
 
@@ -477,10 +477,12 @@ namespace SLON
                 }
                 theme = !theme;
 
-                // Задержка для применения темы
+                // Принудительно обновляем цвета кнопок
+                UpdateButtonColors();
+
+                // Обновляем цвета карточек
                 Device.BeginInvokeOnMainThread(async () =>
                 {
-                    //await Task.Delay(10); // Даём время на обновление ресурсов
                     foreach (var user in Users)
                     {
                         user.UpdateCardColor();
@@ -493,23 +495,31 @@ namespace SLON
             }
         }
 
+        private void UpdateButtonColors()
+        {
+            // Обновляем цвета на основе текущего состояния
+            if (ProfilesEventsButtonStatus == 1)
+            {
+                EventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                ProfilesButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+            }
+            else
+            {
+                ProfilesButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                EventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+            }
+        }
+
         private void UpdateActiveButton()
         {
             if (ProfilesEventsButtonStatus == 1)
             {
-                SetActiveButton(EventsButton, ProfilesButton);
+                OnButtonClicked(EventsButton, null);
             }
             else
             {
-                SetActiveButton(ProfilesButton, EventsButton);
+                OnButtonClicked(ProfilesButton, null);
             }
-        }
-
-        private void SetActiveButton(Button activeButton, Button inactiveButton)
-        {
-            // Используем ресурсы вместо жёстких цветов
-            activeButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
-            inactiveButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
         }
 
         public void OnEventsButtonClicked(object sender, EventArgs e)
@@ -517,8 +527,7 @@ namespace SLON
             if (ProfilesEventsButtonStatus == 1) return;
             ProfilesEventsButtonStatus = 1;
 
-            SetActiveButton(EventsButton, ProfilesButton);
-
+            UpdateButtonColors();
             swipeCardView.IsVisible = false;
             swipeCardViewEvent.IsVisible = true;
         }
@@ -528,11 +537,12 @@ namespace SLON
             if (ProfilesEventsButtonStatus == 0) return;
             ProfilesEventsButtonStatus = 0;
 
-            SetActiveButton(ProfilesButton, EventsButton);
-
+            UpdateButtonColors();
             swipeCardView.IsVisible = true;
             swipeCardViewEvent.IsVisible = false;
         }
+
+        
 
 
 

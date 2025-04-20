@@ -21,13 +21,30 @@
     <x:String x:Key="ImageButton">loon_dark_theme.png</x:String>
 
     <!-- Для файла Main-->
+    
+    <!-- Цвет заднего плана-->
     <Color x:Key="BackGroundColorMain">Black</Color>
+    <!-- Цвет текста-->
     <Color x:Key="TextColorMain">White</Color>
+    <!-- Цвет пассивной кнопки профили ивенты-->
     <Color x:Key="ButtonColorMain">#292929</Color>
+    <!-- Цвет активной кнопки профили ивенты-->
     <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
+    <!-- Цвет текста на кнопках-->
     <Color x:Key="ButtonTextColorMain">White</Color>
+    <!-- Цвет заднего плана карточек-->
     <Color x:Key="CardBackgroundColor">#292929</Color>
+    <!-- Цвет обводок карточек-->
     <Color x:Key="CardBorderColor">#44414B</Color>
+    <!-- Цвет для заднего плана текста в инфо скилс-->
     <Color x:Key="BoxesColor">#44414B</Color>
-
+    <!-- Цвет обводки кнопок в настройках -->
+    <Color x:Key="ButtonSettingsBorderColor">White</Color>
+    <!-- Иконка шестеренки -->
+    <x:String x:Key="SettingsImage">settings_dark_theme.png</x:String>
+    <!-- Цвет обводки кнопок категорий-->
+    <Color x:Key="ButtonCatsBorderColor">#D3D3D3</Color>
+    <!-- Цвет пассивных кнопок категорий-->
+    <Color x:Key="ButtonCatsColor">#6D6D6D</Color>
+    
 </ResourceDictionary>

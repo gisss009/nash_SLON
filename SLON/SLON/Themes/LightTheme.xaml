@@ -20,14 +20,32 @@
     <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
     <x:String x:Key="ImageButton">sun_light_theme.png</x:String>
 
+    
     <!-- Для файла Main-->
-    <Color x:Key="BackGroundColorMain">#F5F5F5</Color>
-    <Color x:Key="TextColorMain">#333333</Color>
-    <Color x:Key="ButtonColorMain">#BDBDBD</Color>
-    <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
-    <Color x:Key="ButtonTextColorMain">White</Color>
-    <Color x:Key="CardBackgroundColor">White</Color>
-    <Color x:Key="CardBorderColor">#D8D8D8</Color>
-    <Color x:Key="BoxesColor">#EFEFEF</Color>
 
+    <!-- Цвет заднего плана-->
+    <Color x:Key="BackGroundColorMain">#F5F5F5</Color>
+    <!-- Цвет текста-->
+    <Color x:Key="TextColorMain">#333333</Color>
+    <!-- Цвет пассивной кнопки профили ивенты-->
+    <Color x:Key="ButtonColorMain">#B9B9B9</Color>
+    <!-- Цвет активной кнопки профили ивенты-->
+    <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
+    <!-- Цвет текста на кнопках-->
+    <Color x:Key="ButtonTextColorMain">White</Color>
+    <!-- Цвет заднего плана карточек-->
+    <Color x:Key="CardBackgroundColor">White</Color>
+    <!-- Цвет обводок карточек-->
+    <Color x:Key="CardBorderColor">#D8D8D8</Color>
+    <!-- Цвет для заднего плана текста в инфо скилс-->
+    <Color x:Key="BoxesColor">#EFEFEF</Color>
+    <!-- Цвет обводки кнопок в настройках -->
+    <Color x:Key="ButtonSettingsBorderColor">#292929</Color>
+    <!-- Иконка шестеренки -->
+    <x:String x:Key="SettingsImage">settings_light_theme.png</x:String>
+    <!-- Цвет обводки кнопок категорий-->
+    <Color x:Key="ButtonCatsBorderColor">#D3D3D3</Color>
+    <!-- Цвет пассивных кнопок категорий-->
+    <Color x:Key="ButtonCatsColor">#B9B9B9</Color>
+    
 </ResourceDictionary>

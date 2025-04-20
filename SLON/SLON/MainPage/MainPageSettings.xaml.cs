@@ -62,11 +62,14 @@ namespace SLON
                     HeightRequest = 50,
                     Padding = new Thickness(10, 5),
                     Margin = new Thickness(5),
-                    BorderColor = Colors.LightGray,
                     BorderWidth = 1,
                     BackgroundColor = (mainPage.ProfilesEventsButtonStatus == 0
-                        ? (tempSelectedUserCategories.Contains(category) ? GetCategoryColor(category) : Color.FromRgb(129, 129, 129))
-                        : (tempSelectedEventCategories.Contains(category) ? GetCategoryColor(category) : Color.FromRgb(129, 129, 129)))
+            ? (tempSelectedUserCategories.Contains(category)
+                ? GetCategoryColor(category)
+                : (Color)Application.Current.Resources["ButtonCatsColor"])
+            : (tempSelectedEventCategories.Contains(category)
+                ? GetCategoryColor(category)
+                : (Color)Application.Current.Resources["ButtonCatsColor"]))
                 };
 
                 button.Clicked += OnCategorySelected;
@@ -146,23 +149,23 @@ namespace SLON
                 switch (button.Text)
                 {
                     case "Online":
-                        OnlineEvent.BackgroundColor = Color.FromArgb("#8E44AD");
-                        OfflineEvent.BackgroundColor = Color.FromArgb("#292929");
+                        OnlineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                        OfflineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
                         tempSelectedEventIsOnline = true;
                         break;
                     case "Offline":
-                        OfflineEvent.BackgroundColor = Color.FromArgb("#8E44AD");
-                        OnlineEvent.BackgroundColor = Color.FromArgb("#292929");
+                        OfflineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                        OnlineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
                         tempSelectedEventIsOnline = false;
                         break;
                     case "Public":
-                        PublicEvent.BackgroundColor = Color.FromArgb("#8E44AD");
-                        PrivateEvent.BackgroundColor = Color.FromArgb("#292929");
+                        PublicEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                        PrivateEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
                         tempSelectedEventIsPublic = true;
                         break;
                     case "Private":
-                        PrivateEvent.BackgroundColor = Color.FromArgb("#8E44AD");
-                        PublicEvent.BackgroundColor = Color.FromArgb("#292929");
+                        PrivateEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                        PublicEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
                         tempSelectedEventIsPublic = false;
                         break;
                 }
@@ -183,7 +186,7 @@ namespace SLON
                     }
                     else
                     {
-                        button.BackgroundColor = Color.FromRgb(129, 129, 129);
+                        button.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
                         tempSelectedUserCategories.Remove(category);
                     }
                     Debug.WriteLine("Temp selected user categories: " + string.Join(", ", tempSelectedUserCategories));
@@ -197,7 +200,7 @@ namespace SLON
                     }
                     else
                     {
-                        button.BackgroundColor = Color.FromRgb(129, 129, 129);
+                        button.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
                         tempSelectedEventCategories.Remove(category);
                     }
                     Debug.WriteLine("Temp selected event categories: " + string.Join(", ", tempSelectedEventCategories));

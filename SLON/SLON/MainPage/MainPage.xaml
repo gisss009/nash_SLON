@@ -58,9 +58,9 @@
                             Clicked="OnProfilesButtonClicked"/>
                 </Border>
             </HorizontalStackLayout>
-            
-            
-            <ImageButton Source="Resources/Images/settings.png"
+
+
+            <ImageButton Source="{DynamicResource SettingsImage}"
                          HorizontalOptions="End"
                          WidthRequest="65"
                          HeightRequest="35"
