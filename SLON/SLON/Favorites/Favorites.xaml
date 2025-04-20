@@ -187,15 +187,24 @@
                                     <Image Source="{Binding IconSource}"
                                            WidthRequest="50"
                                            HeightRequest="50"/>
-                                    <VerticalStackLayout>
+                                    <VerticalStackLayout HorizontalOptions="FillAndExpand" Spacing="2">
+                                        <!-- Title (Name + Surname) -->
                                         <Label Text="{Binding Title}" 
                                                TextColor="White"
                                                FontSize="16"
-                                               FontAttributes="Bold"/>
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="1"
+                                               HorizontalOptions="StartAndExpand" />
+                                        <!-- Subtitle (Vocation) -->
                                         <Label Text="{Binding Subtitle}" 
                                                TextColor="White" 
-                                               FontSize="14"/>
+                                               FontSize="14"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="1"
+                                               HorizontalOptions="StartAndExpand" />
                                     </VerticalStackLayout>
+
                                 </StackLayout>
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnItemTapped"/>

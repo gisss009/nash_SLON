@@ -142,8 +142,9 @@ namespace SLON.Services
             public string mail { get; set; }
             public string vocation { get; set; }
             public Dictionary<string, string> tags { get; set; }
-            public Dictionary<string, string> skills { get; set; } 
+            public Dictionary<string, string> skills { get; set; }
         }
+
 
         public static async Task<bool> UpdateProfileCategory(string username, string category,
     string tags, string skills)
@@ -574,7 +575,7 @@ namespace SLON.Services
 
         public static async Task<List<User>> GetSwipedUsersAsync(string username)
         {
-            step:
+        step:
             try
             {
                 string url = $"http://139.28.223.134:5000/users/get_swiped_users?username={Uri.EscapeDataString(username)}";
@@ -591,10 +592,11 @@ namespace SLON.Services
                     return usersData.Select(u => new User(
                         username: u.username,
                         name: u.name,
-                        tags: default(List<string>), // tak kak eto zdez ne vazhno
+                        surname: u.surname, // Фамилия теперь передаётся
+                        tags: new List<string>(),  // Если теги не нужны, оставляем по умолчанию
                         vocation: u.vocation,
                         info: u.info,
-                        skills: default(string) // tak kak eto zdez ne vazhno
+                        skills: ""  // При необходимости можно передать навыки
                     )
                     {
                         IsMutual = u.is_mutual,
@@ -613,15 +615,18 @@ namespace SLON.Services
             }
         }
 
+
         public class UserData
         {
             public string username { get; set; }
             public string name { get; set; }
+            public string surname { get; set; }  // Добавлено поле фамилии
             public string vocation { get; set; }
             public string info { get; set; }
             public bool is_mutual { get; set; }
             public bool is_accepted_me { get; set; }
             public bool is_i_liked_him { get; set; }
         }
+
     }
 }

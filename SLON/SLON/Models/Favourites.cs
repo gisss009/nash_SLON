@@ -1,5 +1,6 @@
 ﻿using SLON.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace SLON.Models
 {
@@ -19,64 +20,48 @@ namespace SLON.Models
         // Список тех, кто меня уже принял (Accepted)
         public static ObservableCollection<User> accepted { get; set; } = new();
 
+        // Флаг начальной инициализации, если требуется
         private static bool _initialized = false;
 
         static Favourites()
         {
-            InitializeTestData();
+            // Инициализация может выполняться здесь, но актуальное обновление должно происходить отдельно.
+            // InitializeTestData(); // Если тестовые данные нужны в режиме отладки
         }
 
-        private async static void InitializeTestData()
+        /// <summary>
+        /// Очищает все локальные списки избранного.
+        /// Вызывается при выходе из аккаунта.
+        /// </summary>
+        public static void ResetFavorites()
         {
-            favorites = await AuthService.GetSwipedUsersAsync(AuthService.GetUsernameAsync());
-
-            if (_initialized) return;
-            _initialized = true;
-
-            // Пример: Пользователи, которые уже меня приняли (Accepted)
-            // Считаем, что у нас уже есть взаимный лайк (Mutual)
-            var userA = new User("ivanpertov", "Ivan Petrov", new List<string> { "IT", "Business" }, "DevOps Engineer", "Some info about Ivan", "Docker, Kubernetes")
-            {
-                IsAcceptedMe = true,
-                IsMutual = true      
-            };
-            var userB = new User("annakim", "Anna Kim", new List<string> { "Creation", "Education" }, "Content Writer", "Some info about Anna", "Copywriting, Blogging")
-            {
-                IsAcceptedMe = true,
-                IsMutual = true
-            };
-            var userC = new User("zoecarter", "Zoe Carter", new List<string> { "Business" }, "Marketing Manager", "Some info about Zoe", "SMM, SEO")
-            {
-                IsAcceptedMe = true,
-                IsMutual = true
-            };
-
-            accepted.Add(userA);
-            accepted.Add(userB);
-            accepted.Add(userC);
-
-            mutual.Add(userA);
-            mutual.Add(userB);
-            mutual.Add(userC);
-
-            // Пример: Пользователи, которые меня запросили (Requests)
-            // Они хотят, чтобы я их принял (Accept).
-            var userR1 = new User("peterjohnson", "Peter Johnson", new List<string> { "Business", "Education" }, "Project Manager", "Some info about Peter", "Scrum, Agile")
-            {
-                IsILikedHim = false // он меня лайкнул, а я его нет
-            };
-            var userR2 = new User("elemwilson", "Elena Wilson", new List<string> { "IT", "Creation" }, "UI/UX Designer", "Some info about Elena", "Figma, Photoshop")
-            {
-                IsILikedHim = false
-            };
-            var userR3 = new User("tomjordan", "Tom Jordan", new List<string> { "IT" }, "Backend Dev", "Some info about Tom", "C#, .NET, SQL")
-            {
-                IsILikedHim = false
-            };
-
-            requests.Add(userR1);
-            requests.Add(userR2);
-            requests.Add(userR3);
+            favorites.Clear();
+            favoriteEvents.Clear();
+            mutual.Clear();
+            requests.Clear();
+            accepted.Clear();
         }
+
+        /// <summary>
+        /// Обновляет (перезагружает) избранное для текущего пользователя.
+        /// Вызывается после успешного входа/регистрации.
+        /// </summary>
+        public static async Task RefreshFavoritesAsync()
+        {
+            // Получаем актуальные свайпнутые пользователи для текущего аккаунта
+            var username = AuthService.GetUsernameAsync();
+            Debug.WriteLine($"[RefreshFavoritesAsync] Получен username: {username}");
+            var swiped = await AuthService.GetSwipedUsersAsync(username);
+            Debug.WriteLine($"[RefreshFavoritesAsync] Получено пользователей: {(swiped != null ? swiped.Count.ToString() : "null")}");
+
+            favorites = swiped ?? new List<User>();
+
+            // Выведите содержимое favorites, чтобы убедиться, что список не пустой, если сервер вернул данные.
+            foreach (var user in favorites)
+            {
+                Debug.WriteLine($"[RefreshFavoritesAsync] Пользователь: {user.Username} - {user.Name}");
+            }
+        }
+
     }
 }

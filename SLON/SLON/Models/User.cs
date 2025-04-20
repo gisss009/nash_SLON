@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Microsoft.Maui.Graphics;
 
 namespace SLON.Models
 {
@@ -6,16 +8,19 @@ namespace SLON.Models
     {
         public string Username { get; set; }
         public int Id { get; set; }
-        public string Name { get; set; }       
-        public new List<string> Tags { get; set; }       
-        public string Vocation { get; set; }   
-        public string Info { get; set; }     
-        public string Skills { get; set; }     
-        public bool IsMutual { get; set; }     // Если true - во "взаимных"
-        public bool IsAcceptedMe { get; set; } // Принял ли он меня
-        public bool IsILikedHim { get; set; }  // Лайкнул ли я его
+        public string Name { get; set; }
+        public string Surname { get; set; }  // Добавлено поле фамилии
 
-        private Color _cardColor = Color.FromArgb("#292929"); // исходный цвет
+        public new List<string> Tags { get; set; }
+        public string Vocation { get; set; }
+        public string Info { get; set; }
+        public string Skills { get; set; }
+
+        public bool IsMutual { get; set; }
+        public bool IsAcceptedMe { get; set; }
+        public bool IsILikedHim { get; set; }
+
+        private Color _cardColor = Color.FromArgb("#292929");
         public Color CardColor
         {
             get => _cardColor;
@@ -28,15 +33,19 @@ namespace SLON.Models
                 }
             }
         }
+        public string FullName => $"{Name} {Surname}";
+
 
         public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        public User(string username, string name, List<string> tags, string vocation, string info, string skills)
+        // Изменённый конструктор, который принимает фамилию
+        public User(string username, string name, string surname, List<string> tags, string vocation, string info, string skills)
         {
             Username = username;
             Name = name;
+            Surname = surname;
             Tags = tags;
             Vocation = vocation;
             Info = info;
@@ -45,6 +54,5 @@ namespace SLON.Models
             IsAcceptedMe = false;
             IsILikedHim = false;
         }
-
     }
 }

@@ -75,20 +75,6 @@ namespace SLON
         public async void FillUserCards()
         {
             Users.Clear();
-
-            // Добавляем тестовые карточки пользователей
-            //Users.Add(new User("alice", "Алиса Джигурда", new List<string> { "Art", "Design", "Innovation" }, "UI Designer", "Specialist in mobile app design", "Adobe XD, Figma, Photoshop"));
-            //Users.Add(new User("bob", "Bob Smith", new List<string> { "Management", "Programming" }, "Backend Developer", "Focused on high-performance APIs", "C#, .NET, SQL"));
-            //Users.Add(new User("carla", "Carla Perez", new List<string> { "Programming", "Cybersecurity" }, "Frontend Developer", "React expert with a focus on responsive design", "JavaScript, React, CSS"));
-            //Users.Add(new User("david", "David Lee", new List<string> { "Programming", "Cybersecurity" }, "Data Scientist", "Experienced in AI and machine learning", "Python, TensorFlow, PyTorch"));
-            //Users.Add(new User("emma", "Emma Brown", new List<string> { "Physics", "Cybersecurity" }, "Marketing Manager", "Specialist in social media campaigns", "SEO, Content Marketing, Google Ads"));
-            //Users.Add(new User("frank", "Frank Wilson", new List<string> { "Marketing", "Networking" }, "DevOps Engineer", "Focus on CI/CD pipelines", "Docker, Kubernetes, Jenkins"));
-            //Users.Add(new User("grace", "Grace Adams", new List<string> { "Management", "Marketing" }, "Project Manager", "Certified Scrum Master", "Agile, Scrum, Kanban"));
-            //Users.Add(new User("henry", "Henry Carter", new List<string> { "Programming", "Biology" }, "Blockchain Developer", "Expert in smart contracts", "Solidity, Ethereum, Web3"));
-            //Users.Add(new User("ivy", "Ivy Martinez", new List<string> { "Creativity", "Learning" }, "Content Writer", "Crafts engaging stories", "Copywriting, Blogging, SEO Writing"));
-            //Users.Add(new User("jack", "Jack Robinson", new List<string> { "AI", "Physics" }, "Cybersecurity Specialist", "Focus on network security", "Penetration Testing, Firewalls, Ethical Hacking"));
-            //Users.Add(new User("lara", "Lara Croft", new List<string> { "Fitness", "Football" }, "Adventurer", "Explorer and athlete", "Climbing, Parkour"));
-
             try
             {
                 Users.Clear();
@@ -135,14 +121,14 @@ namespace SLON
         private User CreateUserModel(AuthService.UserProfile profile)
         {
             var selectedCategories = Settings.selectedUserCategories.ToList();
-            bool noCategorySelected = selectedCategories.Count == 0; // Проверяем, выбраны ли категории
+            bool noCategorySelected = selectedCategories.Count == 0;
 
+            // Фильтрация тегов
             var filteredTags = new List<string>();
             if (profile.tags != null)
             {
                 if (noCategorySelected)
                 {
-                    // Если категории не выбраны, добавляем все теги из всех категорий
                     foreach (var tagList in profile.tags.Values)
                     {
                         filteredTags.AddRange(tagList.Split(',').Select(t => t.Trim()).Where(t => !string.IsNullOrEmpty(t)));
@@ -150,7 +136,6 @@ namespace SLON
                 }
                 else
                 {
-                    // Если категории выбраны, добавляем только теги из этих категорий
                     foreach (var category in selectedCategories)
                     {
                         if (profile.tags.ContainsKey(category))
@@ -161,12 +146,12 @@ namespace SLON
                 }
             }
 
+            // Фильтрация навыков
             var filteredSkills = new List<string>();
             if (profile.skills != null)
             {
                 if (noCategorySelected)
                 {
-                    // Если категории не выбраны, добавляем все навыки из всех категорий
                     foreach (var skillList in profile.skills.Values)
                     {
                         filteredSkills.AddRange(skillList.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)));
@@ -174,7 +159,6 @@ namespace SLON
                 }
                 else
                 {
-                    // Если категории выбраны, добавляем только навыки из этих категорий
                     foreach (var category in selectedCategories)
                     {
                         if (profile.skills.ContainsKey(category))
@@ -185,18 +169,18 @@ namespace SLON
                 }
             }
 
+            // Передаём отдельно имя и фамилию
             return new User(
                 username: profile.username,
-                name: $"{profile.name ?? ""} {profile.surname ?? ""}".Trim(),
+                name: profile.name ?? "",
+                surname: profile.surname ?? "",
                 tags: filteredTags,
                 vocation: profile.vocation ?? "Не указано",
                 info: profile.description ?? "Нет описания",
                 skills: string.Join(", ", filteredSkills)
-            )
-            {
-                Username = profile.username
-            };
+            );
         }
+
 
         private List<AuthService.UserProfile> FilterUsersByCategories( List<AuthService.UserProfile> users, List<string> selectedCategories)
         {

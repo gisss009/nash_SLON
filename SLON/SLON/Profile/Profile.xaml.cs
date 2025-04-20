@@ -54,12 +54,6 @@ namespace SLON
             MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
             InEventsButton.BackgroundColor = Colors.DarkGray;
 
-            events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent3", "Education", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
-            events.Add((Guid.NewGuid().ToString(), "In", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
             RefreshEventsUI();
         }
 
@@ -98,6 +92,7 @@ namespace SLON
             }
         }
 
+
         private async void OnUsernameTapped(object sender, EventArgs e)
         {
             string username = UsernameLabel.Text;
@@ -108,11 +103,17 @@ namespace SLON
             if (!confirm)
                 return;
 
+            // Очищаем учетные данные
             await AuthService.ClearCredentialsAsync();
             AuthService.SetAuthenticated(false);
 
+            // Очищаем локальные коллекции избранного
+            Models.Favourites.ResetFavorites();
+
+            // Переходим на экран авторизации
             Application.Current.MainPage = new NavigationPage(new AuthPage());
         }
+
 
 
         private async Task LoadAndRefreshEvents(string username)
