@@ -510,17 +510,6 @@ namespace SLON
             }
         }
 
-        private void UpdateActiveButton()
-        {
-            if (ProfilesEventsButtonStatus == 1)
-            {
-                OnButtonClicked(EventsButton, null);
-            }
-            else
-            {
-                OnButtonClicked(ProfilesButton, null);
-            }
-        }
 
         public void OnEventsButtonClicked(object sender, EventArgs e)
         {

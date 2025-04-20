@@ -8,8 +8,8 @@
     Title="SLON" BackgroundColor="#3C3C3C"
     
     Shell.ForegroundColor="White"
-    Shell.TabBarBackgroundColor="#1c1c1c"
-    Shell.TabBarForegroundColor="White"
+    Shell.TabBarBackgroundColor="{DynamicResource TabBarBGColor}"
+    Shell.TabBarForegroundColor="{DynamicResource TabBarFGColor}"
     Shell.TabBarTitleColor="White"
     Shell.TabBarUnselectedColor="Gray">
 

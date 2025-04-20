@@ -41,11 +41,22 @@
     <Color x:Key="BoxesColor">#EFEFEF</Color>
     <!-- Цвет обводки кнопок в настройках -->
     <Color x:Key="ButtonSettingsBorderColor">#292929</Color>
-    <!-- Иконка шестеренки -->
-    <x:String x:Key="SettingsImage">settings_light_theme.png</x:String>
     <!-- Цвет обводки кнопок категорий-->
     <Color x:Key="ButtonCatsBorderColor">#D3D3D3</Color>
     <!-- Цвет пассивных кнопок категорий-->
     <Color x:Key="ButtonCatsColor">#B9B9B9</Color>
     
+
+
+    <!-- Иконка шестеренки -->
+    <x:String x:Key="SettingsImage">settings_light_theme.png</x:String>
+    <!-- Иконка выбора даты -->
+    <x:String x:Key="DateTimeImage">data_time_light_theme.png</x:String>
+
+
+    <!-- Цвет нижней менюшки-->
+    <Color x:Key="TabBarBGColor">White</Color>
+    <!-- Цвет выбранной иконки в нижней менюшке -->
+    <Color x:Key="TabBarFGColor">#915AC5</Color>
+
 </ResourceDictionary>
