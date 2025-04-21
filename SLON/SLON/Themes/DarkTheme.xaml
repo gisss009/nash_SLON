@@ -57,5 +57,22 @@
     <Color x:Key="TabBarBGColor">#1c1c1c</Color>
     <!-- Цвет выбранной иконки в нижней менюшке -->
     <Color x:Key="TabBarFGColor">White</Color>
+    
+    
+
+
+    <!-- Для файла Profile -->
+
+    <!-- Цвет заднего плана-->
+    <Color x:Key="BackGroundColorProfile">Black</Color>
+    <!-- Цвет текста-->
+    <Color x:Key="TextColorProfile">White</Color>
+    <!-- Цвет блоков-->
+    <Color x:Key="BlockColorProfile">#292929</Color>
+    <!-- Цвет кнопки ShowAll-->
+    <Color x:Key="ShowAllProfile">DarkGray</Color>
+    <!-- Цвет ивентов-->
+    <Color x:Key="EventsColorProfile">#6D6D6D</Color>
+
 
 </ResourceDictionary>

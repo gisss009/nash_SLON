@@ -852,7 +852,7 @@ namespace SLON
             var frame = new Frame
             {
                 AutomationId = eventHash,
-                BackgroundColor = Color.FromArgb("#353535"),
+                BackgroundColor = (Color)Application.Current.Resources["EventsColorProfile"],
                 CornerRadius = 10,
                 Padding = 10,
                 Margin = 5,
@@ -1142,7 +1142,7 @@ namespace SLON
                 var frame = new Frame
                 {
                     AutomationId = ev.Hash,
-                    BackgroundColor = Color.FromArgb("#353535"),
+                    BackgroundColor = (Color)Application.Current.Resources["BlockColorProfile"],
                     CornerRadius = 10,
                     Padding = 10,
                     Margin = 5,
@@ -1152,7 +1152,7 @@ namespace SLON
                 var label = new Label
                 {
                     Text = ev.Name,
-                    TextColor = Colors.White,
+                    TextColor = (Color)Application.Current.Resources["TextColorProfile"],
                     FontSize = 16,
                     VerticalOptions = LayoutOptions.Center
                 };
