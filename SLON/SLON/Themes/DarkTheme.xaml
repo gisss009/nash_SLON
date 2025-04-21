@@ -7,7 +7,7 @@
     <Color x:Key="TextColor">White</Color>
     <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
     <Color x:Key="BorderColor">White</Color>
-    <Color x:Key="BackGroundColorButtonGray">DarkGray</Color>
+    <Color x:Key="BackGroundColorButtonGray">#292929</Color>
     <Color x:Key="BackGroundColorSwapRed">Red</Color>
     <Color x:Key="BackGroundColorSwapGreen">Green</Color>
     <Color x:Key="BackGroundColorCardInfo">#222222</Color>

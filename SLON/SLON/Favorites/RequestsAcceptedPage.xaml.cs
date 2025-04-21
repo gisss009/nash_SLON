@@ -5,6 +5,8 @@ namespace SLON
 {
     public partial class RequestsAcceptedPage : ContentPage
     {
+
+        bool theme = true;
         private ObservableCollection<User> requestsList = new();
         private ObservableCollection<User> acceptedList = new();
 
@@ -31,18 +33,31 @@ namespace SLON
 
         private void OnRequestsClicked(object sender, EventArgs e)
         {
-            RequestsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AcceptedButton.BackgroundColor = Colors.DarkGray;
+            //#292929
+            ThemeRequests();
             ShowRequests();
+        }
+
+        public void ThemeRequests()
+        {
+            RequestsButton.BackgroundColor = Color.FromArgb("#915AC5");
+            if (Theme.theme) AcceptedButton.BackgroundColor = Color.FromArgb("#292929");
+            else AcceptedButton.BackgroundColor = Colors.DarkGray;
         }
 
         private void OnAcceptedClicked(object sender, EventArgs e)
         {
-            AcceptedButton.BackgroundColor = Color.FromArgb("#915AC5");
-            RequestsButton.BackgroundColor = Colors.DarkGray;
+            var mp = new MainPage();
+            ThemeAccepted();
             ShowAccepted();
         }
 
+        public void ThemeAccepted()
+        {
+            AcceptedButton.BackgroundColor = Color.FromArgb("#915AC5");
+            if (Theme.theme) RequestsButton.BackgroundColor = Color.FromArgb("#292929");
+            else RequestsButton.BackgroundColor = Colors.DarkGray;
+        }
         private void ShowRequests()
         {
             IsRequestsMode = true;

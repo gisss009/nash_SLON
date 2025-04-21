@@ -9,6 +9,7 @@ namespace SLON
 {
     public partial class Favorites : ContentPage
     {
+        
         // ����� �����������: Events (true) ��� Profiles (false)
         private bool showingEvents = true;
         // ��� ��������: All (true) ��� Mutual (false)
@@ -85,37 +86,56 @@ namespace SLON
 
 
         #region �������������
+        string color = "A9A9A9";
 
         private void OnAllClicked(object sender, EventArgs e)
         {
             showingAll = true;
-            AllButton.BackgroundColor = Color.FromArgb("#915AC5");
-            MutualButton.BackgroundColor = Colors.DarkGray;
+            ThemeAll();
             RefreshLikes();
+        }
+        public void ThemeAll()
+        {
+            AllButton.BackgroundColor = Color.FromArgb("#915AC5");
+            MutualButton.BackgroundColor = Color.FromArgb($"{color}");
         }
 
         private void OnMutualClicked(object sender, EventArgs e)
         {
             showingAll = false;
-            MutualButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AllButton.BackgroundColor = Colors.DarkGray;
+            ThemeMutual();
             RefreshLikes();
         }
 
+        public void ThemeMutual()
+        {
+            MutualButton.BackgroundColor = Color.FromArgb("#915AC5");
+            AllButton.BackgroundColor = Color.FromArgb($"{color}");
+        }
         private void OnEventsClicked(object sender, EventArgs e)
         {
             showingEvents = true;
-            EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            ProfilesButton.BackgroundColor = Colors.DarkGray;
+            ThemeEvents();
             RefreshLikes();
+        }
+
+        public void ThemeEvents()
+        {
+            EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
+            ProfilesButton.BackgroundColor = Color.FromArgb($"{color}");
         }
 
         private void OnProfilesClicked(object sender, EventArgs e)
         {
             showingEvents = false;
-            ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
-            EventsButton.BackgroundColor = Colors.DarkGray;
+            ThemeProfile();
             RefreshLikes();
+        }
+
+        public void ThemeProfile()
+        {
+            ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
+            EventsButton.BackgroundColor = Color.FromArgb($"{color}");
         }
 
         #endregion
