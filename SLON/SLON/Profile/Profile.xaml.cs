@@ -803,7 +803,19 @@ namespace SLON
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
-                await DisplayAlert("Ошибка", "Произошла неожиданная ошибка", "OK");
+                if (ex is TaskCanceledException)
+                {
+                    await DisplayAlert("Ошибка", "Время ожидания истекло. Возможно, сервер не отвечает.", "OK");
+                }
+                else if (ex is HttpRequestException httpEx)
+                {
+                    await DisplayAlert("Ошибка сети", $"Проблема с сетью: {httpEx.Message}", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+                }
+                // await DisplayAlert("Ошибка", "Произошла неожиданная ошибка", "OK");
             }
         }
 
@@ -876,7 +888,7 @@ namespace SLON
                 CornerRadius = 10,
                 Padding = 10,
                 Margin = 5,
-                // HeightRequest = 40
+                HeightRequest = 50
             };
             var grid = new Grid();
             var label = new Label
@@ -1028,6 +1040,7 @@ namespace SLON
 
         private void UpdateEventPopupUI()
         {
+            EventPopupHeaderLabel.Text = _isCreatingEvent ? "Create event card" : (_isEditingEvent ? "Edit event card" : "Event card");
             SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
             EventNameInput.IsReadOnly = !_isEditingEvent;
             EventDescriptionInput.IsReadOnly = !_isEditingEvent;
@@ -1228,8 +1241,8 @@ namespace SLON
                     BackgroundColor = Color.FromArgb("#353535"),
                     CornerRadius = 10,
                     Padding = 10,
-                    Margin = 5,
-                    HeightRequest = 40
+                    Margin = 3,
+                    HeightRequest = 50
                 };
                 var grid = new Grid();
                 var label = new Label
