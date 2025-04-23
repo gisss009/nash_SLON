@@ -56,6 +56,69 @@ c.execute('''CREATE TABLE IF NOT EXISTS mutual (
 db.commit()
 
 
+
+def create_notification(username: str, username_from: str):
+    existing = c.execute(
+        "SELECT 1 FROM notifications WHERE username = ? AND username_from = ? AND is_request_or_accepted = 0",
+        (username, username_from)
+    ).fetchone()
+
+    if not existing:
+        c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 0))
+        db.commit()
+
+
+def delete_notification(username: str, username_from: str):
+    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
+    db.commit()
+
+def get_requests(username: str):
+    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 0", (username,)).fetchall()
+    
+    result = []
+    for req in data:
+        result.append(req[1])
+
+    return result
+
+def create_accepted_request(username: str, username_from: str):
+    existing = c.execute(
+        "SELECT 1 FROM notifications WHERE username = ? AND username_from = ? AND is_request_or_accepted = 1",
+        (username, username_from)
+    ).fetchone()
+
+    if not existing:
+        c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 1))
+        db.commit()
+
+
+def delete_accepted_request(username: str, username_from: str):
+    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
+    db.commit()
+
+def get_accepted(username: str):
+    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 1", (username,)).fetchall()
+    return [acc[1] for acc in data]
+
+def add_mutual_user(username_one: str, username_two: str):
+    pair1 = f"{username_one},{username_two}"
+    pair2 = f"{username_two},{username_one}"
+
+    existing = c.execute("SELECT 1 FROM mutual WHERE pair = ? OR pair = ?", (pair1, pair2)).fetchone()
+
+    if not existing:
+        c.execute("INSERT INTO mutual VALUES (?)", (pair1,))
+        db.commit()
+
+
+def delete_mutual_user(username_one: str, username_two: str):
+    c.execute("DELETE FROM mutual WHERE pair = ? OR pair = ?", (username_one + "," + username_two, username_two + "," + username_one))
+    db.commit()
+
+def get_mutuals():
+    data = c.execute("SELECT * FROM mutual").fetchall()
+    return [pair[0] for pair in data]
+
 def find_profile(username: str):
     user = c.execute("SELECT username FROM profiles WHERE username = (?)", (username,)).fetchone()
     return user != None
@@ -312,6 +375,8 @@ def add_profile_swiped_user(username: str, user_name_to: str):
     
     c.execute("UPDATE profiles SET swiped_users = ? WHERE username = ?", (json.dumps(users_list), username))
     db.commit()
+    
+    create_notification(user_name_to, username)
 
 
 def add_profile_swiped_event(username: str, hash: str):
@@ -352,15 +417,15 @@ def get_profile_swiped_events(username: str):
     return json.loads(swiped_events_str) if swiped_events_str else []
 
 
-def delete_profile_swiped_user(username: str, hash: int):
+def delete_profile_swiped_user(username: str, username_who: int):
     if not find_profile(username):
         return
     
     users_str = c.execute("SELECT swiped_users FROM profiles WHERE username = ?", (username,)).fetchone()[0]
     users_list = json.loads(users_str) if users_str else []
     
-    if hash in users_list:
-        users_list.remove(hash)
+    if username_who in users_list:
+        users_list.remove(username_who)
     
     c.execute("UPDATE profiles SET swiped_users = ? WHERE username = ?", (json.dumps(users_list), username))
     db.commit()
@@ -702,44 +767,3 @@ def get_swiped_events(username: str):
                                  (username,)).fetchone()[0]
     return json.loads(swiped_events_str) if swiped_events_str else []
 
-
-def create_notification(username: str, username_from: str):
-    c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 0))
-    db.commit()
-
-def delete_notification(username: str, username_from: str):
-    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
-    db.commit()
-
-def get_requests(username: str):
-    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 0", (username,)).fetchall()
-    
-    result = []
-    for req in data:
-        result.append(req[1])
-
-    return result
-
-def create_accepted_request(username: str, username_from: str):
-    c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 1))
-    db.commit()
-
-def delete_accepted_request(username: str, username_from: str):
-    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
-    db.commit()
-
-def get_accepted(username: str):
-    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 1", (username,)).fetchall()
-    return [acc[1] for acc in data]
-
-def add_mutual_user(username_one: str, username_two: str):
-    c.execute("INSERT INTO mutual VALUES (?)", (username_one + "," + username_two,))
-    db.commit()
-
-def delete_mutual_user(username_one: str, username_two: str):
-    c.execute("DELETE FROM mutual WHERE pair = ? OR pair = ?", (username_one + "," + username_two, username_two + "," + username_one))
-    db.commit()
-
-def get_mutuals():
-    data = c.execute("SELECT * FROM mutual").fetchall()
-    return [pair[0] for pair in data]
