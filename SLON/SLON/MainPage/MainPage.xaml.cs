@@ -7,26 +7,13 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using Microsoft.Maui.Layouts;
+using System.Runtime.CompilerServices;
 
 namespace SLON
 {
     static public class Theme
     {
-        public static event EventHandler ThemeChanged;
-
         public static bool theme;
-        public static bool Them
-        {
-            get => theme;
-            set
-            {
-                if (theme != value)
-                {
-                    theme = value;
-                    ThemeChanged?.Invoke(null, EventArgs.Empty);
-                }
-            }
-        }
     }
     public partial class MainPage : ContentPage
     {
@@ -47,6 +34,7 @@ namespace SLON
 
             swipeCardView.Dragging += OnDragging;
             swipeCardViewEvent.Dragging += OnDragging;
+
         }
 
         private void OnDragging(object sender, DraggingCardEventArgs e)
@@ -492,7 +480,6 @@ namespace SLON
                     mergedDictionaries.Add(new DarkTheme());
                     Theme.theme = true;
                 }
-
                 // Принудительно обновляем цвета кнопок
                 UpdateButtonColors();
 
@@ -509,7 +496,7 @@ namespace SLON
                     }
                 });
             }
-        }
+        } 
 
         private void UpdateButtonColors()
         {

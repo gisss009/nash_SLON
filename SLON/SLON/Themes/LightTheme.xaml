@@ -12,12 +12,12 @@
     <Color x:Key="BackGroundColorButtonRed">Red</Color>
     <Color x:Key="BackGroundColorSwapGreen">Green</Color>
     <Color x:Key="BackGroundColorButtonGreen">Green</Color>
-    <Color x:Key="BackGroundColorCardInfo">#EFEFEF</Color>
+    <Color x:Key="BackGroundColorCardInfo">White</Color>
     <Color x:Key="BackGroundColorHeader">White</Color>
     <Color x:Key="BackGroundColorDesc">White</Color>
-    <Color x:Key="BackGroundColorHeaderStack">#FDE8E5</Color>
+    <Color x:Key="BackGroundColorHeaderStack">White</Color>
     <Color x:Key="BackGroundColorDescName">White</Color>
-    <Color x:Key="BackGroundColorEvent">#EFEFEF</Color>
+    <Color x:Key="BackGroundColorEvent">White</Color>
     <x:String x:Key="LogoImage">slon_light.png</x:String>
     <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
     <x:String x:Key="ImageButton">sun_light_theme.png</x:String>

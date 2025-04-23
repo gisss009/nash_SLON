@@ -22,9 +22,9 @@ namespace SLON
         public Favorites()
         {
             InitializeComponent();
-            BindingContext = this;
-        }
+            UpdateButtonColors();
 
+        }
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -83,59 +83,44 @@ namespace SLON
             UpdateEmptyView();
         }
 
-
-
         #region �������������
-        string color = "A9A9A9";
+        private void UpdateButtonColors()
+        {
+            var mainColor = (Color)Application.Current.Resources["BackGroundColorButtonGray"];
+            var purpleColor = (Color)Application.Current.Resources["BackGroundColorButtonPurple"];
 
+            // Обновляем цвета в зависимости от текущего состояния
+            AllButton.BackgroundColor = showingAll ? purpleColor : mainColor;
+            MutualButton.BackgroundColor = !showingAll ? purpleColor : mainColor;
+            EventsButton.BackgroundColor = showingEvents ? purpleColor : mainColor;
+            ProfilesButton.BackgroundColor = !showingEvents ? purpleColor : mainColor;
+        }
         private void OnAllClicked(object sender, EventArgs e)
         {
             showingAll = true;
-            ThemeAll();
             RefreshLikes();
-        }
-        public void ThemeAll()
-        {
-            AllButton.BackgroundColor = Color.FromArgb("#915AC5");
-            MutualButton.BackgroundColor = Color.FromArgb($"{color}");
+            UpdateButtonColors(); // Теперь этот метод вызывается автоматически при изменении темы
         }
 
         private void OnMutualClicked(object sender, EventArgs e)
         {
             showingAll = false;
-            ThemeMutual();
             RefreshLikes();
+            UpdateButtonColors();
         }
 
-        public void ThemeMutual()
-        {
-            MutualButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AllButton.BackgroundColor = Color.FromArgb($"{color}");
-        }
         private void OnEventsClicked(object sender, EventArgs e)
         {
             showingEvents = true;
-            ThemeEvents();
             RefreshLikes();
-        }
-
-        public void ThemeEvents()
-        {
-            EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            ProfilesButton.BackgroundColor = Color.FromArgb($"{color}");
+            UpdateButtonColors();
         }
 
         private void OnProfilesClicked(object sender, EventArgs e)
         {
             showingEvents = false;
-            ThemeProfile();
             RefreshLikes();
-        }
-
-        public void ThemeProfile()
-        {
-            ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
-            EventsButton.BackgroundColor = Color.FromArgb($"{color}");
+            UpdateButtonColors();
         }
 
         #endregion
