@@ -43,7 +43,7 @@
                             <Button x:Name="EventsButton"
                                     Text="Events"
                                     FontSize="12"
-                                    TextColor= "{DynamicResource TextColor}"
+                                    TextColor= "White"
                                     BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                                     CornerRadius="0"
                                     BorderColor="{DynamicResource BorderColor}"
@@ -59,7 +59,7 @@
                             <Button x:Name="ProfilesButton"
                                     Text="Profile"
                                     FontSize="12"
-                                    TextColor="{DynamicResource TextColor}"
+                                    TextColor="White"
                                     BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                     CornerRadius="0"
                                     BorderColor="{DynamicResource BorderColor}"
@@ -89,7 +89,7 @@
                             <Button x:Name="AllButton"
                                     Text="All"
                                     FontSize="10"
-                                    TextColor="{DynamicResource TextColor}"
+                                    TextColor="White"
                                     BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                                     CornerRadius="0"
                                     BorderColor="{DynamicResource BorderColor}"
@@ -106,7 +106,7 @@
                             <Button x:Name="MutualButton"
                                     Text="Mutual"
                                     FontSize="10"
-                                    TextColor="{DynamicResource TextColor}"
+                                    TextColor="White"
                                     BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                     CornerRadius="0"
                                     BorderColor="{DynamicResource BorderColor}"
@@ -169,13 +169,10 @@
                                    Margin="5"
                                    HeightRequest="70">
                                 <StackLayout Orientation="Horizontal" Spacing="10">
-                                    <Frame CornerRadius="50"  
-                                           IsClippedToBounds="True"  
-                                            WidthRequest="48"
-                                            HeightRequest="48">
-                                        <Image Source="{Binding IconSource}"  
+                                    <Image Source="{Binding IconSource}"  
+                                           WidthRequest="50"
+                                           HeightRequest="50"
                                            Aspect="AspectFill" />
-                                    </Frame>
                                     <VerticalStackLayout>
                                         <Label Text="{Binding Title}" 
                                                TextColor="{DynamicResource TextColor}"

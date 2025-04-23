@@ -7,7 +7,7 @@
     <Color x:Key="TextColor">#333333</Color>
     <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
     <Color x:Key="BorderColor">#333333</Color>
-    <Color x:Key="BackGroundColorButtonGray">#B9B9B9</Color>
+    <Color x:Key="BackGroundColorButtonGray">#515151</Color>
     <Color x:Key="BackGroundColorSwapRed">Red</Color>
     <Color x:Key="BackGroundColorButtonRed">Red</Color>
     <Color x:Key="BackGroundColorSwapGreen">Green</Color>
@@ -19,7 +19,7 @@
     <Color x:Key="BackGroundColorDescName">White</Color>
     <Color x:Key="BackGroundColorEvent">White</Color>
     <x:String x:Key="LogoImage">slon_light.png</x:String>
-    <x:String x:Key="ImageProfile">default_profile_icon.png</x:String>
+    <x:String x:Key="ImageProfile">default_profile_icon2.png</x:String>
     <x:String x:Key="ImageButton">sun_light_theme.png</x:String>
 
     

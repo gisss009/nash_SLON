@@ -73,7 +73,7 @@ namespace SLON
                         UserData = user,
                         Title = user.Name,
                         Subtitle = user.Vocation,
-                        IconSource = "default_profile_icon.png",
+                        IconSource = "default_profile_icon2.png",
                         LeftSwipeIcon = "chat_icon.png"
                     });
                 }

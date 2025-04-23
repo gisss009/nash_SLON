@@ -22,22 +22,22 @@ namespace SLON
             if (ev.IsPublic)
             {
                 PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
-                PrivateButton.BackgroundColor = Colors.DarkGray;
+                PrivateButton.BackgroundColor = Color.FromArgb("#515151");
             }
             else
             {
-                PublicButton.BackgroundColor = Colors.DarkGray;
+                PublicButton.BackgroundColor = Color.FromArgb("#515151");
                 PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
             }
 
             if (ev.IsOnline)
             {
                 OnlineButton.BackgroundColor = Color.FromArgb("#915AC5");
-                OfflineButton.BackgroundColor = Colors.DarkGray;
+                OfflineButton.BackgroundColor = Color.FromArgb("#515151");
             }
             else
             {
-                OnlineButton.BackgroundColor = Colors.DarkGray;
+                OnlineButton.BackgroundColor = Color.FromArgb("#515151");
                 OfflineButton.BackgroundColor = Color.FromArgb("#915AC5");
             }
         }

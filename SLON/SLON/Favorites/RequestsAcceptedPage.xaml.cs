@@ -41,7 +41,7 @@ namespace SLON
         public void ThemeRequests()
         {
             RequestsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AcceptedButton.BackgroundColor = Colors.DarkGray;
+            AcceptedButton.BackgroundColor = Color.FromArgb("#515151");
         }
 
         private void OnAcceptedClicked(object sender, EventArgs e)
@@ -54,7 +54,7 @@ namespace SLON
         public void ThemeAccepted()
         {
             AcceptedButton.BackgroundColor = Color.FromArgb("#915AC5");
-            RequestsButton.BackgroundColor = Colors.DarkGray;
+            RequestsButton.BackgroundColor = Color.FromArgb("#515151");
 
         }
         private void ShowRequests()
