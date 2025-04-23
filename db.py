@@ -46,7 +46,7 @@ db.commit()
 c.execute('''CREATE TABLE IF NOT EXISTS notifications (
     username TEXT,
     username_from TEXT,
-    is_request_or_accepted BOOLEAN /* 0 - request, 1 - accepted */
+    is_request_or_accepted BOOLEAN
 )''')
 db.commit()
 
@@ -290,6 +290,35 @@ def delete_profile_event(username: str, hash: string):
     
     c.execute("UPDATE profiles SET events = ? WHERE username = ?", (json.dumps(events_list), username))
     db.commit()
+
+
+# def add_profile_own_event(username: str, hash: string):
+#     if not find_profile(username):
+#         return
+    
+#     events_str = c.execute("SELECT own_events FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+#     events_list = json.loads(events_str) if events_str else []
+
+#     if id not in events_list:
+#         events_list.append(hash)
+    
+#     c.execute("UPDATE profiles SET own_events = ? WHERE username = ?", (json.dumps(events_list), username))
+#     db.commit()
+
+
+# def delete_profile_own_event(username: str, hash: string):
+#     if not find_profile(username):
+#         return
+    
+#     events_str = c.execute("SELECT own_events FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+#     events_list = json.loads(events_str) if events_str else []
+    
+#     if id in events_list:
+#         events_list.remove(hash)
+    
+#     c.execute("UPDATE profiles SET own_events = ? WHERE username = ?", (json.dumps(events_list), username))
+#     db.commit()
+
 
 def edit_profile_description(username: str, description: str):
     c.execute("UPDATE profiles SET description = ? WHERE username = ?", (description, username))
@@ -594,32 +623,31 @@ def add_event_member(event_hash: str, member: str):
         db.commit()
 
 
+import json
+
 def get_all_events():
     c.execute("SELECT * FROM events")
     rows = c.fetchall()
-    
-    column_names = [description[0] for description in c.description]
-    
+    column_names = [d[0] for d in c.description]
+
     events_list = []
     for row in rows:
         event_dict = {column_names[i]: row[i] for i in range(len(column_names))}
-        
-        if event_dict["categories"]:
-            event_dict["categories"] = [cat.strip() for cat in event_dict["categories"].split(",")]
-        else:
+
+        try:
+            event_dict["categories"] = json.loads(event_dict.get("categories") or "[]")
+        except (TypeError, json.JSONDecodeError):
             event_dict["categories"] = []
-        
-        if event_dict["members"]:
-            try:
-                event_dict["members"] = json.loads(event_dict["members"])
-            except json.JSONDecodeError:
-                event_dict["members"] = [] 
-        else:
+
+        try:
+            event_dict["members"] = json.loads(event_dict.get("members") or "[]")
+        except (TypeError, json.JSONDecodeError):
             event_dict["members"] = []
-        
+
         events_list.append(event_dict)
-    
+
     return events_list
+
 
 
 def is_user_and_password_correct(username: str, password: str):
@@ -703,6 +731,39 @@ def get_swiped_events(username: str):
     return json.loads(swiped_events_str) if swiped_events_str else []
 
 
+add_profile("test")
+edit_profile_surname("test", "surrr")
+print(get_profile("test"))
+# add_profile("ne_test")
+# hash = add_event("test_event", "ne_test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
+# add_event_member(hash, "test")
+# add_event("test_event", "test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
+# print(get_all_user_events("test"))
+# print(get_profile("test"))
+# add_profile_category("test", "IT")
+# edit_profile_description("test", "test_desc")
+# edit_profile_name("test", "хуесос")
+# edit_profile_surname("test", "петрович")
+# def migrate_add_skills_column():
+#     try:
+#         # Добавляем столбец skills с default значением '{}'
+#         c.execute("ALTER TABLE profiles ADD COLUMN skills TEXT DEFAULT '{}'")
+        
+#         # Обновляем существующие записи, где значение NULL
+#         c.execute("UPDATE profiles SET skills = '{}' WHERE skills IS NULL")
+        
+#         db.commit()
+#         print("Migration successful: added and initialized skills column")
+#     except sqlite3.OperationalError as e:
+#         if "duplicate column name" in str(e):
+#             print("Column already exists")
+#         else:
+#             raise e
+
+# # Выполнить миграцию при запуске
+# migrate_add_skills_column()
+
+
 def create_notification(username: str, username_from: str):
     c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 0))
     db.commit()
@@ -710,15 +771,6 @@ def create_notification(username: str, username_from: str):
 def delete_notification(username: str, username_from: str):
     c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
     db.commit()
-
-def get_requests(username: str):
-    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 0", (username,)).fetchall()
-    
-    result = []
-    for req in data:
-        result.append(req[1])
-
-    return result
 
 def create_accepted_request(username: str, username_from: str):
     c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 1))
@@ -728,18 +780,10 @@ def delete_accepted_request(username: str, username_from: str):
     c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
     db.commit()
 
-def get_accepted(username: str):
-    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 1", (username,)).fetchall()
-    return [acc[1] for acc in data]
-
 def add_mutual_user(username_one: str, username_two: str):
-    c.execute("INSERT INTO mutual VALUES (?)", (username_one + "," + username_two,))
+    c.execute("INSERT INTO mutual VALUES (?,)", (username_one + "," + username_two,))
     db.commit()
 
 def delete_mutual_user(username_one: str, username_two: str):
-    c.execute("DELETE FROM mutual WHERE pair = ? OR pair = ?", (username_one + "," + username_two, username_two + "," + username_one))
+    c.execute("DELETE FROM mutual WHERE pair = ?", (username_one + "," + username_two,))
     db.commit()
-
-def get_mutuals():
-    data = c.execute("SELECT * FROM mutual").fetchall()
-    return [pair[0] for pair in data]
