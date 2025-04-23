@@ -169,9 +169,13 @@
                                    Margin="5"
                                    HeightRequest="70">
                                 <StackLayout Orientation="Horizontal" Spacing="10">
-                                    <Image Source="{Binding IconSource}"
-                                           WidthRequest="50"
-                                           HeightRequest="50"/>
+                                    <Frame CornerRadius="50"  
+                                           IsClippedToBounds="True"  
+                                            WidthRequest="48"
+                                            HeightRequest="48">
+                                        <Image Source="{Binding IconSource}"  
+                                           Aspect="AspectFill" />
+                                    </Frame>
                                     <VerticalStackLayout>
                                         <Label Text="{Binding Title}" 
                                                TextColor="{DynamicResource TextColor}"
