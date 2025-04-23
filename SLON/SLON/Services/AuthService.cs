@@ -308,68 +308,42 @@ namespace SLON.Services
             }
         }
 
-        private static string _lastSentHash = string.Empty;
 
-        public static async Task<bool> AddEventAsync(EventData eventData)
+        public static async Task<EventData> AddEventAsync(EventData eventData)
         {
-            try
+            // URL теперь без параметров в строке
+            var url = "http://139.28.223.134:5000/events";
+
+            // Собираем JSON-полезное тело
+            var payload = JsonSerializer.Serialize(new
             {
-                // Уникальный хеш на основе ключевых данных — чтобы не отправлять повторно
-                string currentHash = $"{eventData.name}_{eventData.date_from}_{eventData.owner}";
-                if (_lastSentHash == currentHash)
-                {
-                    Console.WriteLine("[DOTNET] Duplicate create request suppressed.");
-                    return false;
-                }
+                name = eventData.name,
+                owner = eventData.owner,
+                categories = eventData.categories,
+                description = eventData.description,
+                location = eventData.location,
+                date_from = eventData.date_from,
+                date_to = eventData.date_to,
+                @public = eventData.@public,
+                online = eventData.online
+            });
 
-                // Собираем URL
-                string url = $"http://139.28.223.134:5000/events/add_event?" +
-                             $"name={Uri.EscapeDataString(eventData.name)}" +
-                             $"&owner={Uri.EscapeDataString(eventData.owner)}" +
-                             $"&categories={Uri.EscapeDataString(string.Join(",", eventData.categories))}" +
-                             $"&description={Uri.EscapeDataString(eventData.description)}" +
-                             $"&location={Uri.EscapeDataString(eventData.location)}" +
-                             $"&date_from={Uri.EscapeDataString(eventData.date_from)}" +
-                             $"&date_to={Uri.EscapeDataString(eventData.date_to)}" +
-                             $"&public={eventData.@public}" +
-                             $"&online={eventData.online}";
+            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                Console.WriteLine("[DOTNET] Sending request to create event...");
-                var response = await _httpClient.GetAsync(url);
+            // Делаем POST
+            using var response = await _httpClient.PostAsync(url, content);
 
-                Console.WriteLine($"[DOTNET] Status: {(int)response.StatusCode} - {response.ReasonPhrase}");
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine("[DOTNET] Request failed before reading response body.");
-                    return false;
-                }
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"[DOTNET] Server Response: {responseBody}");
-
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-
-                if (jsonResponse?.ok == true)
-                {
-                    Console.WriteLine("[DOTNET] Event successfully created.");
-                    _lastSentHash = currentHash;
-                    return true;
-                }
-
-                Console.WriteLine("[DOTNET] Server responded with ok = false.");
-                return false;
-            }
-            catch (HttpRequestException httpEx)
+            // Читаем и десериализуем ответ
+            var body = await response.Content.ReadAsStringAsync();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+            if (jr?.ok == true && jr.response.HasValue)
             {
-                Console.WriteLine($"[DOTNET] HttpRequestException: {httpEx.Message}");
-                return false;
+                return JsonSerializer.Deserialize<EventData>(jr.response.Value.GetRawText());
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[DOTNET] Unexpected error: {ex.Message}");
-                return false;
-            }
+            return null;
         }
 
 
@@ -438,43 +412,44 @@ namespace SLON.Services
             }
         }
 
-        public static async Task<bool> UpdateEventAsync(EventData eventData)
+        public static async Task<EventData> UpdateEventAsync(EventData eventData)
         {
-            step:
-            try
+            if (string.IsNullOrEmpty(eventData.hash))
+                return null;
+
+            string url = $"http://139.28.223.134:5000/events/{eventData.hash}";
+
+            var payload = JsonSerializer.Serialize(new
             {
-                string url = $"http://139.28.223.134:5000/events/edit_event?" +
-                            $"hash={eventData.hash}" +
-                            $"&name={Uri.EscapeDataString(eventData.name)}" +
-                            $"&categories={Uri.EscapeDataString(string.Join(",", eventData.categories))}" +
-                            $"&description={Uri.EscapeDataString(eventData.description)}" +
-                            $"&location={Uri.EscapeDataString(eventData.location)}" +
-                            $"&date_from={Uri.EscapeDataString(eventData.date_from)}" +
-                            $"&date_to={Uri.EscapeDataString(eventData.date_to)}" +
-                            $"&public={eventData.@public}" +
-                            $"&online={eventData.online}";
+                name = eventData.name,
+                categories = eventData.categories,
+                description = eventData.description,
+                location = eventData.location,
+                date_from = eventData.date_from,
+                date_to = eventData.date_to,
+                @public = eventData.@public,
+                online = eventData.online
+            });
 
-                var response = await _httpClient.GetAsync(url);
-                var responseBody = await response.Content.ReadAsStringAsync();
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+            var response = await _httpClient.PutAsync(url, content);
 
-                // Явная проверка ответа сервера
-                if (jsonResponse?.ok == true)
-                {
-                    Console.WriteLine("Event successfully created");
-                    return true;
-                }
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+            if (jsonResponse?.ok == true && jsonResponse.response.HasValue)
             {
-                Console.WriteLine($"Error updating event: {ex.Message}");
-                goto step;
-                return false;
+                return JsonSerializer.Deserialize<EventData>(jsonResponse.response.Value.GetRawText());
             }
+
+            return null;
         }
+
+
 
         public static async Task<bool> RemoveProfileCategory(string username, string category)
         {

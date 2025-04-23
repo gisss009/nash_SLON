@@ -521,35 +521,23 @@ namespace SLON
                 button.IsEnabled = isEnabled;
         }
 
-        private void OnEditSaveEventClicked(object sender, EventArgs e)
+        private async void OnEditSaveEventClicked(object sender, EventArgs e)
         {
             if (_isCreatingEvent || _isEditingEvent)
             {
-                SaveEventChanges();
-                if (_isCreatingEvent)
-                {
-                    _isCreatingEvent = false;
-                    EventPopup.IsVisible = false;
-                    return;
-                }
+                await SaveEventChanges();
+                return;
             }
 
             if (IsCurrentEventMine())
             {
                 _isEditingEvent = !_isEditingEvent;
                 SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
-                if (_isEditingEvent)
-                {
-                    EventPopupHeaderLabel.Text = "Edit event card";
-                }
-                else
-                {
-                    EventPopupHeaderLabel.Text = "Event card";
-                }
-
+                EventPopupHeaderLabel.Text = _isEditingEvent ? "Edit event card" : "Event card";
                 UpdateEventPopupUI();
             }
         }
+
 
         private View CreateCategoryChip(string categoryName)
         {
@@ -697,101 +685,131 @@ namespace SLON
 
         private DateTime _lastSaveTime = DateTime.MinValue;
 
-        private async void SaveEventChanges()
+        private async Task SaveEventChanges()
         {
+            // 0) Запомним, создавали ли мы ивент
+            bool wasCreating = _isCreatingEvent;
+
+            // Анти-дубль-таймер
             if ((DateTime.Now - _lastSaveTime).TotalSeconds < 1)
                 return;
-
             _lastSaveTime = DateTime.Now;
+
             try
             {
-                // 1. Валидация названия
-                string name = EventNameInput.Text?.Trim();
-                if (string.IsNullOrWhiteSpace(name))
+                // --- Сбор и валидация полей ---
+                string name = EventNameInput.Text?.Trim() ?? "";
+                string description = EventDescriptionInput.Text?.Trim() ?? "";
+                string location = EventLocationInput.Text?.Trim() ?? "";
+
+                if (string.IsNullOrWhiteSpace(name)
+                    || string.IsNullOrWhiteSpace(description)
+                    || string.IsNullOrWhiteSpace(location)
+                    || selectedCategories.Count == 0)
                 {
-                    await DisplayAlert("Ошибка", "Название мероприятия не может быть пустым", "OK");
+                    await DisplayAlert("Ошибка", "Все поля должны быть заполнены", "OK");
                     return;
                 }
+
                 if (name.Length > 50)
                 {
                     await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
                     return;
                 }
 
-                // 2. Валидация дат
                 if (_endDate < _startDate)
                 {
                     await DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала", "OK");
                     return;
                 }
 
-                // 3. Валидация категорий
-                if (selectedCategories.Count == 0)
+                // --- Проверка дубликата в локальном списке ---
+                bool isDuplicate = wasCreating
+                    ? events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    : events.Any(e => e.Hash != _originalEventHash
+                                      && e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                if (isDuplicate)
                 {
-                    await DisplayAlert("Ошибка", "Выберите хотя бы одну категорию", "OK");
+                    await DisplayAlert("Ошибка", "Мероприятие с таким именем уже существует", "OK");
                     return;
                 }
 
-                // 4. Подготовка данных
+                // --- Подготовка данных для API ---
                 var username = AuthService.GetUsernameAsync();
-                var eventData = new AuthService.EventData
+                var payload = new AuthService.EventData
                 {
                     name = name,
                     owner = username,
                     categories = new List<string>(selectedCategories),
-                    description = EventDescriptionInput.Text?.Trim(),
-                    location = EventLocationInput.Text?.Trim(),
+                    description = description,
+                    location = location,
                     date_from = _startDate.ToString("dd.MM.yyyy"),
                     date_to = _endDate.ToString("dd.MM.yyyy"),
                     @public = _isPublic ? 1 : 0,
-                    online = _isOnline ? 1 : 0
+                    online = _isOnline ? 1 : 0,
+                    // Передаём hash только при обновлении
+                    hash = wasCreating ? null : _originalEventHash
                 };
 
-                bool success;
-                string operation;
+                // --- Вызов API создания или обновления ---
+                AuthService.EventData resultEvent = wasCreating
+                    ? await AuthService.AddEventAsync(payload)
+                    : await AuthService.UpdateEventAsync(payload);
 
-                // 5. Логика сохранения в зависимости от режима
-                if (_isCreatingEvent)
+                // --- Обработка ответа ---
+                if (resultEvent != null)
                 {
-                    if (events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsMyEvent))
-                    {
-                        await DisplayAlert("Ошибка", "Мероприятие с таким названием уже существует", "OK");
-                        return;
-                    }
+                    // Обновляем локальную коллекцию events
+                    var idx = events.FindIndex(e => e.Hash == resultEvent.hash);
+                    var tuple = (
+                        resultEvent.hash,
+                        resultEvent.name,
+                        string.Join(", ", resultEvent.categories),
+                        resultEvent.description,
+                        resultEvent.location,
+                        resultEvent.online == 1,
+                        resultEvent.@public == 1,
+                        DateTime.ParseExact(resultEvent.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        DateTime.ParseExact(resultEvent.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        true
+                    );
 
-                    if (string.IsNullOrEmpty(_originalEventHash))
-                    {
-                        _originalEventHash = Guid.NewGuid().ToString();
-                    }
-                    eventData.hash = _originalEventHash;
-                    operation = "создано";
-                    success = await AuthService.AddEventAsync(eventData);
-                }
-                else
-                {
-                    eventData.hash = _originalEventHash;
-                    operation = "обновлено";
-                    success = await AuthService.UpdateEventAsync(eventData);
-                }
+                    if (idx >= 0)
+                        events[idx] = tuple;
+                    else
+                        events.Add(tuple);
 
-                // 6. Обработка результата
-                if (success)
-                {
-                    await DisplayAlert("Успех", $"Мероприятие успешно {operation}!", "OK");
+                    // Показать правильное сообщение
+                    string successMsg = wasCreating
+                        ? "Мероприятие успешно создано!"
+                        : "Мероприятие успешно обновлено!";
+                    await DisplayAlert("Успех", successMsg, "OK");
+
+                    // Сброс флага создания и закрытие попапа
+                    _isCreatingEvent = false;
                     EventPopup.IsVisible = false;
-                    await RefreshEventsFromServer();
+                    RefreshEventsUI();
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", $"Не удалось {operation} мероприятие", "OK");
+                    // Обработка неудачи
+                    string failMsg = wasCreating
+                        ? "Не удалось создать мероприятие"
+                        : "Не удалось обновить мероприятие";
+                    await DisplayAlert("Ошибка", failMsg, "OK");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
-                await DisplayAlert("Ошибка", "Произошла непредвиденная ошибка", "OK");
+                await DisplayAlert("Ошибка", "Произошла неожиданная ошибка", "OK");
             }
         }
+
+
+
+
 
 
         private async Task RefreshEventsFromServer()
@@ -830,12 +848,24 @@ namespace SLON
         private void RefreshEventsUI()
         {
             EventsContainer.Children.Clear();
-            var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
-            var displayList = filtered.Take(3).ToList();
-            foreach (var ev in displayList)
+
+            var filtered = _showMyEvents
+                ? events.Where(ev => ev.IsMyEvent)
+                : events.Where(ev => !ev.IsMyEvent);
+
+            // Сортируем по дате начала
+            var sorted = filtered
+                .OrderBy(ev => ev.StartDate)
+                .ToList();
+
+            // Показываем только три первых
+            foreach (var ev in sorted.Take(3))
                 AddEventCard(ev.Hash, ev.Name, ev.IsMyEvent);
-            ShowAllEventsButton.IsVisible = true;
+
+            // Кнопка «Показать все» видна, только если больше трёх
+            // ShowAllEventsButton.IsVisible = sorted.Count > 3;
         }
+
 
         private void AddEventCard(string eventHash, string eventName, bool isMyEvent)
         {
