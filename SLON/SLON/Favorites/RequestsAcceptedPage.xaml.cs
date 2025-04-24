@@ -40,8 +40,15 @@ namespace SLON
 
         public void ThemeRequests()
         {
-            RequestsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AcceptedButton.BackgroundColor = Color.FromArgb("#515151");
+            // Устанавливаем динамические ресурсы вместо статических цветов
+            RequestsButton.SetDynamicResource(
+                Button.BackgroundColorProperty,
+                "BackGroundColorButtonPurple" // Активная кнопка (фиолетовая)
+            );
+            AcceptedButton.SetDynamicResource(
+                Button.BackgroundColorProperty,
+                "BackGroundColorButtonGray" // Неактивная кнопка (серая)
+            );
         }
 
         private void OnAcceptedClicked(object sender, EventArgs e)
@@ -52,11 +59,17 @@ namespace SLON
         }
 
         public void ThemeAccepted()
-        {
-            AcceptedButton.BackgroundColor = Color.FromArgb("#915AC5");
-            RequestsButton.BackgroundColor = Color.FromArgb("#515151");
-
-        }
+{
+    // Устанавливаем динамические ресурсы вместо статических цветов
+    AcceptedButton.SetDynamicResource(
+        Button.BackgroundColorProperty, 
+        "BackGroundColorButtonPurple" // Активная кнопка (фиолетовая)
+    );
+    RequestsButton.SetDynamicResource(
+        Button.BackgroundColorProperty, 
+        "BackGroundColorButtonGray" // Неактивная кнопка (серая)
+    );
+}
         private void ShowRequests()
         {
             IsRequestsMode = true;

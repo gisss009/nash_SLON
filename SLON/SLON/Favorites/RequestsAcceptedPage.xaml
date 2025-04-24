@@ -17,38 +17,46 @@
             
             <!-- Переключатель Requests / Accepted -->
             <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Center">
-                <Border Padding="-10" Margin="0,5,0,0">
+                <!-- Кнопка Requests -->
+                <Border Padding="-10" 
+            Margin="0,5,0,0"
+            Stroke="{DynamicResource BorderColor}"
+            StrokeThickness="1">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15,0,15,0"/>
                     </Border.StrokeShape>
                     <Button x:Name="RequestsButton"
-                            Text="Requests"
-                            FontSize="12"
-                            TextColor="White"
-                            BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
-                            CornerRadius="0"
-                            BorderColor="{DynamicResource BorderColor}"
-                            BorderWidth="0.1"
-                            WidthRequest="85"
-                            HeightRequest="55"
-                            Clicked="OnRequestsClicked"/>
+                Text="Requests"
+                FontSize="12"
+                TextColor="White"
+                BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
+                CornerRadius="0"
+                BorderColor="Transparent"
+                BorderWidth="0"
+                WidthRequest="85"
+                HeightRequest="55"
+                Clicked="OnRequestsClicked"/>
                 </Border>
 
-                <Border Padding="-10" Margin="0,5,0,0">
+                <!-- Кнопка Accepted -->
+                <Border Padding="-10" 
+            Margin="0,5,0,0"
+            Stroke="{DynamicResource BorderColor}"
+            StrokeThickness="1">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="0,15,0,15"/>
                     </Border.StrokeShape>
                     <Button x:Name="AcceptedButton"
-                            Text="Accepted"
-                            FontSize="12"
-                            TextColor="White"
-                            BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
-                            CornerRadius="0"
-                            BorderColor="{DynamicResource BorderColor}"
-                            BorderWidth="0.1"
-                            WidthRequest="85"
-                            HeightRequest="55"
-                            Clicked="OnAcceptedClicked"/>
+                Text="Accepted"
+                FontSize="12"
+                TextColor="White"
+                BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
+                CornerRadius="0"
+                BorderColor="Transparent"
+                BorderWidth="0"
+                WidthRequest="85"
+                HeightRequest="55"
+                Clicked="OnAcceptedClicked"/>
                 </Border>
             </HorizontalStackLayout>
         </Grid>

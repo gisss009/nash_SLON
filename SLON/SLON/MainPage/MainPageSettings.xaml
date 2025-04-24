@@ -47,13 +47,13 @@
                             <!-- Первая группа: Online + Offline -->
                             <HorizontalStackLayout Spacing="0">
                                 <!-- Кнопка Online -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="OnlineEvent"
                                             Text="Online"
-                                            BackgroundColor="{DynamicResource ButtonColorMain}"
+                                            BackgroundColor="{DynamicResource ButtonColorSettingsMain}"
                                             TextColor="{DynamicResource ButtonTextColorMain}"
                                             Padding="15,8"
                                             CornerRadius="0"
@@ -61,7 +61,7 @@
                                 </Border>
 
                                 <!-- Кнопка Offline -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="0,15,0,15"/>
                                     </Border.StrokeShape>
@@ -78,13 +78,13 @@
                             <!-- Вторая группа: Public + Private -->
                             <HorizontalStackLayout Spacing="0">
                                 <!-- Кнопка Public -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="PublicEvent"
                                             Text="Public"
-                                            BackgroundColor="{DynamicResource ButtonColorMain}"
+                                            BackgroundColor="{DynamicResource ButtonColorSettingsMain}"
                                             TextColor="{DynamicResource ButtonTextColorMain}"
                                             Padding="15,8"
                                             CornerRadius="0"
@@ -92,7 +92,7 @@
                                 </Border>
 
                                 <!-- Кнопка Private -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="0,15,0,15"/>
                                     </Border.StrokeShape>

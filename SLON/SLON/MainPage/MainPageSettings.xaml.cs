@@ -150,22 +150,22 @@ namespace SLON
                 {
                     case "Online":
                         OnlineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
-                        OfflineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+                        OfflineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorSettingsMain"];
                         tempSelectedEventIsOnline = true;
                         break;
                     case "Offline":
                         OfflineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
-                        OnlineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+                        OnlineEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorSettingsMain"];
                         tempSelectedEventIsOnline = false;
                         break;
                     case "Public":
                         PublicEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
-                        PrivateEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+                        PrivateEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorSettingsMain"];
                         tempSelectedEventIsPublic = true;
                         break;
                     case "Private":
                         PrivateEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
-                        PublicEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+                        PublicEvent.BackgroundColor = (Color)Application.Current.Resources["ButtonColorSettingsMain"];
                         tempSelectedEventIsPublic = false;
                         break;
                 }

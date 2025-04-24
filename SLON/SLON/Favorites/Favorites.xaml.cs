@@ -86,14 +86,17 @@ namespace SLON
         #region �������������
         private void UpdateButtonColors()
         {
-            var mainColor = (Color)Application.Current.Resources["BackGroundColorButtonGray"];
-            var purpleColor = (Color)Application.Current.Resources["BackGroundColorButtonPurple"];
+            // Для кнопок All/Mutual
+            AllButton.SetDynamicResource(Button.BackgroundColorProperty,
+                showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+            MutualButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
 
-            // Обновляем цвета в зависимости от текущего состояния
-            AllButton.BackgroundColor = showingAll ? purpleColor : mainColor;
-            MutualButton.BackgroundColor = !showingAll ? purpleColor : mainColor;
-            EventsButton.BackgroundColor = showingEvents ? purpleColor : mainColor;
-            ProfilesButton.BackgroundColor = !showingEvents ? purpleColor : mainColor;
+            // Для кнопок Events/Profiles
+            EventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+            ProfilesButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
         }
         private void OnAllClicked(object sender, EventArgs e)
         {

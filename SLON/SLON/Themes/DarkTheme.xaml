@@ -6,8 +6,8 @@
     <Color x:Key="BackGroundColor">Black</Color>
     <Color x:Key="TextColor">White</Color>
     <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
-    <Color x:Key="BorderColor">White</Color>
-    <Color x:Key="BackGroundColorButtonGray">#515151</Color>
+    <Color x:Key="BorderColor">Black</Color>
+    <Color x:Key="BackGroundColorButtonGray">#292929</Color>
     <Color x:Key="BackGroundColorSwapRed">Red</Color>
     <Color x:Key="BackGroundColorSwapGreen">Green</Color>
     <Color x:Key="BackGroundColorCardInfo">#222222</Color>
@@ -28,6 +28,7 @@
     <Color x:Key="TextColorMain">White</Color>
     <!-- Цвет пассивной кнопки профили ивенты-->
     <Color x:Key="ButtonColorMain">#292929</Color>
+    <Color x:Key="ButtonColorSettingsMain">#6D6D6D</Color>
     <!-- Цвет активной кнопки профили ивенты-->
     <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
     <!-- Цвет текста на кнопках-->
