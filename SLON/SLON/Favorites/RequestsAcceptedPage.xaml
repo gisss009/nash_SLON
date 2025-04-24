@@ -94,7 +94,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Button Text="Decline"
-                                    TextColor="{DynamicResource TextColor}"
+                                    TextColor="white"
                                     BackgroundColor="{DynamicResource BackGroundColorSwapRed}"
                                     Grid.Column="0"
                                     IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
@@ -103,7 +103,7 @@
                                     WidthRequest="80"
                                     HeightRequest="40"/>
                             <Button Text="Accept"
-                                    TextColor="{DynamicResource TextColor}"
+                                    TextColor="White"
                                     BackgroundColor="{DynamicResource BackGroundColorSwapGreen}"
                                     Grid.Column="1"
                                     IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
