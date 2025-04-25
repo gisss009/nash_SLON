@@ -5,12 +5,12 @@ namespace SLON
 {
     public partial class EventReadOnlyPopup : Popup
     {
+        
         public EventReadOnlyPopup(Event ev)
         {
             InitializeComponent();
             BindEvent(ev);
         }
-
         private void BindEvent(Event ev)
         {
             EventNameEntry.Text = ev.Name;
@@ -19,26 +19,25 @@ namespace SLON
             StartDateLabel.Text = ev.StartDate.ToString("dd.MM.yyyy");
             EndDateLabel.Text = ev.EndDate.ToString("dd.MM.yyyy");
             EventLocationEditor.Text = ev.Place;
-
             if (ev.IsPublic)
             {
                 PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
-                PrivateButton.BackgroundColor = Colors.DarkGray;
+                PrivateButton.BackgroundColor = Color.FromArgb("#515151");
             }
             else
             {
-                PublicButton.BackgroundColor = Colors.DarkGray;
+                PublicButton.BackgroundColor = Color.FromArgb("#515151");
                 PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
             }
 
             if (ev.IsOnline)
             {
                 OnlineButton.BackgroundColor = Color.FromArgb("#915AC5");
-                OfflineButton.BackgroundColor = Colors.DarkGray;
+                OfflineButton.BackgroundColor = Color.FromArgb("#515151");
             }
             else
             {
-                OnlineButton.BackgroundColor = Colors.DarkGray;
+                OnlineButton.BackgroundColor = Color.FromArgb("#515151");
                 OfflineButton.BackgroundColor = Color.FromArgb("#915AC5");
             }
         }

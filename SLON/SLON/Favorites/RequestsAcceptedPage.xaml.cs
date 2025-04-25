@@ -5,6 +5,8 @@ namespace SLON
 {
     public partial class RequestsAcceptedPage : ContentPage
     {
+
+        bool theme = true;
         private ObservableCollection<User> requestsList = new();
         private ObservableCollection<User> acceptedList = new();
 
@@ -31,18 +33,43 @@ namespace SLON
 
         private void OnRequestsClicked(object sender, EventArgs e)
         {
-            RequestsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AcceptedButton.BackgroundColor = Colors.DarkGray;
+            //#292929
+            ThemeRequests();
             ShowRequests();
+        }
+
+        public void ThemeRequests()
+        {
+            // Устанавливаем динамические ресурсы вместо статических цветов
+            RequestsButton.SetDynamicResource(
+                Button.BackgroundColorProperty,
+                "BackGroundColorButtonPurple" // Активная кнопка (фиолетовая)
+            );
+            AcceptedButton.SetDynamicResource(
+                Button.BackgroundColorProperty,
+                "BackGroundColorButtonGray" // Неактивная кнопка (серая)
+            );
         }
 
         private void OnAcceptedClicked(object sender, EventArgs e)
         {
-            AcceptedButton.BackgroundColor = Color.FromArgb("#915AC5");
-            RequestsButton.BackgroundColor = Colors.DarkGray;
+            var mp = new MainPage();
+            ThemeAccepted();
             ShowAccepted();
         }
 
+        public void ThemeAccepted()
+{
+    // Устанавливаем динамические ресурсы вместо статических цветов
+    AcceptedButton.SetDynamicResource(
+        Button.BackgroundColorProperty, 
+        "BackGroundColorButtonPurple" // Активная кнопка (фиолетовая)
+    );
+    RequestsButton.SetDynamicResource(
+        Button.BackgroundColorProperty, 
+        "BackGroundColorButtonGray" // Неактивная кнопка (серая)
+    );
+}
         private void ShowRequests()
         {
             IsRequestsMode = true;

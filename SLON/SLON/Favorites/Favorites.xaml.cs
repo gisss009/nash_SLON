@@ -9,6 +9,7 @@ namespace SLON
 {
     public partial class Favorites : ContentPage
     {
+        
         // ����� �����������: Events (true) ��� Profiles (false)
         private bool showingEvents = true;
         // ��� ��������: All (true) ��� Mutual (false)
@@ -21,9 +22,9 @@ namespace SLON
         public Favorites()
         {
             InitializeComponent();
-            BindingContext = this;
-        }
+            UpdateButtonColors();
 
+        }
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -72,7 +73,7 @@ namespace SLON
                         UserData = user,
                         Title = user.Name,
                         Subtitle = user.Vocation,
-                        IconSource = "default_icon_profile.png",
+                        IconSource = "default_profile_icon2.png",
                         LeftSwipeIcon = "chat_icon.png"
                     });
                 }
@@ -82,40 +83,47 @@ namespace SLON
             UpdateEmptyView();
         }
 
-
-
         #region �������������
+        private void UpdateButtonColors()
+        {
+            // Для кнопок All/Mutual
+            AllButton.SetDynamicResource(Button.BackgroundColorProperty,
+                showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+            MutualButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
 
+            // Для кнопок Events/Profiles
+            EventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+            ProfilesButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+        }
         private void OnAllClicked(object sender, EventArgs e)
         {
             showingAll = true;
-            AllButton.BackgroundColor = Color.FromArgb("#915AC5");
-            MutualButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors(); // Теперь этот метод вызывается автоматически при изменении темы
         }
 
         private void OnMutualClicked(object sender, EventArgs e)
         {
             showingAll = false;
-            MutualButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AllButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors();
         }
 
         private void OnEventsClicked(object sender, EventArgs e)
         {
             showingEvents = true;
-            EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            ProfilesButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors();
         }
 
         private void OnProfilesClicked(object sender, EventArgs e)
         {
             showingEvents = false;
-            ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
-            EventsButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors();
         }
 
         #endregion

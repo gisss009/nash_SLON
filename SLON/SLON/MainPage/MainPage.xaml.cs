@@ -7,9 +7,14 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using Microsoft.Maui.Layouts;
+using System.Runtime.CompilerServices;
 
 namespace SLON
 {
+    static public class Theme
+    {
+        public static bool theme;
+    }
     public partial class MainPage : ContentPage
     {
         public ObservableCollection<User> Users { get; set; } = new();
@@ -29,6 +34,7 @@ namespace SLON
 
             swipeCardView.Dragging += OnDragging;
             swipeCardViewEvent.Dragging += OnDragging;
+
         }
 
         private void OnDragging(object sender, DraggingCardEventArgs e)
@@ -457,26 +463,23 @@ namespace SLON
             Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
         }
 
-
-
-        bool theme = true;
-
         public void OnImageButtonClicked(object sender, EventArgs e)
         {
+            var fav = new Favorites();
             ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
             if (mergedDictionaries != null)
             {
                 mergedDictionaries.Clear();
-                if (theme)
+                if (Theme.theme)
                 {
                     mergedDictionaries.Add(new LightTheme());
+                    Theme.theme = false;
                 }
                 else
                 {
                     mergedDictionaries.Add(new DarkTheme());
+                    Theme.theme = true;
                 }
-                theme = !theme;
-
                 // Принудительно обновляем цвета кнопок
                 UpdateButtonColors();
 
@@ -493,7 +496,7 @@ namespace SLON
                     }
                 });
             }
-        }
+        } 
 
         private void UpdateButtonColors()
         {
@@ -530,9 +533,6 @@ namespace SLON
             swipeCardView.IsVisible = true;
             swipeCardViewEvent.IsVisible = false;
         }
-
-        
-
 
 
 

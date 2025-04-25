@@ -6,8 +6,8 @@
     <Color x:Key="BackGroundColor">Black</Color>
     <Color x:Key="TextColor">White</Color>
     <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
-    <Color x:Key="BorderColor">White</Color>
-    <Color x:Key="BackGroundColorButtonGray">DarkGray</Color>
+    <Color x:Key="BorderColor">Black</Color>
+    <Color x:Key="BackGroundColorButtonGray">#292929</Color>
     <Color x:Key="BackGroundColorSwapRed">Red</Color>
     <Color x:Key="BackGroundColorSwapGreen">Green</Color>
     <Color x:Key="BackGroundColorCardInfo">#222222</Color>
@@ -17,7 +17,7 @@
     <Color x:Key="BackGroundColorDescName">#292929</Color>
     <Color x:Key="BackGroundColorEvent">#3D3D3D</Color>
     <x:String x:Key="LogoImage">slon.png</x:String>
-    <x:String x:Key="ImageProfile">default_icon_profile.png</x:String>
+    <x:String x:Key="ImageProfile">default_icon_profile2.png</x:String>
     <x:String x:Key="ImageButton">loon_dark_theme.png</x:String>
 
     <!-- Для файла Main-->
@@ -28,6 +28,7 @@
     <Color x:Key="TextColorMain">White</Color>
     <!-- Цвет пассивной кнопки профили ивенты-->
     <Color x:Key="ButtonColorMain">#292929</Color>
+    <Color x:Key="ButtonColorSettingsMain">#6D6D6D</Color>
     <!-- Цвет активной кнопки профили ивенты-->
     <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
     <!-- Цвет текста на кнопках-->
