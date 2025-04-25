@@ -69,7 +69,7 @@
                     <!-- Иконки (Add Event, Edit, Save) в правом верхнем углу -->
                     <Grid Grid.ColumnSpan="2" HorizontalOptions="End" VerticalOptions="Start" Margin="0,0,10,0">
                         <ImageButton x:Name="AddEventIcon"
-                                     Source="add_icon1.png"
+                                     Source="{DynamicResource EventButton}"
                                      BackgroundColor="Transparent"
                                      WidthRequest="32"
                                      HeightRequest="32"
@@ -79,7 +79,7 @@
                                      Clicked="OnAddEventIconClicked"/>
                         
                         <ImageButton x:Name="EditIcon"
-                                     Source="edit_icon.png"
+                                     Source="{DynamicResource EditButton}"
                                      BackgroundColor="Transparent"
                                      WidthRequest="24"
                                      HeightRequest="24"
@@ -89,7 +89,7 @@
                                      Clicked="OnEditIconClicked"/>
                         
                         <ImageButton x:Name="SaveIcon"
-                                     Source="save_icon.png"
+                                     Source="{DynamicResource SaveButton}"
                                      BackgroundColor="Transparent"
                                      WidthRequest="24"
                                      HeightRequest="24"
@@ -115,7 +115,7 @@
                                    VerticalOptions="Center"
                                    HorizontalOptions="Start"/>
                             <ImageButton x:Name="AddCategoryIcon"
-                                         Source="add_icon.png"
+                                         Source="{DynamicResource AddButton}"
                                          BackgroundColor="Transparent"
                                          WidthRequest="24"
                                          HeightRequest="24"
@@ -246,7 +246,7 @@
         <ContentView x:Name="CategoryPopup"
                      IsVisible="False"
                      BackgroundColor="#80000000">
-            <Frame BackgroundColor="#2E2E2E"
+            <Frame BackgroundColor="{DynamicResource BackGroundColorProfile}"
                    CornerRadius="15"
                    Padding="20"
                    Margin="40">
@@ -263,17 +263,17 @@
                         <Label Text="Tags"
                                FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                HorizontalOptions="Start"/>
 
-                        <Frame BackgroundColor="#3D3D3D" CornerRadius="10" HeightRequest="160" Padding="0">
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}" CornerRadius="10" HeightRequest="160" Padding="0">
                             <ScrollView VerticalOptions="FillAndExpand">
                                 <Editor x:Name="TagsEditor"
                                         Placeholder="Enter tags... (e.g. C# Python DevOps)"
                                         PlaceholderColor="#AAAAAA"
                                         VerticalTextAlignment="Start"
                                         HorizontalTextAlignment="Start"
-                                        TextColor="White"
+                                        TextColor="{DynamicResource TextColorProfile}"
                                         FontSize="16"
                                         Margin="10,0"
                                         AutoSize="TextChanges"/>
@@ -286,17 +286,17 @@
                         <Label Text="Skills"
                                FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                HorizontalOptions="Start"/>
 
-                        <Frame BackgroundColor="#3D3D3D" CornerRadius="10" HeightRequest="160" Padding="0">
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}" CornerRadius="10" HeightRequest="160" Padding="0">
                             <ScrollView VerticalOptions="FillAndExpand">
                                 <Editor x:Name="SkillsEditor"
                                         Placeholder="Describe skills... (e.g. Backend Development, Cloud Architecture)"
                                         PlaceholderColor="#AAAAAA"
                                         VerticalTextAlignment="Start"
                                         HorizontalTextAlignment="Start"
-                                        TextColor="White"
+                                        TextColor="{DynamicResource TextColorProfile}"
                                         FontSize="16"
                                         Margin="10,0"
                                         AutoSize="TextChanges"/>
@@ -370,7 +370,7 @@
                                    VerticalOptions="Center"
                                    Grid.Column="1"/>
                             <ImageButton x:Name="SaveEventButton"
-                                         Source="edit_icon.png"
+                                         Source="{DynamicResource SaveButton}"
                                          BackgroundColor="Transparent"
                                          WidthRequest="24"
                                          HeightRequest="24"

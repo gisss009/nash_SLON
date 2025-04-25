@@ -73,6 +73,13 @@
     <Color x:Key="ShowAllProfile">DarkGray</Color>
     <!-- Цвет ивентов-->
     <Color x:Key="EventsColorProfile">#6D6D6D</Color>
-
+    <!-- Кнопка добавления ивента -->
+    <x:String x:Key="EventButton">addevent_icon1.png</x:String>
+    <!-- Кнопка редактирования -->
+    <x:String x:Key="EditButton">edit_icon.png</x:String>
+    <!-- Кнопка сохранения -->
+    <x:String x:Key="SaveButton">save_icon.png</x:String>
+    <!-- Кнопка добавления категории -->
+    <x:String x:Key="AddButton">add_icon.png</x:String>
 
 </ResourceDictionary>
