@@ -30,6 +30,8 @@ namespace SLON
         private DateTime _endDate = DateTime.Today;
         private string _originalEventHash = string.Empty; // Хранит хеш редактируемого события
 
+
+
         private readonly Dictionary<string, (string TagExample, string SkillExample)> categoryExamples = new() {
             {"IT", ("C# Python DevOps", "Backend Development, Cloud Architecture")},
             {"Creation", ("Photography Illustration Typography", "Graphic Design, 3D Modeling")},
@@ -41,18 +43,23 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
+
+
         private AuthService.UserProfile _currentProfile;
         public Profile()
         {
+
             InitializeComponent();
+
 
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
 
             _showMyEvents = true;
-            MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            InEventsButton.BackgroundColor = Colors.DarkGray;
+            MyEventsButton.BackgroundColor = (Color)Application.Current.Resources["ActiveButtonColorProfile"]; ;
+            InEventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorProfile"];
+
 
             events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
             events.Add((Guid.NewGuid().ToString(), "InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
@@ -61,6 +68,12 @@ namespace SLON
             events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
             events.Add((Guid.NewGuid().ToString(), "In", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
             RefreshEventsUI();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            MessagingCenter.Unsubscribe<MainPage>(this, "ThemeChanged");
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -839,6 +852,7 @@ namespace SLON
 
         private void RefreshEventsUI()
         {
+        
             EventsContainer.Children.Clear();
             var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
             var displayList = filtered.Take(3).ToList();
@@ -1114,14 +1128,14 @@ namespace SLON
             if (sender == InEventsButton)
             {
                 _showMyEvents = false;
-                InEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-                MyEventsButton.BackgroundColor = Colors.DarkGray;
+                InEventsButton.BackgroundColor = (Color)Application.Current.Resources["ActiveButtonColorProfile"];
+                MyEventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorProfile"];
             }
             else if (sender == MyEventsButton)
             {
                 _showMyEvents = true;
-                MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-                InEventsButton.BackgroundColor = Colors.DarkGray;
+                MyEventsButton.BackgroundColor = (Color)Application.Current.Resources["ActiveButtonColorProfile"];
+                InEventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorProfile"];
             }
             RefreshEventsUI();
         }

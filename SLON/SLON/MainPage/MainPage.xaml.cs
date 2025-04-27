@@ -505,6 +505,7 @@ namespace SLON
             {
                 EventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
                 ProfilesButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+
             }
             else
             {

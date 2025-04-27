@@ -71,7 +71,7 @@
     <!-- Цвет блоков -->
     <Color x:Key="BlockColorProfile">White</Color>
     <!-- Цвет кнопки ShowAll -->
-    <Color x:Key="ShowAllProfile">#6D6D6D</Color>
+    <Color x:Key="ShowAllProfile">#B9B9B9</Color>
     <!-- Цвет ивентов -->
     <Color x:Key="EventsColorProfile">#6D6D6D</Color>
     <!-- Кнопка добавления ивента -->
@@ -82,5 +82,9 @@
     <x:String x:Key="SaveButton">save_icon2.png</x:String>
     <!-- Кнопка добавления категории -->
     <x:String x:Key="AddButton">add_icon2.png</x:String>
+    <!-- Цвет неактивной кнопки -->
+    <Color x:Key="ButtonColorProfile">#B9B9B9</Color>
+    <!-- Цвет активной кнопки -->
+    <Color x:Key="ActiveButtonColorProfile">#915AC5</Color>
 
 </ResourceDictionary>
