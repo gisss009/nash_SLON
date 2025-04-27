@@ -5,6 +5,7 @@ using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using System.Globalization;
 
 namespace SLON
 {
@@ -15,6 +16,7 @@ namespace SLON
         public ICommand OnCardSwipedCommand { get; }
         // 0 - профили, 1 - ивенты
         public int ProfilesEventsButtonStatus = 0;
+        private List<Event> _allEventsCache;
 
         public MainPage()
         {
@@ -62,14 +64,15 @@ namespace SLON
                 }
             }
         }
-        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        protected override async void OnAppearing()
         {
-            base.OnNavigatedTo(args);
+            base.OnAppearing();
 
-            FillUserCards();
+            var username = AuthService.GetUsernameAsync();
+            Settings.Init(username);
 
-            Events.Clear();
-            FillEventsCards();
+            await FillEventsCardsAsync();
+            await FilterCards();
         }
 
         public async void FillUserCards()
@@ -81,7 +84,6 @@ namespace SLON
 
                 var currentUsername = AuthService.GetUsernameAsync();
 
-                // Получаем всех пользователей из базы
                 var allUsers = await AuthService.GetAllUsersAsync();
                 if (allUsers == null || !allUsers.Any())
                 {
@@ -106,7 +108,6 @@ namespace SLON
                     filteredUsers = FilterUsersByCategories(filteredUsers, selectedCategoriesList);
                 }
 
-                // Добавляем в коллекцию
                 foreach (var user in filteredUsers)
                 {
                     Users.Add(CreateUserModel(user));
@@ -169,7 +170,6 @@ namespace SLON
                 }
             }
 
-            // Передаём отдельно имя и фамилию
             return new User(
                 username: profile.username,
                 name: profile.name ?? "",
@@ -186,119 +186,46 @@ namespace SLON
         {
             return users.Where(user =>
             {
-                // Если у пользователя нет категорий - пропускаем
                 if (user.categories == null || !user.categories.Any())
                     return false;
 
-                // Проверяем пересечение категорий пользователя с выбранными
                 return user.categories.Intersect(selectedCategories).Any();
             }).ToList();
         }
 
-        public void FillEventsCards()
+        public async Task FillEventsCardsAsync()
         {
-            // Тестовые карточки событий с заполненными датами
-            Events.Add(new Event(1, "Tech Conference 2024", new List<string> { "Creation", "Education", "IT" },
-                "A conference on the latest trends in mobile app design, APIs, and UI/UX",
-                "Ulitsa 2-ya Krivorozhskaya, Rostov-on-Don", false, false)
+            var allEventsData = await AuthService.GetAllEventsAsync();
+            if (allEventsData == null) return;
+
+            if (_allEventsCache == null)
+                _allEventsCache = new List<Event>();
+
+            var currentUser = AuthService.GetUsernameAsync();
+            foreach (var ed in allEventsData)
             {
-                StartDate = new DateTime(2024, 5, 1),
-                EndDate = new DateTime(2024, 5, 3)
-            });
-            Events.Add(new Event(2, "Backend Development Workshop", new List<string> { "IT", "Science", "Business" },
-                "A hands-on workshop focusing on building high-performance APIs",
-                "Ulitsa Budennovskiy, Rostov-on-Don", false, false)
-            {
-                StartDate = new DateTime(2024, 6, 10),
-                EndDate = new DateTime(2024, 6, 10)
-            });
-            Events.Add(new Event(3, "React Masterclass", new List<string> { "Education", "Creation" },
-                "An in-depth session on mastering React and responsive design",
-                "Ulitsa Berzhaninova, Rostov-on-Don", true, true)
-            {
-                StartDate = new DateTime(2024, 7, 5),
-                EndDate = new DateTime(2024, 7, 5)
-            });
-            Events.Add(new Event(4, "AI and Machine Learning Summit", new List<string> { "Science", "IT", "Business" },
-                "A summit dedicated to AI advancements and machine learning applications",
-                "Ulitsa Chekistov, Rostov-on-Don", false, false)
-            {
-                StartDate = new DateTime(2024, 8, 15),
-                EndDate = new DateTime(2024, 8, 17)
-            });
-            Events.Add(new Event(5, "Social Media Marketing Bootcamp", new List<string> { "IT", "Education", "Social" },
-                "A bootcamp focused on building effective social media campaigns",
-                "Ulitsa Pushkinskaya, Rostov-on-Don", false, false)
-            {
-                StartDate = new DateTime(2024, 9, 1),
-                EndDate = new DateTime(2024, 9, 1)
-            });
-            Events.Add(new Event(6, "DevOps and Automation Training", new List<string> { "IT", "Science", "Education" },
-                "A training session on CI/CD pipelines and DevOps tools",
-                "Ulitsa Sovetskaya, Rostov-on-Don", true, true)
-            {
-                StartDate = new DateTime(2024, 10, 10),
-                EndDate = new DateTime(2024, 10, 11)
-            });
-            Events.Add(new Event(7, "Agile Project Management Seminar", new List<string> { "Business", "Education", "IT" },
-                "A seminar on Agile methodologies, Scrum, and Kanban",
-                "Ulitsa Lenina, Rostov-on-Don", false, false)
-            {
-                StartDate = new DateTime(2024, 11, 5),
-                EndDate = new DateTime(2024, 11, 5)
-            });
-            Events.Add(new Event(8, "Blockchain & Crypto Conference", new List<string> { "Science", "IT", "Business" },
-                "A conference focused on the latest in blockchain technology and smart contracts",
-                "Ulitsa Maksima Gorkogo, Rostov-on-Don", true, true)
-            {
-                StartDate = new DateTime(2024, 12, 1),
-                EndDate = new DateTime(2024, 12, 2)
-            });
-            Events.Add(new Event(9, "Content Writing for SEO", new List<string> { "Business", "Creation", "Education" },
-                "A workshop on creating SEO-friendly content for blogs and websites",
-                "Ulitsa Nekrasova, Rostov-on-Don", true, true)
-            {
-                StartDate = new DateTime(2024, 4, 20),
-                EndDate = new DateTime(2024, 4, 20)
-            });
-            Events.Add(new Event(10, "Cybersecurity Awareness Workshop", new List<string> { "Science", "IT", "Education" },
-                "A workshop on network security and ethical hacking",
-                "Ulitsa Molodezhnyy, Rostov-on-Don", true, true)
-            {
-                StartDate = new DateTime(2024, 3, 15),
-                EndDate = new DateTime(2024, 3, 15)
-            });
-            Events.Add(new Event(11, "Health & Wellness Expo", new List<string> { "Health", "Social" },
-                "An expo dedicated to wellness, fitness, and nutrition",
-                "Ulitsa Zdorovya, Rostov-on-Don", true, false)
-            {
-                StartDate = new DateTime(2024, 5, 20),
-                EndDate = new DateTime(2024, 5, 20)
-            });
-            Events.Add(new Event(12, "Health & Wellness Expo", new List<string> { "Health", "Social" },
-                "An expo dedicated to wellness, fitness, and nutrition",
-                "Ulitsa Zdorovya, Rostov-on-Don", true, false)
-            {
-                StartDate = new DateTime(2024, 5, 21),
-                EndDate = new DateTime(2024, 5, 21)
-            });
-            Events.Add(new Event(13, "Health & Wellness Expo", new List<string> { "Health", "Social" },
-                "An expo dedicated to wellness, fitness, and nutrition",
-                "Ulitsa Zdorovya, Rostov-on-Don", true, false)
-            {
-                StartDate = new DateTime(2024, 5, 22),
-                EndDate = new DateTime(2024, 5, 22)
-            });
-            Events.Add(new Event(14, "Health & Wellness Expo", new List<string> { "Health", "Social" },
-                    "An expo dedicated to wellness, fitness, and nutrition",
-                    "Ulitsa Zdorovya, Rostov-on-Don", true, false)
-            {
-                StartDate = new DateTime(2024, 5, 23),
-                EndDate = new DateTime(2024, 5, 23)
-            });
+                if (ed.owner == currentUser) continue;
+                if (_allEventsCache.Any(e => e.Hash == ed.hash)) continue;
+
+                var start = DateTime.ParseExact(ed.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                var end = DateTime.ParseExact(ed.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                _allEventsCache.Add(new Event(
+                    ed.hash, ed.name,
+                    ed.categories ?? new List<string>(),
+                    ed.description, ed.location,
+                    ed.@public == 1, ed.online == 1)
+                {
+                    StartDate = start,
+                    EndDate = end
+                });
+            }
+
+            Events.Clear();
+            foreach (var ev in _allEventsCache)
+                Events.Add(ev);
         }
 
-        public void FilterCards()
+        public async Task FilterCards()
         {
             if (ProfilesEventsButtonStatus == 0)
             {
@@ -309,7 +236,6 @@ namespace SLON
                 {
                     List<User> filteredUsers = new List<User>();
 
-                    // Если выбрана только одна категория:
                     if (Settings.selectedUserCategories.Count == 1)
                     {
                         var selectedCategory = Settings.selectedUserCategories.First();
@@ -320,14 +246,12 @@ namespace SLON
                         }
                         var allowedTags = TagCategories.Categories[selectedCategory];
 
-                        // Фильтруем только тех пользователей, у которых все теги принадлежат выбранной категории
                         filteredUsers = Users.Where(user =>
                             user.Tags.Any() && user.Tags.All(tag => allowedTags.Contains(tag))
                         ).ToList();
                     }
-                    else // Если выбрано 2 и более категорий
+                    else
                     {
-                        // Собираем объединённый набор разрешённых тегов из выбранных категорий
                         var allowedTags = new HashSet<string>();
                         foreach (var category in Settings.selectedUserCategories)
                         {
@@ -340,12 +264,10 @@ namespace SLON
                             }
                         }
 
-                        // Группа 1: пользователи, у которых все теги входят в разрешённый набор
                         var group1 = Users.Where(user =>
                             user.Tags.Any() && user.Tags.All(tag => allowedTags.Contains(tag))
                         ).ToList();
 
-                        // Группа 2: пользователи, у которых есть хотя бы один разрешённый тег, но не все теги из него
                         var group2 = Users.Where(user =>
                             user.Tags.Any(tag => allowedTags.Contains(tag)) &&
                             user.Tags.Any(tag => !allowedTags.Contains(tag))
@@ -354,7 +276,6 @@ namespace SLON
                         filteredUsers = group1.Concat(group2).ToList();
                     }
 
-                    // Очищаем исходную коллекцию и добавляем отфильтрованных пользователей
                     Users.Clear();
                     foreach (var user in filteredUsers)
                     {
@@ -363,23 +284,61 @@ namespace SLON
                     }
                 }
             }
-            else if (ProfilesEventsButtonStatus == 1) // Фильтрация событий (по категориям)
-            {
-                Events.Clear();
-                FillEventsCards();
-                var filteredEvents = Events.Where(ev =>
-                    (Settings.selectedEventCategories.Count == 0 ||
-                     ev.Categories.Any(tag => Settings.selectedEventCategories.Contains(tag)))
-                ).ToList();
+            else {
+                await FillEventsCardsAsync();
 
-                Events.Clear();
-                foreach (var ev in filteredEvents)
+                // 1) Фильтр по public/online только если они заданы
+                var list = Events.AsEnumerable();
+                if (Settings.SelectedEventIsPublic.HasValue)
+                    list = list.Where(ev => ev.IsPublic == Settings.SelectedEventIsPublic.Value);
+                if (Settings.SelectedEventIsOnline.HasValue)
+                    list = list.Where(ev => ev.IsOnline == Settings.SelectedEventIsOnline.Value);
+
+                // 2) Категории
+                var selCats = Settings.selectedEventCategories;
+                IEnumerable<Event> exactCats, partialCats;
+                if (selCats.Count == 0)
                 {
-                    Events.Add(ev);
-                    Debug.WriteLine($"Добавлено событие: {ev.Name}");
+                    exactCats = list;
+                    partialCats = Enumerable.Empty<Event>();
                 }
+                else
+                {
+                    // точные по набору и дополнительные
+                    exactCats = list.Where(ev => ev.Categories.Count == selCats.Count && selCats.All(c => ev.Categories.Contains(c)));
+                    partialCats = list.Where(ev => ev.Categories.Any(c => selCats.Contains(c)) && !(ev.Categories.Count == selCats.Count && selCats.All(c => ev.Categories.Contains(c))));
+                }
+
+                // 3) Диапазон дат
+                var sOpt = Settings.SelectedEventStartDate;
+                var eOpt = Settings.SelectedEventEndDate;
+                List<Event> final;
+                if (!sOpt.HasValue || !eOpt.HasValue)
+                {
+                    final = exactCats.Concat(partialCats).ToList();
+                }
+                else
+                {
+                    var s = sOpt.Value.Date;
+                    var e = eOpt.Value.Date;
+
+                    // точное совпадение
+                    var dateExact = exactCats.Where(ev => ev.StartDate.Date == s && ev.EndDate.Date == e);
+
+                    // полностью внутри диапазона
+                    var dateInside = exactCats.Concat(partialCats).Where(ev => ev.StartDate.Date >= s && ev.EndDate.Date <= e && !(ev.StartDate.Date == s && ev.EndDate.Date == e));
+
+                    // пересекающиеся (начинаются до конца диапазона и заканчиваются после начала)
+                    var dateOverlap = exactCats.Concat(partialCats).Where(ev => ev.StartDate.Date <= e&& ev.EndDate.Date >= s && !(ev.StartDate.Date >= s && ev.EndDate.Date <= e));
+
+                    final = dateExact.Concat(dateInside).Concat(dateOverlap).ToList();
+                }
+                Events.Clear();
+                foreach (var ev in final)
+                    Events.Add(ev);
             }
         }
+
 
         private async void OnCardSwiped(SwipedCardEventArgs e)
         {
@@ -387,28 +346,18 @@ namespace SLON
             {
                 if (e.Direction == SwipeCardDirection.Left)
                 {
-                    Debug.WriteLine($"Liked: {swipedUser.Name}");
+                    Debug.WriteLine($"Liked user: {swipedUser.Name}");
 
-                    // Сохраняем в базу данных
-                    string my_username = AuthService.GetUsernameAsync();
-                        
-                    bool success = await AuthService.AddSwipedUser(my_username, swipedUser.Username);
-                    if (!success)
-                    {
+                    var username = AuthService.GetUsernameAsync();
+                    bool saved = await AuthService.AddSwipedUser(username, swipedUser.Username);
+                    if (!saved)
                         Debug.WriteLine("Failed to save swiped user to server");
-                    }
 
-                    if (!Favourites.favorites.Any(u => u.Id == swipedUser.Id))
+                    if (!Favourites.favorites.Any(u => u.Username == swipedUser.Username))
                     {
-                        swipedUser.IsILikedHim = true;
                         Favourites.favorites.Add(swipedUser);
-
-                        // здесь проверка взаимного лайка
+                        Debug.WriteLine($"User {swipedUser.Username} added to favorites");
                     }
-                }
-                else if (e.Direction == SwipeCardDirection.Right)
-                {
-                    Debug.WriteLine($"Skipped: {swipedUser.Name}");
                 }
             }
             else if (e.Item is Event swipedEvent)
@@ -416,25 +365,36 @@ namespace SLON
                 if (e.Direction == SwipeCardDirection.Left)
                 {
                     Debug.WriteLine($"Liked event: {swipedEvent.Name}");
-                    if (!Favourites.favoriteEvents.Any(ev => ev.Id == swipedEvent.Id))
+
+                    var username = AuthService.GetUsernameAsync();
+
+                    bool savedSwipe = await AuthService.AddSwipedEvent(username, swipedEvent.Hash);
+                    if (!savedSwipe)
+                        Debug.WriteLine("Failed to save swiped event to server");
+
+                    bool addedMember = await AuthService.AddEventMemberAsync(username, swipedEvent.Hash);
+                    if (!addedMember)
+                        Debug.WriteLine("Failed to add event member on server");
+
+                    if (savedSwipe)
                     {
-                        Favourites.favoriteEvents.Add(swipedEvent);
-                        Debug.WriteLine($"Event {swipedEvent.Name} added to favorites");
+                        if (!Favourites.favoriteEvents.Any(ev => ev.Hash == swipedEvent.Hash))
+                        {
+                            Favourites.favoriteEvents.Add(swipedEvent);
+                            Debug.WriteLine($"Event {swipedEvent.Name} added to favorites");
+                        }
                     }
-                }
-                else if (e.Direction == SwipeCardDirection.Right)
-                {
-                    Debug.WriteLine($"Skipped event: {swipedEvent.Name}");
                 }
             }
         }
+
 
         private void OnButtonSettingsClicked(object sender, System.EventArgs e)
         {
             this.ShowPopupAsync(new MainPageSettings(this));
         }
 
-        public void OnEventsButtonClicked(object sender, EventArgs e)
+        public async void OnEventsButtonClicked(object sender, EventArgs e)
         {
             if (ProfilesEventsButtonStatus == 1) return;
             ProfilesEventsButtonStatus = 1;
@@ -442,7 +402,10 @@ namespace SLON
             ProfilesButton.BackgroundColor = Color.FromArgb("#292929");
             swipeCardView.IsVisible = false;
             swipeCardViewEvent.IsVisible = true;
+
+            await FilterCards();
         }
+
 
         public void OnProfilesButtonClicked(object sender, EventArgs e)
         {
@@ -452,7 +415,10 @@ namespace SLON
             EventsButton.BackgroundColor = Color.FromArgb("#292929");
             swipeCardView.IsVisible = true;
             swipeCardViewEvent.IsVisible = false;
+
+            FillUserCards();
         }
+
 
         public void OnButtonLupaClicked(object sender, EventArgs e)
         {

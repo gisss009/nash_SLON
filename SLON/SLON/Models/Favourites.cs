@@ -1,6 +1,7 @@
 ﻿using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace SLON.Models
 {
@@ -48,18 +49,27 @@ namespace SLON.Models
         /// </summary>
         public static async Task RefreshFavoritesAsync()
         {
-            // Получаем актуальные свайпнутые пользователи для текущего аккаунта
             var username = AuthService.GetUsernameAsync();
-            Debug.WriteLine($"[RefreshFavoritesAsync] Получен username: {username}");
-            var swiped = await AuthService.GetSwipedUsersAsync(username);
-            Debug.WriteLine($"[RefreshFavoritesAsync] Получено пользователей: {(swiped != null ? swiped.Count.ToString() : "null")}");
 
-            favorites = swiped ?? new List<User>();
+            // Свайпнутые пользователи
+            var swipedUsers = await AuthService.GetSwipedUsersAsync(username);
+            favorites = swipedUsers ?? new List<User>();
 
-            // Выведите содержимое favorites, чтобы убедиться, что список не пустой, если сервер вернул данные.
-            foreach (var user in favorites)
+            // Свайпнутые события
+            var swipedEvents = await AuthService.GetSwipedEventsAsync(username);
+            favoriteEvents.Clear();
+            foreach (var ed in swipedEvents)
             {
-                Debug.WriteLine($"[RefreshFavoritesAsync] Пользователь: {user.Username} - {user.Name}");
+                // Преобразуем EventData в Event-модель
+                var start = DateTime.ParseExact(ed.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                var end = DateTime.ParseExact(ed.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                var ev = new Event(ed.hash, ed.name, ed.categories, ed.description, ed.location,
+                                   ed.@public == 1, ed.online == 1)
+                {
+                    StartDate = start,
+                    EndDate = end
+                };
+                favoriteEvents.Add(ev);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Storage;
 using SLON.Models;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 
@@ -12,7 +13,7 @@ namespace SLON.Services
         private const string PasswordKey = "Password";
         private static readonly HttpClient _httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(10) // Таймаут, чтобы избежать зависания
+            Timeout = TimeSpan.FromSeconds(10)
         };
 
         // Установка статуса авторизации
@@ -92,8 +93,8 @@ namespace SLON.Services
                     retries++;
                     Console.WriteLine($"IsUsernameAndPasswordCorrect: Попытка {retries} из {maxRetries} завершилась ошибкой: {ex.Message}");
                     if (retries >= maxRetries)
-                        throw; // пробрасываем исключение, если попытки исчерпаны
-                    await Task.Delay(1000); // ждем 1 секунду перед новой попыткой
+                        throw;
+                    await Task.Delay(1000);
                 }
             }
             return false;
@@ -118,15 +119,10 @@ namespace SLON.Services
             catch (HttpRequestException)
             {
                 goto step;
-                //await Application.Current.MainPage.DisplayAlert("Error", $"Please wait.", "OK");
-                //return false;
             }
             catch (Exception ex)
             {
                 goto step;
-                //Console.WriteLine($"Неизвестная ошибка: {ex}");
-                //Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                //return false;
             }
         }
 
@@ -162,7 +158,6 @@ namespace SLON.Services
 
                 var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
-                // Явная проверка ответа сервера
                 if (jsonResponse?.ok == true)
                 {
                     Console.WriteLine("Category updated");
@@ -179,7 +174,6 @@ namespace SLON.Services
             }
         }
 
-        // Получение профиля пользователя
         public static async Task<UserProfile> GetUserProfileAsync(string username)
         {
             const int maxRetries = 3;
@@ -208,7 +202,6 @@ namespace SLON.Services
                         else
                         {
                             Console.WriteLine("Ошибка в ответе API: неверный формат данных.");
-                            // Здесь можно либо сразу выбросить исключение, либо повторить попытку
                             throw new Exception("Неверный формат данных в ответе API.");
                         }
                     }
@@ -224,13 +217,12 @@ namespace SLON.Services
                     Console.WriteLine($"Попытка {retries} из {maxRetries} завершилась ошибкой: {ex.Message}");
                     if (retries >= maxRetries)
                     {
-                        throw; // Если попытки закончились, пробрасываем исключение дальше
+                        throw; 
                     }
-                    await Task.Delay(1000); // Ждём 1 секунду перед следующей попыткой
+                    await Task.Delay(1000);
                 }
             }
 
-            // Если цикл завершился без возврата (этого формально быть не должно), возвращаем null или генерируем исключение
             return null;
         }
 
@@ -267,7 +259,6 @@ namespace SLON.Services
 
                     if (jsonResponse != null && jsonResponse.ok && jsonResponse.response.HasValue)
                     {
-                        // Преобразование JSON-данных в список EventData
                         var events = JsonSerializer.Deserialize<List<EventData>>(jsonResponse.response.Value.ToString());
                         Console.WriteLine(events.Count());
                         return events;
@@ -311,10 +302,8 @@ namespace SLON.Services
 
         public static async Task<EventData> AddEventAsync(EventData eventData)
         {
-            // URL теперь без параметров в строке
             var url = "http://139.28.223.134:5000/events";
 
-            // Собираем JSON-полезное тело
             var payload = JsonSerializer.Serialize(new
             {
                 name = eventData.name,
@@ -330,13 +319,11 @@ namespace SLON.Services
 
             using var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            // Делаем POST
             using var response = await _httpClient.PostAsync(url, content);
 
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            // Читаем и десериализуем ответ
             var body = await response.Content.ReadAsStringAsync();
             var jr = JsonSerializer.Deserialize<JsonResponse>(body);
             if (jr?.ok == true && jr.response.HasValue)
@@ -360,7 +347,6 @@ namespace SLON.Services
 
                 var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
-                // Явная проверка ответа сервера
                 if (jsonResponse?.ok == true)
                 {
                     Console.WriteLine("Event successfully created");
@@ -384,7 +370,6 @@ namespace SLON.Services
             {
                 var url = $"http://139.28.223.134:5000/users/update_profile?username={username}";
 
-                // Явно указываем какие поля мы можем обновлять
                 if (updates.ContainsKey("name"))
                     url += $"&name={Uri.EscapeDataString(updates["name"])}";
 
@@ -499,23 +484,20 @@ namespace SLON.Services
 
         public static async Task<bool> AddSwipedEvent(string username, string eventHash)
         {
-            step:
             try
             {
-                string url = $"http://139.28.223.134:5000/users/add_swiped_event?" +
-                           $"username={Uri.EscapeDataString(username)}" +
-                           $"&event_hash={Uri.EscapeDataString(eventHash)}";
+                var url = $"http://139.28.223.134:5000/users/add_swiped_event?" +
+                          $"username={Uri.EscapeDataString(username)}&event_hash={Uri.EscapeDataString(eventHash)}";
+                using var resp = await _httpClient.GetAsync(url);
+                if (!resp.IsSuccessStatusCode)
+                    return false;
 
-                var response = await _httpClient.GetAsync(url);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-
-                return jsonResponse?.ok ?? false;
+                var jr = JsonSerializer.Deserialize<JsonResponse>(await resp.Content.ReadAsStringAsync());
+                return jr?.ok ?? false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding swiped event: {ex.Message}");
-                goto step;
+                Debug.WriteLine($"AddSwipedEventAsync failed: {ex}");
                 return false;
             }
         }
@@ -567,11 +549,11 @@ namespace SLON.Services
                     return usersData.Select(u => new User(
                         username: u.username,
                         name: u.name,
-                        surname: u.surname, // Фамилия теперь передаётся
-                        tags: new List<string>(),  // Если теги не нужны, оставляем по умолчанию
+                        surname: u.surname,
+                        tags: new List<string>(),
                         vocation: u.vocation,
                         info: u.info,
-                        skills: ""  // При необходимости можно передать навыки
+                        skills: ""  
                     )
                     {
                         IsMutual = u.is_mutual,
@@ -590,12 +572,102 @@ namespace SLON.Services
             }
         }
 
+        public static async Task<List<EventData>> GetAllEventsAsync()
+        {
+            const int maxRetries = 3;
+            int retries = 0;
+            while (true)
+            {
+                try
+                {
+                    string url = "http://139.28.223.134:5000/events/get_all_events";
+                    var response = await _httpClient.GetAsync(url);
+                    var body = await response.Content.ReadAsStringAsync();
+                    Debug.WriteLine("[HTTP GET /events/get_all_events] Response body:");
+                    Debug.WriteLine(body);
+                    var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+                    if (jr?.ok == true && jr.response.HasValue)
+                    {
+                        return JsonSerializer.Deserialize<List<EventData>>(jr.response.Value.GetRawText());
+                    }
+                    return new List<EventData>();
+                }
+                catch
+                {
+                    retries++;
+                    if (retries >= maxRetries) throw;
+                    await Task.Delay(500);
+                }
+            }
+        }
+
+        public static async Task<List<EventData>> GetSwipedEventsAsync(string username)
+        {
+            string url = $"http://139.28.223.134:5000/users/get_swiped_events?username={Uri.EscapeDataString(username)}";
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return new List<EventData>();
+
+            var body = await response.Content.ReadAsStringAsync();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+            if (jr?.ok == true && jr.response.HasValue)
+            {
+                return JsonSerializer.Deserialize<List<EventData>>(jr.response.Value.GetRawText());
+            }
+            return new List<EventData>();
+        }
+
+        /// <summary>
+        /// Добавляет текущего пользователя в members события на сервере.
+        /// </summary>
+        public static async Task<bool> AddEventMemberAsync(string username, string eventHash)
+        {
+            var url = $"http://139.28.223.134:5000/events/add_event_member" +
+                      $"?username={Uri.EscapeDataString(username)}" +
+                      $"&hash={Uri.EscapeDataString(eventHash)}";
+
+            var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+                return false;
+
+            var body = await resp.Content.ReadAsStringAsync();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+            return jr?.ok ?? false;
+        }
+
+        public static async Task<bool> DeleteSwipedEventAsync(string username, string eventHash)
+        {
+            var url = $"http://139.28.223.134:5000/users/delete_swiped_event?" +
+                      $"username={Uri.EscapeDataString(username)}&event_hash={Uri.EscapeDataString(eventHash)}";
+
+            using var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+                return false;
+
+            var body = await resp.Content.ReadAsStringAsync();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+            return jr?.ok ?? false;
+        }
+
+        public static async Task<bool> RemoveEventMemberAsync(string username, string eventHash)
+        {
+            var url = $"http://139.28.223.134:5000/events/remove_event_member?" +
+                      $"username={Uri.EscapeDataString(username)}&hash={Uri.EscapeDataString(eventHash)}";
+
+            using var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+                return false;
+
+            var body = await resp.Content.ReadAsStringAsync();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+            return jr?.ok ?? false;
+        }
 
         public class UserData
         {
             public string username { get; set; }
             public string name { get; set; }
-            public string surname { get; set; }  // Добавлено поле фамилии
+            public string surname { get; set; }
             public string vocation { get; set; }
             public string info { get; set; }
             public bool is_mutual { get; set; }

@@ -2,6 +2,7 @@ using CommunityToolkit.Maui.Views;
 using SLON.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using SLON.Services;
 
 namespace SLON
 {
@@ -21,7 +22,7 @@ namespace SLON
         {
             InitializeComponent();
             BindingContext = this;
-            Instance = this; // Сохраняем ссылку на экземпляр
+            Instance = this;
         }
 
         // Изменённый метод OnAppearing: теперь он обновляет данные с сервера перед обновлением UI
@@ -30,7 +31,6 @@ namespace SLON
             base.OnAppearing();
             try
             {
-                // Обновляем локальные коллекции свайпнутых пользователей для текущего аккаунта
                 await Models.Favourites.RefreshFavoritesAsync();
             }
             catch (Exception ex)
@@ -81,7 +81,6 @@ namespace SLON
                     {
                         IsEvent = false,
                         UserData = user,
-                        // Объединяем имя и фамилию – если фамилия пустая, Trim() ничего не повредит
                         Title = $"{user.Name} {user.Surname}".Trim(),
                         Subtitle = user.Vocation,
                         IconSource = "default_profile_icon1.png",
@@ -140,24 +139,57 @@ namespace SLON
         #endregion
 
         #region Swipe Handlers
-
-        private void OnDeleteSwipeInvoked(object sender, EventArgs e)
+        private async void OnDeleteSwipeInvoked(object sender, EventArgs e)
         {
-            if (sender is SwipeItem swipeItem && swipeItem.BindingContext is LikeItem item)
+            if (!(sender is SwipeItem swipeItem && swipeItem.BindingContext is LikeItem item))
+                return;
+
+            var username = AuthService.GetUsernameAsync();
+
+            if (item.IsEvent && item.EventData != null)
             {
-                if (item.IsEvent && item.EventData != null)
+                var eventHash = item.EventData.Hash;
+                bool removedFromSwipes = false;
+                bool removedFromMembers = false;
+
+                try
+                {
+                    removedFromSwipes = await AuthService.DeleteSwipedEventAsync(username, eventHash);
+                    Debug.WriteLine($"DeleteSwipedEventAsync returned {removedFromSwipes}");
+                }
+                catch (HttpRequestException ex)
+                {
+                    Debug.WriteLine($"Error deleting swiped event: {ex}");
+                }
+
+                try
+                {
+                    removedFromMembers = await AuthService.RemoveEventMemberAsync(username, eventHash);
+                    Debug.WriteLine($"RemoveEventMemberAsync returned {removedFromMembers}");
+                }
+                catch (HttpRequestException ex)
+                {
+                    Debug.WriteLine($"Error removing event member: {ex}");
+                }
+
+                if (removedFromSwipes)
                 {
                     Favourites.favoriteEvents.Remove(item.EventData);
                     LikeItems.Remove(item);
                 }
-                else if (!item.IsEvent && item.UserData != null)
+                else
                 {
-                    Favourites.favorites.Remove(item.UserData);
-                    Favourites.mutual.Remove(item.UserData);
-                    LikeItems.Remove(item);
+                    await DisplayAlert("Ошибка", "Не удалось удалить событие с сервера.", "OK");
                 }
             }
+            else if (!item.IsEvent && item.UserData != null)
+            {
+                Favourites.favorites.Remove(item.UserData);
+                Favourites.mutual.Remove(item.UserData);
+                LikeItems.Remove(item);
+            }
         }
+
 
         private async void OnRightSwipeInvoked(object sender, EventArgs e)
         {

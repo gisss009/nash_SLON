@@ -124,20 +124,27 @@ namespace SLON
 
         private void OnSaveClicked(object sender, EventArgs e)
         {
-            // ��������� ��������� ���� � ���������� ��������� (������ ��� �������)
-            if (mainPage.ProfilesEventsButtonStatus == 1)
-            {
-                Settings.SelectedEventStartDate = startDatePicker.Date;
-                Settings.SelectedEventEndDate = endDatePicker.Date;
-            }
-            // ��������� ��������� ��������� �� ���������� � ����� �������
+            // 1) Сохраняем даты
+            Settings.SelectedEventStartDate = startDatePicker.Date;
+            Settings.SelectedEventEndDate = endDatePicker.Date;
+
+            // 2) Сохраняем категории
             Settings.selectedUserCategories = new HashSet<string>(tempSelectedUserCategories);
             Settings.selectedEventCategories = new HashSet<string>(tempSelectedEventCategories);
+
+            // 3) Сохраняем флаги Online/Public
             Settings.SelectedEventIsOnline = tempSelectedEventIsOnline;
             Settings.SelectedEventIsPublic = tempSelectedEventIsPublic;
+
+            Settings.Save();
+
+            // 4) Перезапускаем фильтрацию **до** закрытия попапа
             mainPage.FilterCards();
+
+            // 5) Закрываем попап
             Close();
         }
+
 
         private void OnEventTypeClicked(object sender, EventArgs e)
         {

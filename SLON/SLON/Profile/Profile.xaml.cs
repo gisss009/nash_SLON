@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SLON.Models;
 
 namespace SLON
 {
@@ -109,7 +110,9 @@ namespace SLON
 
             // Очищаем локальные коллекции избранного
             Models.Favourites.ResetFavorites();
+            SLON.Models.Settings.Save();
 
+            Settings.Init("");
             // Переходим на экран авторизации
             Application.Current.MainPage = new NavigationPage(new AuthPage());
         }
@@ -204,7 +207,6 @@ namespace SLON
             }
         }
 
-        // Keep only the async version that actually saves to server
         private async Task SaveProfileChanges()
         {
             try
@@ -212,7 +214,6 @@ namespace SLON
                 var username = AuthService.GetUsernameAsync();
                 var updates = new Dictionary<string, string>();
 
-                // Добавляем только измененные поля
                 if (NameInput.Text != _originalProfileData.Name)
                     updates["name"] = NameInput.Text;
 
@@ -225,7 +226,6 @@ namespace SLON
                 if (ResumeEditor.Text != _originalProfileData.Description)
                     updates["description"] = ResumeEditor.Text;
 
-                // Если нет изменений - просто выходим
                 if (updates.Count == 0)
                 {
                     return;
@@ -235,7 +235,6 @@ namespace SLON
 
                 if (success)
                 {
-                    // Обновляем оригинальные данные
                     _originalProfileData.Name = NameInput.Text;
                     _originalProfileData.Surname = SurnameInput.Text;
                     _originalProfileData.Vocation = VocationInput.Text;
@@ -261,13 +260,11 @@ namespace SLON
         {
             if (_originalProfileData == null) return;
 
-            // Восстанавливаем оригинальные значения
             NameInput.Text = _originalProfileData.Name;
             SurnameInput.Text = _originalProfileData.Surname;
             VocationInput.Text = _originalProfileData.Vocation;
             ResumeEditor.Text = _originalProfileData.Description;
 
-            // Обновляем UI
             UpdateProfileUI(_currentProfile);
         }
 
@@ -307,7 +304,6 @@ namespace SLON
 
             AvatarButton.Source = isEditing ? "edit_profile_avatar.png" : "default_profile_icon.png";
 
-            // Обновляем UI категорий
             RefreshCategoriesUI(_currentProfile);
 
             // Включаем/выключаем кнопки удаления
@@ -365,7 +361,6 @@ namespace SLON
         {
             if (!_isEditing) return;
 
-            // Получаем список доступных категорий
             var availableCategories = allCategories
                 .Except(_currentProfile?.categories ?? new List<string>())
                 .ToArray();
@@ -389,17 +384,14 @@ namespace SLON
             CategoryPopup.IsVisible = true;
             CategoryNameLabel.Text = categoryName;
 
-            // Устанавливаем цвет категории
             CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
 
-            // Получаем примеры для подсказок
             if (categoryExamples.TryGetValue(categoryName, out var examples))
             {
                 TagsEditor.Placeholder = $"Enter tags... (e.g. {examples.TagExample})";
                 SkillsEditor.Placeholder = $"Describe skills... (e.g. {examples.SkillExample})";
             }
 
-            // Получаем текущие теги и навыки для этой категории из профиля
             if (_currentProfile?.tags != null && _currentProfile.tags.TryGetValue(categoryName, out var currentTags))
             {
                 TagsEditor.Text = currentTags;
@@ -418,7 +410,6 @@ namespace SLON
                 SkillsEditor.Text = string.Empty;
             }
 
-            // Настройка режима редактирования
             if (!_isEditing)
             {
                 TagsEditor.IsReadOnly = true;
@@ -608,7 +599,6 @@ namespace SLON
 
                 if (success)
                 {
-                    // Обновляем профиль после удаления
                     _currentProfile = await AuthService.GetUserProfileAsync(username);
                     RefreshCategoriesUI(_currentProfile);
                 }
@@ -630,7 +620,6 @@ namespace SLON
             string tags = TagsEditor.Text?.Trim() ?? "";
             string skills = SkillsEditor.Text?.Trim() ?? "";
 
-            // Проверка
             if (string.IsNullOrWhiteSpace(tags) || string.IsNullOrWhiteSpace(skills))
             {
                 await DisplayAlert("Error", "Both Tags and Skills fields must be filled.", "OK");
@@ -644,7 +633,6 @@ namespace SLON
 
                 if (success)
                 {
-                    // Обновляем UI
                     _currentProfile = await AuthService.GetUserProfileAsync(username);
                     RefreshCategoriesUI(_currentProfile);
                     CategoryPopup.IsVisible = false;
@@ -674,7 +662,7 @@ namespace SLON
                 {
                     await DisplayAlert("Успех", "Мероприятие успешно удалено", "OK");
                     EventPopup.IsVisible = false;
-                    await RefreshEventsFromServer(); // Обновляем данные с сервера
+                    await RefreshEventsFromServer();
                 }
                 else
                 {
@@ -687,17 +675,14 @@ namespace SLON
 
         private async Task SaveEventChanges()
         {
-            // 0) Запомним, создавали ли мы ивент
             bool wasCreating = _isCreatingEvent;
 
-            // Анти-дубль-таймер
             if ((DateTime.Now - _lastSaveTime).TotalSeconds < 1)
                 return;
             _lastSaveTime = DateTime.Now;
 
             try
             {
-                // --- Сбор и валидация полей ---
                 string name = EventNameInput.Text?.Trim() ?? "";
                 string description = EventDescriptionInput.Text?.Trim() ?? "";
                 string location = EventLocationInput.Text?.Trim() ?? "";
@@ -723,7 +708,6 @@ namespace SLON
                     return;
                 }
 
-                // --- Проверка дубликата в локальном списке ---
                 bool isDuplicate = wasCreating
                     ? events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                     : events.Any(e => e.Hash != _originalEventHash
@@ -735,7 +719,6 @@ namespace SLON
                     return;
                 }
 
-                // --- Подготовка данных для API ---
                 var username = AuthService.GetUsernameAsync();
                 var payload = new AuthService.EventData
                 {
@@ -748,19 +731,15 @@ namespace SLON
                     date_to = _endDate.ToString("dd.MM.yyyy"),
                     @public = _isPublic ? 1 : 0,
                     online = _isOnline ? 1 : 0,
-                    // Передаём hash только при обновлении
                     hash = wasCreating ? null : _originalEventHash
                 };
 
-                // --- Вызов API создания или обновления ---
                 AuthService.EventData resultEvent = wasCreating
                     ? await AuthService.AddEventAsync(payload)
                     : await AuthService.UpdateEventAsync(payload);
 
-                // --- Обработка ответа ---
                 if (resultEvent != null)
                 {
-                    // Обновляем локальную коллекцию events
                     var idx = events.FindIndex(e => e.Hash == resultEvent.hash);
                     var tuple = (
                         resultEvent.hash,
@@ -780,7 +759,6 @@ namespace SLON
                     else
                         events.Add(tuple);
 
-                    // Показать правильное сообщение
                     string successMsg = wasCreating
                         ? "Мероприятие успешно создано!"
                         : "Мероприятие успешно обновлено!";
@@ -815,14 +793,8 @@ namespace SLON
                 {
                     await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
                 }
-                // await DisplayAlert("Ошибка", "Произошла неожиданная ошибка", "OK");
             }
         }
-
-
-
-
-
 
         private async Task RefreshEventsFromServer()
         {
@@ -865,17 +837,12 @@ namespace SLON
                 ? events.Where(ev => ev.IsMyEvent)
                 : events.Where(ev => !ev.IsMyEvent);
 
-            // Сортируем по дате начала
             var sorted = filtered
                 .OrderBy(ev => ev.StartDate)
                 .ToList();
 
-            // Показываем только три первых
             foreach (var ev in sorted.Take(3))
                 AddEventCard(ev.Hash, ev.Name, ev.IsMyEvent);
-
-            // Кнопка «Показать все» видна, только если больше трёх
-            // ShowAllEventsButton.IsVisible = sorted.Count > 3;
         }
 
 
