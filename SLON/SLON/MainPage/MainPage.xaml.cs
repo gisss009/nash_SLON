@@ -480,6 +480,7 @@ namespace SLON
                     mergedDictionaries.Add(new DarkTheme());
                     Theme.theme = true;
                 }
+
                 // Принудительно обновляем цвета кнопок
                 UpdateButtonColors();
 

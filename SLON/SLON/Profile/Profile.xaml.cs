@@ -50,15 +50,12 @@ namespace SLON
         {
 
             InitializeComponent();
+            UpdateButtonColorsProfile(); // Первоначальная установка цветов
 
 
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
-
-            _showMyEvents = true;
-            MyEventsButton.BackgroundColor = (Color)Application.Current.Resources["ActiveButtonColorProfile"]; ;
-            InEventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorProfile"];
 
 
             events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
@@ -70,10 +67,14 @@ namespace SLON
             RefreshEventsUI();
         }
 
-        protected override void OnDisappearing()
+
+        public void UpdateButtonColorsProfile()
         {
-            base.OnDisappearing();
-            MessagingCenter.Unsubscribe<MainPage>(this, "ThemeChanged");
+            // Для кнопок in/my
+            MyEventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                _showMyEvents ? "ActiveButtonColorProfile" : "ButtonColorProfile");
+            InEventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !_showMyEvents ? "ActiveButtonColorProfile" : "ButtonColorProfile");
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -161,6 +162,8 @@ namespace SLON
             SurnameInput.Text = profile?.surname ?? "";
             VocationInput.Text = profile?.vocation ?? "";
             ResumeEditor.Text = profile?.description ?? "";
+
+            UpdateButtonColorsProfile();
 
             RefreshCategoriesUI(profile);
         }
@@ -852,13 +855,15 @@ namespace SLON
 
         private void RefreshEventsUI()
         {
-        
+
             EventsContainer.Children.Clear();
             var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
             var displayList = filtered.Take(3).ToList();
             foreach (var ev in displayList)
                 AddEventCard(ev.Hash, ev.Name, ev.IsMyEvent);
             ShowAllEventsButton.IsVisible = true;
+
+            UpdateButtonColorsProfile();
         }
 
         private void AddEventCard(string eventHash, string eventName, bool isMyEvent)
@@ -1137,6 +1142,7 @@ namespace SLON
                 MyEventsButton.BackgroundColor = (Color)Application.Current.Resources["ActiveButtonColorProfile"];
                 InEventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorProfile"];
             }
+            UpdateButtonColorsProfile(); 
             RefreshEventsUI();
         }
 

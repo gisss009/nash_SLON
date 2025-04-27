@@ -86,5 +86,4 @@
     <Color x:Key="ButtonColorProfile">#B9B9B9</Color>
     <!-- Цвет активной кнопки -->
     <Color x:Key="ActiveButtonColorProfile">#915AC5</Color>
-
 </ResourceDictionary>
