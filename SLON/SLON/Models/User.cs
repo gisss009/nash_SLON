@@ -1,29 +1,68 @@
-﻿namespace SLON.Models
+﻿using System.ComponentModel;
+
+namespace SLON.Models
 {
-    public class User
+    public class User : INotifyPropertyChanged
     {
-        public int Id { get; set; }
+        public string Username { get; set; }
         public string Name { get; set; }       
-        public string Tags { get; set; }       
+        public string Surname { get; set; }
+        public new List<string> Tags { get; set; }       
         public string Vocation { get; set; }   
         public string Info { get; set; }     
-        public string Skills { get; set; }     
+        public string Skills { get; set; }
+        public string FullName => $"{Name} {Surname}";
 
-        public bool IsMutual { get; set; }     // Если true - во "взаимных"
-        public bool IsAcceptedMe { get; set; } // Принял ли он меня
-        public bool IsILikedHim { get; set; }  // Лайкнул ли я его
-
-        public User(int id, string name, string tags, string vocation, string info, string skills)
+        // Новый параметр для аватарки
+        private ImageSource _avatar;
+        public ImageSource Avatar
         {
-            Id = id;
+            get => _avatar;
+            set
+            {
+                if (_avatar != value)
+                {
+                    _avatar = value;
+                    OnPropertyChanged(nameof(Avatar));
+                }
+
+            }
+        }
+
+        private Color _cardColor = Color.FromArgb("#292929"); // исходный цвет
+        public Color CardColor
+        {
+            get => _cardColor;
+            set
+            {
+                if (_cardColor != value)
+                {
+                    _cardColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public User()
+        {
+        }
+
+
+        public User(string username, string name, string surname, List<string> tags, string vocation, string info, string skills)
+        {
+            Username = username;
             Name = name;
+            Surname = surname;
             Tags = tags;
             Vocation = vocation;
             Info = info;
             Skills = skills;
-            IsMutual = false;
-            IsAcceptedMe = false;
-            IsILikedHim = false;
+            Avatar = ImageSource.FromFile("avatar_placeholder.png");
         }
+
     }
 }

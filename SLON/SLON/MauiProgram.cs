@@ -14,14 +14,12 @@ namespace SLON
                 .UseMauiApp<App>()
                 .UseSwipeCardView()
                 .UseMauiCommunityToolkit()
-                .UseAcrylicView()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("MaterialSymbolsOutlined-Regular.ttf", "MaterialSymbolsOutlined");
                 });
-
 
     		builder.Logging.AddDebug();
             return builder.Build();

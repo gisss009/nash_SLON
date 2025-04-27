@@ -43,7 +43,7 @@
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#090909" BaseSize="244,197" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -56,11 +56,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="Models\Новая папка\**" />
+	  <Compile Remove="Models\Новая папка\**" />
+	  <EmbeddedResource Remove="Models\Новая папка\**" />
+	  <MauiCss Remove="Models\Новая папка\**" />
+	  <MauiXaml Remove="Models\Новая папка\**" />
+	  <None Remove="Models\Новая папка\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Remove="NewPage1.xaml.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Remove="NewPage1.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Models\data_time.png" />
+	  <None Remove="Resources\Images\data_time.png" />
+	  <None Remove="Resources\Images\slon_logo_authorization.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -81,22 +96,25 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="AddUsersToEventPopup.xaml">
+	  <MauiXaml Update="Favorites\AddUsersToEventPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="EventReadOnlyPopup.xaml">
+	  <MauiXaml Update="Services\AuthPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Favorites.xaml">
+	  <MauiXaml Update="Favorites\EventReadOnlyPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="MainPageSettings.xaml">
+	  <MauiXaml Update="Favorites\Favorites.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Profile.xaml">
+	  <MauiXaml Update="MainPage\MainPageSettings.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="RequestsAcceptedPage.xaml">
+	  <MauiXaml Update="Profile\Profile.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Favorites\RequestsAcceptedPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="SectionView.xaml">
@@ -104,4 +122,11 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningKeyStore>..\key.keystore</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>123asd</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>SlonAlias</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>123asd</AndroidSigningKeyPass>
+	</PropertyGroup>-->
 </Project>

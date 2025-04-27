@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+           x:Class="SLON.MainPageSettings"
+           Color="Transparent"
+           CanBeDismissedByTappingOutsideOfPopup="False">
+    <Border Stroke="Transparent" BackgroundColor="#292929" Padding="15" WidthRequest="360" HeightRequest="600">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="20" />
+        </Border.StrokeShape>
+        <ScrollView>
+            <VerticalStackLayout Spacing="15" Padding="0">
+                <!-- Заголовок -->
+                <Label Text="Select the desired categories"
+                       FontSize="20"
+                       HorizontalOptions="Center"
+                       TextColor="White"
+                       FontAttributes="Bold"/>
+                <!-- Основной блок с категориями и настройками событий -->
+                <Grid RowSpacing="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- Секция категорий -->
+                    <FlexLayout x:Name="categoriesContainer"
+                                  Grid.Row="0"
+                                  Wrap="Wrap"
+                                  Direction="Row"
+                                  JustifyContent="SpaceBetween"
+                                  AlignItems="Start"
+                                  AlignContent="Start"
+                                  Margin="0,5,0,10"/>
+                    <!-- Секция настроек событий -->
+                    <VerticalStackLayout x:Name="ForEvent" Grid.Row="1" Spacing="10" Padding="0">
+                        <Label Text="Event settings"
+                                       FontSize="20"
+                                       HorizontalOptions="Center"
+                                       TextColor="White"
+                                       FontAttributes="Bold"/>
+                        <!-- Вместо Grid вставляем общий HorizontalStackLayout -->
+                        <HorizontalStackLayout HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Spacing="20">
+                            <!-- Первая группа: Online + Offline -->
+                            <HorizontalStackLayout Spacing="0">
+                                <!-- Кнопка Online -->
+                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="15,0,15,0"/>
+                                    </Border.StrokeShape>
+                                    <Button x:Name="OnlineEvent"
+                                            Text="Online"
+                                            BackgroundColor="#292929"
+                                            TextColor="White"
+                                            Padding="15,8"
+                                            CornerRadius="0"
+                                            Clicked="OnEventTypeClicked"/>
+                                </Border>
+
+                                <!-- Кнопка Offline -->
+                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0,15,0,15"/>
+                                    </Border.StrokeShape>
+                                    <Button x:Name="OfflineEvent"
+                                            Text="Offline"
+                                            BackgroundColor="#8E44AD"
+                                            TextColor="White"
+                                            Padding="15,8"
+                                            CornerRadius="0"
+                                            Clicked="OnEventTypeClicked"/>
+                                </Border>
+                            </HorizontalStackLayout>
+
+                            <!-- Вторая группа: Public + Private -->
+                            <HorizontalStackLayout Spacing="0">
+                                <!-- Кнопка Public -->
+                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="15,0,15,0"/>
+                                    </Border.StrokeShape>
+                                    <Button x:Name="PublicEvent"
+                                            Text="Public"
+                                            BackgroundColor="#292929"
+                                            TextColor="White"
+                                            Padding="15,8"
+                                            CornerRadius="0"
+                                            Clicked="OnEventTypeClicked"/>
+                                </Border>
+
+                                <!-- Кнопка Private -->
+                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0,15,0,15"/>
+                                    </Border.StrokeShape>
+                                    <Button x:Name="PrivateEvent"
+                                            Text="Private"
+                                            BackgroundColor="#8E44AD"
+                                            TextColor="White"
+                                            Padding="15,8"
+                                            CornerRadius="0"
+                                            Clicked="OnEventTypeClicked"/>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
+                        <StackLayout>
+                            <!-- Label для даты -->
+                            <Label Text="Date"
+                                     FontSize="20"
+                                     TextColor="White"
+                                     HorizontalOptions="Center"
+                                     Margin="0,10,0,-10"
+                                     FontAttributes="Bold"/>
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <!-- Изображение -->
+                                <Image Source="Resources/Images/data_time.png"
+                                       WidthRequest="40"
+                                       HeightRequest="40"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Start"
+                                       Grid.Column="0"
+                                       Margin="0,19,0,0"/>
+                                <!-- Start Date Picker -->
+                                <DatePicker x:Name="startDatePicker"
+                                            BackgroundColor="#292929"
+                                            TextColor="White"
+                                            Margin="0,10,0,0"
+                                            VerticalOptions="Center"
+                                            Grid.Column="1"
+                                            FontSize="20"/>
+                                <!-- Разделитель -->
+                                <Label Text="-"
+                                       FontSize="20"
+                                       TextColor="White"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center"
+                                       Grid.Column="2"
+                                       Margin="0,10,0,10"/>
+                                <!-- End Date Picker -->
+                                <DatePicker x:Name="endDatePicker"
+                                            BackgroundColor="#292929"
+                                            TextColor="White"
+                                            Margin="0,10,0,0"
+                                            VerticalOptions="Center"
+                                            Grid.Column="3"
+                                            FontSize="20"/>
+                            </Grid>
+                        </StackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+                <!-- Кнопки управления -->
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" Padding="10,0,0,0">
+                    <Button Text="Close"
+                              BackgroundColor="#292929"
+                              TextColor="White"
+                              CornerRadius="15"
+                              BorderColor="White"
+                              BorderWidth="1"
+                              WidthRequest="140"
+                              FontAttributes="Bold"
+                              Clicked="OnCancelClicked" />
+                    <Button Text="Save"
+                              BackgroundColor="#292929"
+                              TextColor="White"
+                              CornerRadius="15"
+                              BorderColor="White"
+                              BorderWidth="1"
+                              WidthRequest="140"
+                              FontAttributes="Bold"
+                              Clicked="OnSaveClicked"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Border>
+</mct:Popup>
