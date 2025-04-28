@@ -13,7 +13,6 @@ namespace SLON.Models
         public string Skills { get; set; }
         public string FullName => $"{Name} {Surname}";
 
-        // Новый параметр для аватарки
         private ImageSource _avatar;
         public ImageSource Avatar
         {

@@ -79,9 +79,10 @@ namespace SLON
         }
 
         // Этот метод вызовется при каждом заходе на страницу через Shell
-        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
+
             if (_fromPage == "FavoritesPage")
             {
                 UsernameLabel.GestureRecognizers.Clear();
@@ -90,25 +91,45 @@ namespace SLON
                 EventsToggleLayout.IsVisible = false;
 
                 Shell.SetTabBarIsVisible(this, false);
-                var titleGrid = new Grid
-                {
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                };
-
-                titleGrid.Children.Add(new Label
-                {
-                    Text = $"@{_requestedUsername}",
-                    FontSize = 20,
-                    TextColor = Colors.White,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center
-                });
-
-                Shell.SetTitleView(this, titleGrid);
             }
 
             _ = LoadProfileAsync();
+
+            //try
+            //{
+            //    var username = AuthService.GetUsernameAsync();
+            //    _currentProfile = await AuthService.GetUserProfileAsync(username);
+
+            //    if (_currentProfile == null)
+            //    {
+            //        await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK");
+            //        return;
+            //    }
+            //    // Инициализируем оригинальные данные
+            //    _originalProfileData = new UserProfileEditModel
+            //    {
+            //        Name = _currentProfile.name ?? "",
+            //        Surname = _currentProfile.surname ?? "",
+            //        Vocation = _currentProfile.vocation ?? "",
+            //        Description = _currentProfile.description ?? "",
+            //        Categories = _currentProfile.categories ?? new List<string>()
+            //    };
+
+            //    UpdateProfileUI(_currentProfile);
+            //    await LoadAndRefreshEvents(username);
+            //    LoadAndUpdateAvatar();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Ошибка при загрузке данных: {ex}");
+            //    await DisplayAlert("Ошибка", "Произошла ошибка при загрузке данных", "OK");
+            //}
+        }
+        public async Task LoadAndUpdateAvatar(string username)
+        {
+            var avatarImage = await AuthService.GetUserAvatarAsync(username);
+
+            AvatarButton.Source = avatarImage ?? ImageSource.FromFile("default_profile_icon.png");
         }
 
         private async Task LoadProfileAsync()
@@ -129,23 +150,18 @@ namespace SLON
             }
             if (profile == null)
             {
-                // Показ ошибки тоже в UI-потоке
                 MainThread.BeginInvokeOnMainThread(async () =>
                     await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK"));
                 return;
             }
 
             Console.WriteLine(profile.username);
-            // 3) Получаем события (только данные, не трогаем UI)
             var eventsData = await AuthService.GetAllUserEventsAsync(usernameToLoad);
 
-            // 4) Всё готово — разово обновляем UI на главном потоке:
-            MainThread.BeginInvokeOnMainThread(() =>
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
-                // Back‑кнопка
                 NavigationPage.SetBackButtonTitle(this, "@" + usernameToLoad);
 
-                // Профиль
                 ExitAccIcon.IsVisible = usernameToLoad == AuthService.GetUsernameAsync();
                 UsernameLabel.Text = profile.username;
                 NameInput.Text = profile.name;
@@ -163,7 +179,8 @@ namespace SLON
                 };
 
                 UpdateProfileUI(profile);
-                LoadAndRefreshEvents(usernameToLoad);
+                await LoadAndRefreshEvents(usernameToLoad);
+                await LoadAndUpdateAvatar(usernameToLoad);
             });
 
         }
@@ -185,7 +202,7 @@ namespace SLON
             if (!confirm)
                 return;
 
-            await AuthService.ClearCredentialsAsync();
+            AuthService.ClearCredentials();
             AuthService.SetAuthenticated(false);
 
             Application.Current.MainPage = new NavigationPage(new AuthPage());
