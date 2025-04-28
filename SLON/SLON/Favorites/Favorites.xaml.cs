@@ -1,17 +1,21 @@
 using CommunityToolkit.Maui.Views;
 using SLON.Models;
+using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
+using SLON.Services;
 
 namespace SLON
 {
     public partial class Favorites : ContentPage
     {
-        // ����� �����������: Events (true) ��� Profiles (false)
+        // true – Events, false – Profiles
         private bool showingEvents = true;
-        // ��� ��������: All (true) ��� Mutual (false)
+        // true – All, false – Mutual
         private bool showingAll = true;
+        // true – показывать только Public события, false – только Private
+        private bool showingPublic = true;
+        public static Favorites Instance { get; private set; }
 
         private ObservableCollection<LikeItem> LikeItems { get; set; } = new();
 
@@ -21,39 +25,55 @@ namespace SLON
         {
             InitializeComponent();
             BindingContext = this;
+            Instance = this;
         }
 
-        protected override void OnAppearing()
+        // Изменённый метод OnAppearing: теперь он обновляет данные с сервера перед обновлением UI
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
+            try
+            {
+                await Models.Favourites.RefreshFavoritesAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error refreshing favorites: {ex.Message}");
+            }
             RefreshLikes();
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
-
-            
-
         }
 
-        private void RefreshLikes()
+        /// <summary>
+        /// Обновляет коллекцию лайков и обновляет UI.
+        /// </summary>
+        public void RefreshLikes()
         {
             LikeItems.Clear();
             OnPropertyChanged(nameof(IsChatAvailable));
 
             if (showingEvents)
             {
+                // вместо скрытия AllMutualStack теперь:
                 AllMutualStack.IsVisible = false;
+                EventFilterStack.IsVisible = true;
 
-                foreach (var ev in Favourites.favoriteEvents)
+                // фильтруем любимые события по Public/Private
+                var filtered = Favourites.favoriteEvents
+                    .Where(ev => ev.IsPublic == showingPublic);
+
+                foreach (var ev in filtered)
                 {
                     LikeItems.Add(new LikeItem
                     {
                         IsEvent = true,
                         EventData = ev,
                         Title = ev.Name,
-                        Subtitle = string.Join(", ", ev.Categories), // Преобразование списка в строку
+                        Subtitle = string.Join(", ", ev.Categories),
                         IconSource = "calendar_icon.png",
                         LeftSwipeIcon = "add_icon2.png"
                     });
@@ -61,8 +81,12 @@ namespace SLON
             }
             else
             {
+                EventFilterStack.IsVisible = false;
                 AllMutualStack.IsVisible = true;
-                var userCollection = showingAll ? Favourites.favorites.OfType<User>() : Favourites.mutual;
+
+                var userCollection = showingAll
+                    ? Favourites.favorites.OfType<User>()
+                    : Favourites.mutual;
 
                 foreach (var user in userCollection)
                 {
@@ -70,7 +94,7 @@ namespace SLON
                     {
                         IsEvent = false,
                         UserData = user,
-                        Title = user.Name,
+                        Title = $"{user.Name} {user.Surname}".Trim(),
                         Subtitle = user.Vocation,
                         IconSource = "default_profile_icon1.png",
                         LeftSwipeIcon = "chat_icon.png"
@@ -82,9 +106,24 @@ namespace SLON
             UpdateEmptyView();
         }
 
+        private void OnPublicClicked(object sender, EventArgs e)
+        {
+            showingPublic = true;
+            PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
+            PrivateButton.BackgroundColor = Colors.DarkGray;
+            RefreshLikes();
+        }
+
+        private void OnPrivateClicked(object sender, EventArgs e)
+        {
+            showingPublic = false;
+            PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
+            PublicButton.BackgroundColor = Colors.DarkGray;
+            RefreshLikes();
+        }
 
 
-        #region �������������
+        #region Обработчики переключения
 
         private void OnAllClicked(object sender, EventArgs e)
         {
@@ -107,6 +146,7 @@ namespace SLON
             showingEvents = true;
             EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
             ProfilesButton.BackgroundColor = Colors.DarkGray;
+            // оставляем previous public/private выбор, просто обновляем список
             RefreshLikes();
         }
 
@@ -118,9 +158,10 @@ namespace SLON
             RefreshLikes();
         }
 
+
         #endregion
 
-        #region �����������
+        #region Обработчики действий
 
         private async void OnBellClicked(object sender, EventArgs e)
         {
@@ -130,24 +171,78 @@ namespace SLON
         #endregion
 
         #region Swipe Handlers
-
-        private void OnDeleteSwipeInvoked(object sender, EventArgs e)
+        private async void OnDeleteSwipeInvoked(object sender, EventArgs e)
         {
-            if (sender is SwipeItem swipeItem && swipeItem.BindingContext is LikeItem item)
+            if (!(sender is SwipeItem swipeItem && swipeItem.BindingContext is LikeItem item))
+                return;
+
+            var username = AuthService.GetUsernameAsync();
+
+            if (item.IsEvent && item.EventData != null)
             {
-                if (item.IsEvent && item.EventData != null)
+                var eventHash = item.EventData.Hash;
+                bool removedFromSwipes = false;
+                bool removedFromMembers = false;
+
+                try
+                {
+                    removedFromSwipes = await AuthService.DeleteSwipedEventAsync(username, eventHash);
+                    Debug.WriteLine($"DeleteSwipedEventAsync returned {removedFromSwipes}");
+                }
+                catch (HttpRequestException ex)
+                {
+                    Debug.WriteLine($"Error deleting swiped event: {ex}");
+                }
+
+                try
+                {
+                    removedFromMembers = await AuthService.RemoveEventMemberAsync(username, eventHash);
+                    Debug.WriteLine($"RemoveEventMemberAsync returned {removedFromMembers}");
+                }
+                catch (HttpRequestException ex)
+                {
+                    Debug.WriteLine($"Error removing event member: {ex}");
+                }
+
+                if (removedFromSwipes)
                 {
                     Favourites.favoriteEvents.Remove(item.EventData);
                     LikeItems.Remove(item);
                 }
-                else if (!item.IsEvent && item.UserData != null)
+                else
+                {
+                    Console.WriteLine(item.UserData.Username);
+
+                    bool isSuccess = await AuthService.DeleteProfileSwipedUserAsync(item.UserData.Username);
+
+                    if (isSuccess)
+                    {
+                        Favourites.favorites.Remove(item.UserData);
+                        Favourites.mutual.Remove(item.UserData);
+                        LikeItems.Remove(item);
+                    }
+                    else
+                        await DisplayAlert("Try again", "Error deleting the user.", "OK");
+
+                }
+            }
+            else if (!item.IsEvent && item.UserData != null)
+            {
+                Console.WriteLine(item.UserData.Username);
+
+                bool isSuccess = await AuthService.DeleteProfileSwipedUserAsync(item.UserData.Username);
+
+                if (isSuccess)
                 {
                     Favourites.favorites.Remove(item.UserData);
                     Favourites.mutual.Remove(item.UserData);
                     LikeItems.Remove(item);
                 }
+                else
+                    await DisplayAlert("Try again", "Error deleting the user.", "OK");
             }
         }
+
 
         private async void OnRightSwipeInvoked(object sender, EventArgs e)
         {
@@ -158,7 +253,7 @@ namespace SLON
                     var ev = item.EventData;
                     if (!ev.IsPublic)
                     {
-                        await DisplayAlert("Event", "����� ���������, ������ �������� ����������", "OK");
+                        await DisplayAlert("Event", "Событие не является публичным, добавление пользователей недоступно", "OK");
                         return;
                     }
                     var popup = new AddUsersToEventPopup(ev);
@@ -168,7 +263,7 @@ namespace SLON
                 {
                     if (!IsChatAvailable)
                         return;
-                    await DisplayAlert("Chat", $"������ ��� � {item.Title}", "OK");
+                    await DisplayAlert("Chat", $"Открыт чат с {item.Title}", "OK");
                 }
             }
         }
@@ -184,7 +279,16 @@ namespace SLON
                 }
                 else if (!selectedItem.IsEvent && selectedItem.UserData != null)
                 {
-                    await DisplayAlert("User Info", $"�������� �������: {selectedItem.UserData.Name}", "OK");
+                    var profilePage = new Profile();
+
+                    var query = new Dictionary<string, object>
+            {
+                { "fromPage", "FavoritesPage" },
+                { "username", selectedItem.UserData.Username }
+            };
+                    profilePage.ApplyQueryAttributes(query);
+
+                    await Shell.Current.Navigation.PushAsync(profilePage);
                 }
             }
         }
@@ -195,7 +299,6 @@ namespace SLON
             EmptyViewLayout.IsVisible = isEmpty;
             likesCollectionView.IsVisible = !isEmpty;
         }
-
 
         #endregion
     }

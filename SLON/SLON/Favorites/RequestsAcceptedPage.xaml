@@ -56,53 +56,67 @@
         <CollectionView x:Name="UsersCollectionView" Margin="10">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Orientation="Horizontal"
-                                 Padding="5"
-                                 Margin="5"
-                                 BackgroundColor="#222222">
-
+                    <StackLayout Padding="10" Margin="5" BackgroundColor="#222222" Spacing="10">
                         <!-- Тап по профилю -->
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnUserTapped" />
                         </StackLayout.GestureRecognizers>
 
-                        <Image Source="default_profile_icon1.png"
-                               WidthRequest="50"
-                               HeightRequest="50"
-                               VerticalOptions="Center"/>
-                        <VerticalStackLayout Spacing="2" Margin="10,5,0,0">
-                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="16"/>
-                            <Label Text="{Binding Vocation}" TextColor="White" FontSize="14"/>
-                        </VerticalStackLayout>
+                        <!-- Верхняя часть: аватар + имя + описание -->
+                        <HorizontalStackLayout Spacing="10">
+                            <Image Source="default_profile_icon1.png"
+                                   WidthRequest="50"
+                                   HeightRequest="50"
+                                   VerticalOptions="Start"
+                                   Aspect="AspectFill"/>
 
-                        <!-- Кнопки Accept/Decline только в режиме Requests -->
-                        <Grid HorizontalOptions="EndAndExpand" VerticalOptions="Center">
+                            <VerticalStackLayout Spacing="2" VerticalOptions="CenterAndExpand">
+                                <Label Text="{Binding FullName}"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="1"
+                                    WidthRequest="280" />
+
+                                <Label Text="{Binding Vocation}"
+                                    TextColor="White"
+                                    FontSize="14"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="1"
+                                    WidthRequest="280" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <!-- Кнопки Accept / Decline -->
+                        <Grid ColumnSpacing="10"
+                              RowSpacing="0"
+                              Margin="0,5,0,0"
+                              IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
                             <Button Text="Decline"
-                                    TextColor="White"
-                                    BackgroundColor="Red"
-                                    Grid.Column="0"
-                                    IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
-                                    Clicked="OnDeclineClicked"
-                                    Margin="5,0,5,0"
-                                    WidthRequest="80"
-                                    HeightRequest="40"/>
+                    TextColor="White"
+                    BackgroundColor="#D9534F"
+                    CornerRadius="10"
+                    Grid.Column="0"
+                    Clicked="OnDeclineClicked"
+                    HeightRequest="40"/>
+
                             <Button Text="Accept"
-                                    TextColor="White"
-                                    BackgroundColor="Green"
-                                    Grid.Column="1"
-                                    IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
-                                    Clicked="OnAcceptClicked"
-                                    Margin="5,0,0,0"
-                                    WidthRequest="80"
-                                    HeightRequest="40"/>
+                    TextColor="White"
+                    BackgroundColor="#5CB85C"
+                    CornerRadius="10"
+                    Grid.Column="1"
+                    Clicked="OnAcceptClicked"
+                    HeightRequest="40"/>
                         </Grid>
                     </StackLayout>
                 </DataTemplate>
+
             </CollectionView.ItemTemplate>
         </CollectionView>
     </VerticalStackLayout>

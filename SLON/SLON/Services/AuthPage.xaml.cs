@@ -44,7 +44,7 @@ namespace SLON
 
         private async void OnSignUpClicked(object sender, EventArgs e)
         {
-            // эти проверки должны быть на сервере
+            // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (string.IsNullOrWhiteSpace(UsernameEntry.Text) ||
                 string.IsNullOrWhiteSpace(PasswordEntry.Text) ||
                 string.IsNullOrWhiteSpace(ConfirmPasswordEntry.Text))
@@ -67,7 +67,7 @@ namespace SLON
 
             bool reg = await AuthService.Register(UsernameEntry.Text, PasswordEntry.Text);
 
-            if (reg) // здесь проверка в базе на корректность введенных данных
+            if (reg) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             {
                 AuthService.SetAuthenticated(true);
                 AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
@@ -78,33 +78,26 @@ namespace SLON
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage.DisplayAlert("Ошибка", "This username is already exists!", "ОК");
+                    Application.Current.MainPage.DisplayAlert("пїЅпїЅпїЅпїЅпїЅпїЅ", "This username is already exists!", "пїЅпїЅ");
                 });
             }
         }
 
         private async void OnSignInClicked(object sender, EventArgs e)
         {
-            try
+            bool isCorrect = await AuthService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
+
+            if (isCorrect)
             {
-                bool isCorrect = await AuthService.IsUsernameAndPasswordCorrect(UsernameEntry.Text, PasswordEntry.Text);
-                if (isCorrect)
-                {
-                    AuthService.SetAuthenticated(true);
-                    AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
-                    await DisplayAlert("Login", "Successful login", "OK");
-                    Application.Current.MainPage = new AppShell();
-                }
-                else
-                {
-                    await DisplayAlert("Login", "Failed to log in.", "OK");
-                }
+                AuthService.SetAuthenticated(true);
+                AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
+                await DisplayAlert("Login", "Successful login", "OK");
+                Application.Current.MainPage = new AppShell();
             }
-            catch (Exception ex)
+            else
             {
-                await DisplayAlert("Ошибка", $"При входе произошла ошибка: {ex.Message}", "OK");
+                await DisplayAlert("Login", "Failed to log in.", "OK");
             }
         }
-
     }
 }

@@ -92,17 +92,33 @@
                                                 <Ellipse.StrokeThickness>2</Ellipse.StrokeThickness>
                                             </Ellipse>
                                             <Image Aspect="AspectFill" HeightRequest="100" 
-                                                   Source="Resources/Images/default_profile_icon.png" 
+                                                   Source="{Binding Avatar}" 
                                                    WidthRequest="100">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="50,50" RadiusX="50" RadiusY="50"/>
                                                 </Image.Clip>
                                             </Image>
                                         </Grid>
-                                        <VerticalStackLayout VerticalOptions="Center">
-                                            <Label Text="{Binding Name}" TextColor="White" FontSize="22" FontAttributes="Bold"/>
-                                            <Label Text="{Binding Vocation}" TextColor="White" FontSize="20"/>
+                                        <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                                            <Label Text="{Binding FullName}" 
+                                                   TextColor="White" 
+                                                   FontSize="22" 
+                                                   FontAttributes="Bold"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1"
+                                                   HorizontalOptions="Start"
+                                                   WidthRequest="200" />
+
+                                            <Label Text="{Binding Vocation}" 
+                                                   TextColor="White" 
+                                                   FontSize="18"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="2"
+                                                   HorizontalOptions="Start"
+                                                   WidthRequest="200" />
+
                                         </VerticalStackLayout>
+
                                     </HorizontalStackLayout>
                                     <Label Text="Tags" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Tags}"
