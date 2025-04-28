@@ -7,7 +7,7 @@
         <ScrollView>
             <VerticalStackLayout Padding="20" Spacing="20">
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
-                    <!-- Левая часть: аватар и @username -->
+                    <!-- Левая часть: аватар и username -->
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Start">
                         <Frame BackgroundColor="Transparent"
                                WidthRequest="120"
@@ -25,12 +25,33 @@
                                          Aspect="AspectFill"
                                          Clicked="OnAvatarButtonClicked" />
                         </Frame>
-                        <Label x:Name="UsernameLabel"
-                               Text="@username"
-                               HorizontalOptions="Center"
-                               TextColor="White"
-                               FontSize="16"
-                               Margin="0,5,0,0"/>
+                        <StackLayout Orientation="Vertical" HorizontalOptions="Center">
+                            <!-- Горизонтальный контейнер с иконкой и именем пользователя -->
+                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                <!-- Иконка выхода -->
+                                <Image x:Name="ExitAccIcon" 
+                                        Source="exit_acc_icon.png" 
+                                        HeightRequest="16" 
+                                        WidthRequest="16" 
+                                        VerticalOptions="Center">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnUsernameTapped"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <!-- Имя пользователя -->
+                                <Label x:Name="UsernameLabel"
+                                       Text="username"
+                                       FontSize="16"
+                                       TextColor="Azure"
+                                       VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnUsernameTapped"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                            <!-- Тонкая белая линия под именем для индикации кликабельности -->
+                            <BoxView HeightRequest="1" BackgroundColor="White" HorizontalOptions="FillAndExpand" Margin="0,2,0,0"/>
+                        </StackLayout>
                     </VerticalStackLayout>
 
                     <!-- Правая часть: поля Name, Surname, Vocation -->
@@ -38,7 +59,6 @@
                         <Entry x:Name="NameInput"
                                TextColor="White"
                                Placeholder="Name"
-                               PlaceholderColor="White"
                                FontSize="28"
                                FontAttributes="Bold"
                                IsReadOnly="True"
@@ -48,7 +68,6 @@
                         <Entry x:Name="SurnameInput"
                                TextColor="White"
                                Placeholder="Surname"
-                               PlaceholderColor="White"
                                FontSize="28"
                                FontAttributes="Bold"
                                IsReadOnly="True"
@@ -58,7 +77,6 @@
                         <Entry x:Name="VocationInput"
                                TextColor="White"
                                Placeholder="Vocation"
-                               PlaceholderColor="White"
                                FontSize="18"
                                IsReadOnly="True"
                                HorizontalTextAlignment="Start"
@@ -157,8 +175,8 @@
                                    TextColor="White"
                                    VerticalOptions="Center"
                                    HorizontalOptions="Start"/>
-                            
-                            <HorizontalStackLayout HorizontalOptions="End" Grid.Column="1">
+
+                            <HorizontalStackLayout x:Name ="EventsToggleLayout" HorizontalOptions="End" Grid.Column="1">
                                 <Border Padding="-10" Margin="0,5,0,0">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
@@ -231,9 +249,9 @@
                     <ScrollView>
                         <Editor x:Name="ResumeEditor"
                                 Placeholder="Write about yourself..."
-                                PlaceholderColor="White"
-                                BackgroundColor="#1E1E1E"
+                                BackgroundColor="Transparent"
                                 TextColor="White"
+                                FontAttributes="Bold"
                                 FontSize="16"
                                 AutoSize="TextChanges"
                                 IsReadOnly="True"/>
@@ -340,7 +358,7 @@
                     <ImageButton Source="delete_icon.png"
                                  WidthRequest="24"
                                  HeightRequest="24"
-                                 HorizontalOptions="End"
+                                 HorizontalOptions="Start"
                                  VerticalOptions="Start"
                                  Clicked="OnCloseAllEventsClicked"/>
                 </Grid>
@@ -362,7 +380,8 @@
                                          WidthRequest="24"
                                          HeightRequest="24"
                                          Clicked="OnCancelEventClicked"/>
-                            <Label Text="Create event card"
+                            <Label x:Name="EventPopupHeaderLabel"
+                                   Text="Create event card"
                                    FontSize="20"
                                    FontAttributes="Bold"
                                    TextColor="White"

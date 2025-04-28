@@ -98,7 +98,6 @@
                                                     <EllipseGeometry Center="50,50" RadiusX="50" RadiusY="50"/>
                                                 </Image.Clip>
                                             </Image>
-
                                         </Grid>
                                         <VerticalStackLayout VerticalOptions="Center">
                                             <Label Text="{Binding Name}" TextColor="White" FontSize="22" FontAttributes="Bold"/>

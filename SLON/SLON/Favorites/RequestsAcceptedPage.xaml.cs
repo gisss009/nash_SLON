@@ -1,6 +1,4 @@
-using CommunityToolkit.Maui.Core.Extensions;
 using SLON.Models;
-using SLON.Services;
 using System.Collections.ObjectModel;
 
 namespace SLON
@@ -10,7 +8,7 @@ namespace SLON
         private ObservableCollection<User> requestsList = new();
         private ObservableCollection<User> acceptedList = new();
 
-        // Привязка для кнопок Accept/Decline
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Accept/Decline
         public bool IsRequestsMode { get; set; } = true;
 
         public RequestsAcceptedPage()
@@ -18,67 +16,13 @@ namespace SLON
             InitializeComponent();
             BindingContext = this;
 
+            foreach (var user in Favourites.requests)
+                requestsList.Add(user);
+            foreach (var user in Favourites.accepted)
+                acceptedList.Add(user);
+
             ShowRequests();
         }
-
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-
-            requestsList.Clear();
-            acceptedList.Clear();
-
-            var reqs = await AuthService.GetRequestsUsersAsync();
-            foreach (var u in reqs)
-                requestsList.Add(u);
-
-            var accs = await AuthService.GetAcceptedUsersDataAsync();
-            foreach (var user in accs)
-            {
-                var u = new User(
-                    username: user.username,
-                    name: user.name,
-                    surname: user.surname,
-                    tags: default,
-                    vocation: user.vocation,
-                    info: default,
-                    skills: default
-                );
-                acceptedList.Add(u);
-            }
-
-            if (IsRequestsMode)
-                UsersCollectionView.ItemsSource = requestsList;
-            else
-                UsersCollectionView.ItemsSource = acceptedList;
-        }
-
-        //protected override async void OnNavigatedTo(NavigatedToEventArgs args)
-        //{
-        //    base.OnNavigatedTo(args);
-
-        //    List<User> reqs = await AuthService.GetRequestsUsersAsync();
-        //    Favourites.requests = reqs.ToObservableCollection();
-
-        //    List<AuthService.UserData> accss = await AuthService.GetAcceptedUsersDataAsync();
-
-        //    foreach (AuthService.UserData user in accss)
-        //    {
-        //        if (Favourites.accepted.Count(x => x.Username == user.username) > 0)
-        //            continue;
-
-        //        Favourites.accepted.Add(new User(
-        //            username: user.username,
-        //            name: user.name + user.surname,
-        //            tags: default,
-        //            vocation: user.vocation,
-        //            info: default,
-        //            skills: default
-        //            ));
-        //    }
-
-
-        //}
 
         private void OnBackClicked(object sender, EventArgs e)
         {
@@ -113,48 +57,25 @@ namespace SLON
             UsersCollectionView.ItemsSource = acceptedList;
         }
 
-        private async void OnDeclineClicked(object sender, EventArgs e)
+        private void OnDeclineClicked(object sender, EventArgs e)
         {
             if (sender is Button btn && btn.BindingContext is User user)
             {
-                bool isSuccess = await AuthService.DeclineUserAsync(user.Username);
-
-                if (isSuccess)
-                {
-                    requestsList.Remove(user);
-                    Favourites.requests.Remove(user);
-
-                    Console.WriteLine($"{user.Username} был declined.");
-
-                }
-                else
-                {
-                    await DisplayAlert("Error :(", $"An error occurred during acceptance", "OK");
-                }
+                requestsList.Remove(user);
+                Favourites.requests.Remove(user);
             }
         }
 
-        private async void OnAcceptClicked(object sender, EventArgs e)
+        private void OnAcceptClicked(object sender, EventArgs e)
         {
             if (sender is Button btn && btn.BindingContext is User user)
             {
-                bool isSuccess = await AuthService.AcceptUserAsync(user.Username);
+                user.IsMutual = true;
+                requestsList.Remove(user);
+                Favourites.requests.Remove(user);
 
-                if (isSuccess)
-                {
-                    requestsList.Remove(user);
-                    Favourites.requests.Remove(user);
-
-                    if (!Favourites.mutual.Any(u => u.Username == user.Username))
-                        Favourites.mutual.Add(user);
-
-                    Console.WriteLine($"{user.Username} был добавлен в Accepted");
-                }
-                else
-                {
-                    await DisplayAlert("Error :(", $"An error occurred during acceptance", "OK");
-                }
-
+                if (!Favourites.mutual.Any(u => u.Id == user.Id))
+                    Favourites.mutual.Add(user);
             }
         }
 
@@ -162,7 +83,7 @@ namespace SLON
         {
             if (sender is StackLayout layout && layout.BindingContext is User user)
             {
-                DisplayAlert("Profile Tapped", $"Нажат профиль: {user.Name}", "OK");
+                DisplayAlert("Profile Tapped", $"пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {user.Name}", "OK");
             }
         }
     }

@@ -3,8 +3,15 @@
     x:Class="SLON.Favorites"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:SLON.Models"
     x:Name="FavoritesPage"
     BackgroundColor="Black">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <models:ChatSwipeVisibilityConverter x:Key="ChatSwipeVisibilityConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
         <!-- Верхняя часть (заголовок + переключатели) -->
@@ -158,9 +165,17 @@
                                 <SwipeItems Mode="Execute">
                                     <SwipeItem BackgroundColor="Green"
                                                IconImageSource="{Binding LeftSwipeIcon}"
-                                               Invoked="OnRightSwipeInvoked"/>
+                                               Invoked="OnRightSwipeInvoked">
+                                        <SwipeItem.IsVisible>
+                                            <MultiBinding Converter="{StaticResource ChatSwipeVisibilityConverter}">
+                                                <Binding Path="IsEvent"/>
+                                                <Binding Source="{x:Reference FavoritesPage}" Path="BindingContext.IsChatAvailable"/>
+                                            </MultiBinding>
+                                        </SwipeItem.IsVisible>
+                                    </SwipeItem>
                                 </SwipeItems>
                             </SwipeView.RightItems>
+
 
                             <!-- Карточка с информацией -->
                             <Frame BackgroundColor="#222222"

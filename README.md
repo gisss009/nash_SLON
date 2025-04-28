@@ -13,3 +13,29 @@
 - Создание удобного интерфейса
 - Реализовать фильтр по тегам
 - Тестирование и запуск
+
+  Дизайн приложения: https://www.figma.com/design/pPzfEcWIxMnS5KpJv0LxZS/SLON?node-id=0-1&t=NzosNv71ZgvXEIeR-1
+
+## Превью дизайна
+
+- Профиль
+
+![Профиль](https://github.com/user-attachments/assets/f258748c-831f-4086-a669-66c3b3c7cf64)
+
+- Экран создания мероприятия
+
+![Мероприятие с онлайн](https://github.com/user-attachments/assets/f53bdf1d-80b2-48b8-a6a6-aff25b2c78cb)
+
+- Экран лайков
+
+![Общий экран лайков](https://github.com/user-attachments/assets/0e253050-ff57-49f9-afc5-5f99e3ac1141)
+
+- Запросы и Принятые
+
+![Экран с запросами](https://github.com/user-attachments/assets/25a93e2b-0109-44e8-9c78-c85aaabb4806)
+![Экран с принятыми](https://github.com/user-attachments/assets/7fc0525e-0741-40f2-9cff-8a0febab15de)
+
+- Добавление в чат\удаление
+
+![Добавление в чат\удаление](https://github.com/user-attachments/assets/b8252f35-0592-4ff7-b0a5-a9c8c449a9cd)
+

@@ -64,33 +64,37 @@ namespace SLON.Services
 
         public static async Task<bool> IsUsernameAndPasswordCorrect(string username, string password)
         {
-            string url = "http://139.28.223.134:5000/is_username_and_password_correct?username=" + username + "&password=" + password;
-
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseBody);
-
-            var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-
-            if (jsonResponse != null)
+            const int maxRetries = 3;
+            int retries = 0;
+            while (retries < maxRetries)
             {
-                Console.WriteLine($"ok: {jsonResponse.ok}");
-
-                if (jsonResponse.response.HasValue)
+                try
                 {
-                    if (jsonResponse.response.Value.ValueKind == JsonValueKind.True ||
-                        jsonResponse.response.Value.ValueKind == JsonValueKind.False)
+                    string url = $"http://139.28.223.134:5000/is_username_and_password_correct?username={username}&password={password}";
+                    HttpResponseMessage response = await _httpClient.GetAsync(url);
+                    string responseBody = await response.Content.ReadAsStringAsync();
+
+                    var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+                    if (jsonResponse != null && jsonResponse.response.HasValue)
                     {
-                        Console.WriteLine($"response: {jsonResponse.response.Value}");
-                        return jsonResponse.ok && jsonResponse.response.Value.GetBoolean(); // Возвращаем true только если оба значения true
+                        // Если response имеет тип логического значения, возвращаем результат
+                        if (jsonResponse.response.Value.ValueKind == JsonValueKind.True ||
+                            jsonResponse.response.Value.ValueKind == JsonValueKind.False)
+                        {
+                            return jsonResponse.ok && jsonResponse.response.Value.GetBoolean();
+                        }
+                        return false;
                     }
-
-                    Console.WriteLine($"response: {jsonResponse.response.Value}");
-                    return false; // Возвращаем true только если оба значения true
+                    return false;
                 }
-
-                Console.WriteLine("response is missing or null.");
-                return false; // Если response null, возвращаем false
+                catch (Exception ex)
+                {
+                    retries++;
+                    Console.WriteLine($"IsUsernameAndPasswordCorrect: Попытка {retries} из {maxRetries} завершилась ошибкой: {ex.Message}");
+                    if (retries >= maxRetries)
+                        throw; // пробрасываем исключение, если попытки исчерпаны
+                    await Task.Delay(1000); // ждем 1 секунду перед новой попыткой
+                }
             }
             return false;
         }
@@ -104,7 +108,6 @@ namespace SLON.Services
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
 
                 var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
 
@@ -248,99 +251,128 @@ namespace SLON.Services
         }
         public static async Task<List<EventData>> GetAllUserEventsAsync(string username)
         {
-            const string endpoint = "http://139.28.223.134:5000/users/get_all_user_events";
-            var result = new List<EventData>();
+            string url = $"http://139.28.223.134:5000/users/get_all_user_events?username={username}";
 
-            for (int attempt = 1; attempt <= 3; attempt++)
-            {
-                try
-                {
-                    // 1) Формируем URL
-                    string url = $"{endpoint}?username={Uri.EscapeDataString(username)}";
-
-                    // 2) Создаём HttpWebRequest, буферизуем и включаем автоматическое распаковывание
-                    var request = (HttpWebRequest)WebRequest.Create(url);
-                    request.Method = "GET";
-                    request.AllowReadStreamBuffering = true;
-                    request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-                    // 3) Получаем ответ
-                    using var response = (HttpWebResponse)await request.GetResponseAsync();
-                    using var stream = response.GetResponseStream();
-                    using var reader = new StreamReader(stream);
-
-                    // 4) Читаем весь JSON одним куском
-                    string json = await reader.ReadToEndAsync();
-
-                    // 5) Десериализуем обёртку
-                    var wrapper = JsonSerializer.Deserialize<JsonResponse>(json);
-                    if (wrapper?.ok == true && wrapper.response.HasValue)
-                    {
-                        // 6) Преобразуем внутренний массив в List<EventData>
-                        var events = JsonSerializer.Deserialize<List<EventData>>(
-                            wrapper.response.Value.GetRawText()
-                        );
-                        return events ?? new List<EventData>();
-                    }
-                    else
-                    {
-                        Console.WriteLine("GetAllUserEventsAsync: неожиданный формат ответа, повторяем.");
-                    }
-                }
-                catch (WebException wex) when (attempt < 3)
-                {
-                    Console.WriteLine(
-                        $"GetAllUserEventsAsync попытка {attempt} не удалась: {wex.Message}. Повтор через 500 мс");
-                    await Task.Delay(500);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"GetAllUserEventsAsync окончательно упала: {ex.Message}");
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-
-        public static async Task<bool> AddEventAsync(EventData eventData)
-        {
             Step:
             try
             {
-                string url = $"http://139.28.223.134:5000/events/add_event?" +
-                            $"name={Uri.EscapeDataString(eventData.name)}" +
-                            $"&owner={Uri.EscapeDataString(eventData.owner)}" +
-                            $"&categories={Uri.EscapeDataString(string.Join(",", eventData.categories))}" +
-                            $"&description={Uri.EscapeDataString(eventData.description)}" +
-                            $"&location={Uri.EscapeDataString(eventData.location)}" +
-                            $"&date_from={Uri.EscapeDataString(eventData.date_from)}" +
-                            $"&date_to={Uri.EscapeDataString(eventData.date_to)}" +
-                            $"&public={eventData.@public}" +
-                            $"&online={eventData.online}";
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
 
-                var response = await _httpClient.GetAsync(url);
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
-
-                // Явная проверка ответа сервера
-                if (jsonResponse?.ok == true)
+                if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("Event successfully created");
-                    return true;
-                }
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    //Console.WriteLine($"Server Response: {responseBody}");
 
-                return response.IsSuccessStatusCode;
+                    var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                    if (jsonResponse != null && jsonResponse.ok && jsonResponse.response.HasValue)
+                    {
+                        // Преобразование JSON-данных в список EventData
+                        var events = JsonSerializer.Deserialize<List<EventData>>(jsonResponse.response.Value.ToString());
+                        Console.WriteLine(events.Count());
+                        return events;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ошибка в ответе API: неверный формат данных.");
+                        goto Step;
+                        return null;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Ошибка HTTP: {response.StatusCode}");
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error Content: {errorContent}");
+                    goto Step;
+                    return null;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HttpRequestException: {ex.Message}");
+                goto Step;
+                return null;
+            }
+            catch (JsonException jsonEx)
+            {
+                Console.WriteLine($"Ошибка десериализации JSON: {jsonEx.Message}");
+                goto Step;
+                return null;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding event: {ex.Message}");
+                Console.WriteLine($"Произошла неизвестная ошибка: {ex.Message}");
                 goto Step;
+                return null;
+            }
+        }
+
+        private static string _lastSentHash = string.Empty;
+
+        public static async Task<bool> AddEventAsync(EventData eventData)
+        {
+            try
+            {
+                // Уникальный хеш на основе ключевых данных — чтобы не отправлять повторно
+                string currentHash = $"{eventData.name}_{eventData.date_from}_{eventData.owner}";
+                if (_lastSentHash == currentHash)
+                {
+                    Console.WriteLine("[DOTNET] Duplicate create request suppressed.");
+                    return false;
+                }
+
+                // Собираем URL
+                string url = $"http://139.28.223.134:5000/events/add_event?" +
+                             $"name={Uri.EscapeDataString(eventData.name)}" +
+                             $"&owner={Uri.EscapeDataString(eventData.owner)}" +
+                             $"&categories={Uri.EscapeDataString(string.Join(",", eventData.categories))}" +
+                             $"&description={Uri.EscapeDataString(eventData.description)}" +
+                             $"&location={Uri.EscapeDataString(eventData.location)}" +
+                             $"&date_from={Uri.EscapeDataString(eventData.date_from)}" +
+                             $"&date_to={Uri.EscapeDataString(eventData.date_to)}" +
+                             $"&public={eventData.@public}" +
+                             $"&online={eventData.online}";
+
+                Console.WriteLine("[DOTNET] Sending request to create event...");
+                var response = await _httpClient.GetAsync(url);
+
+                Console.WriteLine($"[DOTNET] Status: {(int)response.StatusCode} - {response.ReasonPhrase}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("[DOTNET] Request failed before reading response body.");
+                    return false;
+                }
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"[DOTNET] Server Response: {responseBody}");
+
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(responseBody);
+
+                if (jsonResponse?.ok == true)
+                {
+                    Console.WriteLine("[DOTNET] Event successfully created.");
+                    _lastSentHash = currentHash;
+                    return true;
+                }
+
+                Console.WriteLine("[DOTNET] Server responded with ok = false.");
+                return false;
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"[DOTNET] HttpRequestException: {httpEx.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DOTNET] Unexpected error: {ex.Message}");
                 return false;
             }
         }
+
+
 
         public static async Task<bool> DeleteEventAsync(string eventHash)
         {

@@ -21,10 +21,11 @@ namespace SLON
         public Favorites()
         {
             InitializeComponent();
+
             BindingContext = this;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
             RefreshLikes();
@@ -187,7 +188,16 @@ namespace SLON
                 }
                 else if (!selectedItem.IsEvent && selectedItem.UserData != null)
                 {
-                    await DisplayAlert("User Info", $"�������� �������: {selectedItem.UserData.Name}", "OK");
+                    var profilePage = new Profile();
+
+                    var query = new Dictionary<string, object>
+                    {
+                        { "fromPage", "FavoritesPage" },
+                        { "username", selectedItem.UserData.Username }
+                    };  
+                    profilePage.ApplyQueryAttributes(query);
+
+                    await Shell.Current.Navigation.PushAsync(profilePage);
                 }
             }
         }

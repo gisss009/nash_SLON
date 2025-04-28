@@ -1,14 +1,21 @@
-﻿using SLON.Services;
+﻿using Microsoft.Maui.Controls;
+using SLON.Models;
+using SLON.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Microsoft.Maui.Controls;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SLON
 {
-    public partial class Profile : ContentPage
+    public partial class Profile : ContentPage, IQueryAttributable
     {
+        private string _fromPage = string.Empty;
+        private string _requestedUsername = string.Empty;
+        private AuthService.UserProfile _currentProfile;
+        private UserProfileEditModel _originalProfileData;
+
         private bool _isEditing = false;          // Режим редактирования профиля
         private bool _isEditingEvent = false;     // Режим редактирования события
         private bool _isCreatingEvent = false;    // Режим создания нового события
@@ -41,11 +48,15 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
-        private AuthService.UserProfile _currentProfile;
         public Profile()
         {
             InitializeComponent();
+            InitializePage();
+            
+        }
 
+        public void InitializePage()
+        {
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
@@ -54,83 +65,132 @@ namespace SLON
             MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
             InEventsButton.BackgroundColor = Colors.DarkGray;
 
-            events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent3", "Education", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
-            events.Add((Guid.NewGuid().ToString(), "In", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
+            //events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
             RefreshEventsUI();
         }
 
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("fromPage", out var fromPageObj))
+                _fromPage = fromPageObj?.ToString() ?? string.Empty;
+
+            if (query.TryGetValue("username", out var userObj))
+                _requestedUsername = userObj?.ToString() ?? string.Empty;
+        }
+
+        // Этот метод вызовется при каждом заходе на страницу через Shell
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+            if (_fromPage == "FavoritesPage")
+            {
+                UsernameLabel.GestureRecognizers.Clear();
+                EditIcon.IsVisible = false;
+                AddEventIcon.IsVisible = false;
+                EventsToggleLayout.IsVisible = false;
+
+                Shell.SetTabBarIsVisible(this, false);
+                var titleGrid = new Grid
+                {
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                };
+
+                titleGrid.Children.Add(new Label
+                {
+                    Text = $"@{_requestedUsername}",
+                    FontSize = 20,
+                    TextColor = Colors.White,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center
+                });
+
+                Shell.SetTitleView(this, titleGrid);
+            }
+
+            _ = LoadProfileAsync();
+        }
+
+        private async Task LoadProfileAsync()
+        {
+            // 1) Решаем, кого грузим:
+            string usernameToLoad =
+                _fromPage == "FavoritesPage" && !string.IsNullOrWhiteSpace(_requestedUsername)
+                ? _requestedUsername
+                : AuthService.GetUsernameAsync();
+
+            // 2) Получаем профиль
+            var profile = await AuthService.GetUserProfileAsync(usernameToLoad);
+            _currentProfile = profile;
+
+            foreach (var item in profile.categories)
+            {
+                Console.WriteLine(item);
+            }
+            if (profile == null)
+            {
+                // Показ ошибки тоже в UI-потоке
+                MainThread.BeginInvokeOnMainThread(async () =>
+                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK"));
+                return;
+            }
+
+            Console.WriteLine(profile.username);
+            // 3) Получаем события (только данные, не трогаем UI)
+            var eventsData = await AuthService.GetAllUserEventsAsync(usernameToLoad);
+
+            // 4) Всё готово — разово обновляем UI на главном потоке:
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                // Back‑кнопка
+                NavigationPage.SetBackButtonTitle(this, "@" + usernameToLoad);
+
+                // Профиль
+                ExitAccIcon.IsVisible = usernameToLoad == AuthService.GetUsernameAsync();
+                UsernameLabel.Text = profile.username;
+                NameInput.Text = profile.name;
+                SurnameInput.Text = profile.surname;
+                VocationInput.Text = profile.vocation;
+                ResumeEditor.Text = profile.description;
+
+                _originalProfileData = new UserProfileEditModel
+                {
+                    Name = profile.name,
+                    Surname = profile.surname,
+                    Vocation = profile.vocation,
+                    Description = profile.description,
+                    Categories = profile.categories ?? new()
+                };
+
+                UpdateProfileUI(profile);
+                LoadAndRefreshEvents(usernameToLoad);
+            });
+
+        }
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
+            Console.WriteLine(_fromPage);
+            bool isForeign = _fromPage == "FavoritesPage";
+            Shell.SetTabBarIsVisible(this, !isForeign);
         }
 
-        //private async Task LoadProfileAsync()
-        //{
-        //    try
-        //    {
-        //        var username = AuthService.GetUsernameAsync();
-        //        // ... ваша логика загрузки профиля и событий ...
-
-        //        // загружаем Аватар только здесь
-        //        var uri = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
-        //        AvatarButton.Source = ImageSource.FromUri(uri);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex);
-        //    }
-        //}
-
-
-        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+        private async void OnUsernameTapped(object sender, EventArgs e)
         {
-            base.OnNavigatedTo(args);
+            string username = UsernameLabel.Text;
 
-            try
-            {
-                var username = AuthService.GetUsernameAsync();
-                _currentProfile = await AuthService.GetUserProfileAsync(username);
+            bool confirm = await DisplayAlert("Подтверждение",
+                 $"Вы уверены, что хотите выйти из аккаунта {username}?", "Да", "Нет");
 
-                if (_currentProfile == null)
-                {
-                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK");
-                    return;
-                }
+            if (!confirm)
+                return;
 
-                // Инициализируем оригинальные данные
-                _originalProfileData = new UserProfileEditModel
-                {
-                    Name = _currentProfile.name ?? "",
-                    Surname = _currentProfile.surname ?? "",
-                    Vocation = _currentProfile.vocation ?? "",
-                    Description = _currentProfile.description ?? "",
-                    Categories = _currentProfile.categories ?? new List<string>()
-                };
+            await AuthService.ClearCredentialsAsync();
+            AuthService.SetAuthenticated(false);
 
-                UpdateProfileUI(_currentProfile);
-                await LoadAndRefreshEvents(username);
-
-                LoadAndUpdateAvatar();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при загрузке данных: {ex}");
-                await DisplayAlert("Ошибка", "Произошла ошибка при загрузке данных", "OK");
-            }
+            Application.Current.MainPage = new NavigationPage(new AuthPage());
         }
 
-        public void LoadAndUpdateAvatar()
-        {
-            string username = AuthService.GetUsernameAsync();
-
-            var uri = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
-            AvatarButton.Source = ImageSource.FromUri(uri);
-        }
 
         private async Task LoadAndRefreshEvents(string username)
         {
@@ -173,16 +233,15 @@ namespace SLON
             public string Description { get; set; }
             public List<string> Categories { get; set; }
         }
-        private UserProfileEditModel _originalProfileData;
 
         private void UpdateProfileUI(AuthService.UserProfile profile)
         {
-            UsernameLabel.Text = "@" + (profile?.username ?? "");
-            NameInput.Text = profile?.name ?? "";
-            SurnameInput.Text = profile?.surname ?? "";
-            VocationInput.Text = profile?.vocation ?? "";
-            ResumeEditor.Text = profile?.description ?? "";
-
+            UsernameLabel.Text = profile?.username ?? "";
+            NameInput.Text = profile?.name ?? "Is empty :(";
+            SurnameInput.Text = profile?.surname ?? "Is empty :(";
+            VocationInput.Text = profile?.vocation ?? "Is empty :(";
+            ResumeEditor.Text = profile?.description ?? "Is empty :(";
+            
             RefreshCategoriesUI(profile);
         }
 
@@ -287,26 +346,6 @@ namespace SLON
             UpdateProfileUI(_currentProfile);
         }
 
-        private void AddCategoryProgrammatically(string categoryName)
-        {
-            if (!addedCategories.ContainsKey(categoryName))
-            {
-                // Добавляем категорию с пустыми тегами и навыками
-                addedCategories[categoryName] = (string.Empty, string.Empty);
-
-                // Обновляем интерфейс
-                RefreshCategoriesUI();
-
-                // Добавляем категорию в список всех доступных категорий (если нужно)
-                allCategories.Add(categoryName);
-
-                // Устанавливаем цвет для новой категории
-                Color categoryColor = GetCategoryColor(categoryName);
-                Console.WriteLine($"Category '{categoryName}' has color: {categoryColor}");
-            }
-        }
-
-
         #region Редактирование профиля
 
         private async void OnEditIconClicked(object sender, EventArgs e)
@@ -325,6 +364,23 @@ namespace SLON
             AddEventIcon.Opacity = isEditing ? 0.5 : 1;
             AddEventIcon.IsEnabled = !isEditing;
             ResumeEditor.Placeholder = isEditing ? "Write about yourself..." : "Description is empty";
+
+            if (isEditing)
+            {
+                NameInput.TextColor = Colors.LightGray;
+                SurnameInput.TextColor = Colors.LightGray;
+                VocationInput.TextColor = Colors.LightGray;
+                ResumeEditor.TextColor = Colors.LightGray;
+            }
+            else
+            {
+                NameInput.TextColor = Colors.White;
+                SurnameInput.TextColor = Colors.White;
+                VocationInput.TextColor = Colors.White;
+                ResumeEditor.TextColor = Colors.White;
+            }
+
+            AvatarButton.Source = isEditing ? "edit_profile_avatar.png" : "default_profile_icon.png";
 
             // Обновляем UI категорий
             RefreshCategoriesUI(_currentProfile);
@@ -348,10 +404,6 @@ namespace SLON
             }
         }
 
-        //private void SaveProfileChanges()
-        //{
-        //    DisplayAlert("Success", "Profile changes saved!", "OK");
-        //}
 
         #endregion
 
@@ -360,7 +412,6 @@ namespace SLON
         private async void OnAvatarButtonClicked(object sender, EventArgs e)
         {
             if (!_isEditing) return;
-
             try
             {
                 var result = await FilePicker.Default.PickAsync(new PickOptions
@@ -368,43 +419,16 @@ namespace SLON
                     PickerTitle = "Выберите изображение:",
                     FileTypes = FilePickerFileType.Images
                 });
-                if (result == null) return;
-
-                // Локальный preview
-                AvatarButton.Source = ImageSource.FromFile(result.FullPath);
-
-                // Получаем поток напрямую из FileResult
-                using var stream = await result.OpenReadAsync();
-
-                byte[] data;
-                using (var ms = new MemoryStream())
+                if (result != null)
                 {
-                    await stream.CopyToAsync(ms);
-                    data = ms.ToArray();
+                    AvatarButton.Source = ImageSource.FromFile(result.FullPath);
                 }
-
-
-                // Вызываем новый апи-метод
-                var ok = await AuthService.UploadUserAvatarAsync(data, result.FileName);
-                if (!ok)
-                {
-                    await DisplayAlert("Ошибка", "Не удалось загрузить аватар", "OK");
-                    return;
-                }
-
-                // Снова подгружаем с сервера
-
-                string username = AuthService.GetUsernameAsync();
-                var url = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
-                AvatarButton.Source = ImageSource.FromUri(url);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Что-то пошло не так: {ex.Message}", "OK");
+                await DisplayAlert("Ошибка", $"Не удалось загрузить изображение: {ex.Message}", "OK");
             }
         }
-
-
 
         #endregion
 
@@ -489,16 +513,6 @@ namespace SLON
             CategoryPopup.IsVisible = false;
         }
 
-        //private void OnSaveCategoryClicked(object sender, EventArgs e)
-        //{
-        //    string categoryName = CategoryNameLabel.Text;
-        //    addedCategories[categoryName] = (TagsEditor.Text, SkillsEditor.Text);
-
-        //    RefreshCategoriesUI();
-
-        //    CategoryPopup.IsVisible = false;
-        //}
-
         private void ToggleDeleteButtons(bool isVisible)
         {
             foreach (var frame in CategoriesGrid.Children.OfType<Frame>())
@@ -524,10 +538,14 @@ namespace SLON
             _isEditingEvent = false;
             ResetEventPopup();
             EventPopup.IsVisible = true;
+
+            
         }
 
         private void ResetEventPopup()
         {
+            bool _isMyEvent = _fromPage == "FavoritesPage";
+
             EventNameInput.Text = string.Empty;
             EventDescriptionInput.Text = string.Empty;
             EventLocationInput.Text = string.Empty;
@@ -557,7 +575,15 @@ namespace SLON
             EnableCategoryButtons(true);
             StartDatePicker.IsEnabled = true;
             EndDatePicker.IsEnabled = true;
+
+            _isCreatingEvent = true;
+            _isEditingEvent = false;
+            _originalEventHash = string.Empty;  
+
+            EventPopupHeaderLabel.Text = "Create event card";
+
         }
+
 
         private void ResetCategoryButtons()
         {
@@ -592,39 +618,16 @@ namespace SLON
             {
                 _isEditingEvent = !_isEditingEvent;
                 SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
-                UpdateEventPopupUI();
-            }
-        }
-
-        private void RefreshCategoriesUI()
-        {
-            CategoriesGrid.Children.Clear();
-            CategoriesGrid.RowDefinitions.Clear();
-
-            var catList = addedCategories.Keys.ToList();
-            int itemsPerRow = 3;
-            int totalCategories = catList.Count;
-            int rows = (int)Math.Ceiling((double)totalCategories / itemsPerRow);
-
-            for (int r = 0; r < rows; r++)
-            {
-                CategoriesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            }
-
-            int index = 0;
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < itemsPerRow; c++)
+                if (_isEditingEvent)
                 {
-                    if (index >= totalCategories)
-                        break;
-
-                    string categoryName = catList[index];
-                    var chip = CreateCategoryChip(categoryName);
-                    CategoriesGrid.Add(chip, c, r);
-
-                    index++;
+                    EventPopupHeaderLabel.Text = "Edit event card";
                 }
+                else
+                {
+                    EventPopupHeaderLabel.Text = "Event card";
+                }
+
+                UpdateEventPopupUI();
             }
         }
 
@@ -772,8 +775,14 @@ namespace SLON
             }
         }
 
+        private DateTime _lastSaveTime = DateTime.MinValue;
+
         private async void SaveEventChanges()
         {
+            if ((DateTime.Now - _lastSaveTime).TotalSeconds < 1)
+                return;
+
+            _lastSaveTime = DateTime.Now;
             try
             {
                 // 1. Валидация названия
@@ -783,7 +792,6 @@ namespace SLON
                     await DisplayAlert("Ошибка", "Название мероприятия не может быть пустым", "OK");
                     return;
                 }
-
                 if (name.Length > 50)
                 {
                     await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
@@ -810,7 +818,7 @@ namespace SLON
                 {
                     name = name,
                     owner = username,
-                    categories = selectedCategories,
+                    categories = new List<string>(selectedCategories),
                     description = EventDescriptionInput.Text?.Trim(),
                     location = EventLocationInput.Text?.Trim(),
                     date_from = _startDate.ToString("dd.MM.yyyy"),
@@ -825,22 +833,25 @@ namespace SLON
                 // 5. Логика сохранения в зависимости от режима
                 if (_isCreatingEvent)
                 {
-                    // Проверка на дубликаты (только для новых событий)
                     if (events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsMyEvent))
                     {
                         await DisplayAlert("Ошибка", "Мероприятие с таким названием уже существует", "OK");
                         return;
                     }
 
+                    if (string.IsNullOrEmpty(_originalEventHash))
+                    {
+                        _originalEventHash = Guid.NewGuid().ToString();
+                    }
+                    eventData.hash = _originalEventHash;
                     operation = "создано";
                     success = await AuthService.AddEventAsync(eventData);
                 }
                 else
                 {
-                    // Для редактирования подставляем исходный hash
                     eventData.hash = _originalEventHash;
                     operation = "обновлено";
-                    success = await AuthService.UpdateEventAsync(eventData); // Предполагается аналогичный метод в AuthService
+                    success = await AuthService.UpdateEventAsync(eventData);
                 }
 
                 // 6. Обработка результата
@@ -860,11 +871,8 @@ namespace SLON
                 Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
                 await DisplayAlert("Ошибка", "Произошла непредвиденная ошибка", "OK");
             }
-            finally
-            {
-                // Можно добавить скрытие индикатора загрузки
-            }
         }
+
 
         private async Task RefreshEventsFromServer()
         {
@@ -918,7 +926,7 @@ namespace SLON
                 CornerRadius = 10,
                 Padding = 10,
                 Margin = 5,
-                HeightRequest = 40
+                // HeightRequest = 40
             };
             var grid = new Grid();
             var label = new Label
@@ -959,14 +967,32 @@ namespace SLON
 
         private void OpenEventPopup(string eventHash, bool isEditing)
         {
+            // Если eventHash пустой, значит это режим создания.
             _isCreatingEvent = string.IsNullOrEmpty(eventHash);
+
+            if (_isCreatingEvent)
+            {
+                // Если создаем новое событие, устанавливаем заголовок:
+                EventPopupHeaderLabel.Text = "Create Event card";
+            }
+            else if (_isEditingEvent)
+            {
+                EventPopupHeaderLabel.Text = "Edit Event card";
+            }
+            else
+            {
+                EventPopupHeaderLabel.Text = "Event card";
+            }
+
             var eventData = _isCreatingEvent ? default : events.FirstOrDefault(e => e.Hash == eventHash);
             if (!_isCreatingEvent && string.IsNullOrEmpty(eventData.Name))
             {
                 DisplayAlert("Error", "Event not found.", "OK");
                 return;
             }
-            _originalEventHash = _isCreatingEvent ? "" : eventData.Hash;
+            _originalEventHash = _isCreatingEvent ? string.Empty : eventData.Hash;
+
+            // Заполняем поля данными или очищаем для создания нового события.
             EventNameInput.Text = _isCreatingEvent ? "" : eventData.Name;
             selectedCategories.Clear();
             if (!_isCreatingEvent)
@@ -1013,8 +1039,11 @@ namespace SLON
             }
             else
             {
-                SaveEventButton.IsVisible = true;
-                DeleteEventButton.IsVisible = !_isCreatingEvent;
+                // костыль?
+                bool isForeign = _fromPage == "FavoritesPage";
+
+                SaveEventButton.IsVisible = !isForeign;
+                DeleteEventButton.IsVisible = isForeign ? false : !_isCreatingEvent;
                 _isEditingEvent = false;
                 SaveEventButton.Source = "edit_icon.png";
                 UpdateEventPopupUI();
@@ -1199,6 +1228,50 @@ namespace SLON
             AllEventsContainer.Children.Clear();
             var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
             var sorted = filtered.OrderByDescending(ev => ev.StartDate).ToList();
+
+            if (sorted.Count == 0)
+            {
+                var emptyLayout = new VerticalStackLayout
+                {
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    Spacing = 20
+                };
+
+                var emptyImage = new Image
+                {
+                    Source = "slon.png",
+                    WidthRequest = 350,
+                    HeightRequest = 350,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center
+                };
+
+                var messageLabel = new Label
+                {
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    TextColor = Colors.White,
+                    FontAttributes = FontAttributes.Bold,
+                    FontSize = 21 
+                };
+
+                if (_showMyEvents)
+                {
+                    messageLabel.Text = "Create an event in profile!";
+                }
+                else
+                {
+                    messageLabel.Text = "Swipe events to participate!";
+                }
+
+                emptyLayout.Children.Add(emptyImage);
+                emptyLayout.Children.Add(messageLabel);
+
+                AllEventsContainer.Children.Add(emptyLayout);
+                return;
+            }
+
             foreach (var ev in sorted)
             {
                 var frame = new Frame

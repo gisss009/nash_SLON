@@ -44,7 +44,7 @@ namespace SLON
 
         private async void OnSignUpClicked(object sender, EventArgs e)
         {
-            // эти проверки должны быть на сервере
+            // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (string.IsNullOrWhiteSpace(UsernameEntry.Text) ||
                 string.IsNullOrWhiteSpace(PasswordEntry.Text) ||
                 string.IsNullOrWhiteSpace(ConfirmPasswordEntry.Text))
@@ -67,7 +67,7 @@ namespace SLON
 
             bool reg = await AuthService.Register(UsernameEntry.Text, PasswordEntry.Text);
 
-            if (reg) // здесь проверка в базе на корректность введенных данных
+            if (reg) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             {
                 AuthService.SetAuthenticated(true);
                 AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
@@ -78,7 +78,7 @@ namespace SLON
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage.DisplayAlert("Ошибка", "This username is already exists!", "ОК");
+                    Application.Current.MainPage.DisplayAlert("пїЅпїЅпїЅпїЅпїЅпїЅ", "This username is already exists!", "пїЅпїЅ");
                 });
             }
         }
