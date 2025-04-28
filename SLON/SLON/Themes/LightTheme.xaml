@@ -86,4 +86,8 @@
     <Color x:Key="ButtonColorProfile">#B9B9B9</Color>
     <!-- Цвет активной кнопки -->
     <Color x:Key="ActiveButtonColorProfile">#915AC5</Color>
+    <!-- Иконка календаря -->
+    <x:String x:Key="CalendarIcon">calendar_icon_w.png</x:String>
+    <!-- Цвет обводки кнопок -->
+    <Color x:Key="ButtonBorderProfile">Transparent</Color>
 </ResourceDictionary>

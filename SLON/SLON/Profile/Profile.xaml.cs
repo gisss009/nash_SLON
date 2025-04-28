@@ -75,6 +75,9 @@ namespace SLON
                 _showMyEvents ? "ActiveButtonColorProfile" : "ButtonColorProfile");
             InEventsButton.SetDynamicResource(Button.BackgroundColorProperty,
                 !_showMyEvents ? "ActiveButtonColorProfile" : "ButtonColorProfile");
+
+            MyEventsButton.SetDynamicResource(Button.BorderColorProperty, "ButtonBorderColorProfile");
+            InEventsButton.SetDynamicResource(Button.BorderColorProperty, "ButtonBorderColorProfile");
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -499,7 +502,7 @@ namespace SLON
 
             EventLocationInput.Placeholder = "Venue...";
             ResetCategoryButtons();
-            SaveEventButton.Source = "save_icon.png";
+            SaveEventButton.Source = (String)Application.Current.Resources["SaveButton"];
 
             SaveEventButton.IsVisible = true;
             DeleteEventButton.IsVisible = false;

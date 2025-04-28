@@ -159,7 +159,7 @@
                                    HorizontalOptions="Start"/>
                             
                             <HorizontalStackLayout HorizontalOptions="End" Grid.Column="1">
-                                <Border Padding="-10" Margin="0,5,0,0">
+                                <Border Padding="-10" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
                                     </Border.StrokeShape>
@@ -168,15 +168,15 @@
                                         FontSize="12"
                                         TextColor="White"
                                         BackgroundColor="{DynamicResource ButtonColorProfile}" 
-                                                                    CornerRadius="0"
-                                        BorderColor="{DynamicResource BorderColor}"
+                                        CornerRadius="0"
+                                        BorderColor="{DynamicResource ButtonBorderProfile}"
                                         BorderWidth="1"
                                         WidthRequest="70"
                                         HeightRequest="40"
                                         Clicked="OnInMyEventsButtonClicked"/>
                                 </Border>
 
-                                <Border Padding="-10" Margin="0,5,0,0">
+                                <Border Padding="-10" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="0,15,0,15"/>
                                     </Border.StrokeShape>
@@ -185,8 +185,8 @@
                                         FontSize="12"
                                         TextColor="White"
                                         BackgroundColor="{DynamicResource ActiveButtonColorProfile}" 
-                                                                    CornerRadius="0"
-                                        BorderColor="{DynamicResource BorderColor}"
+                                        CornerRadius="0"
+                                        BorderColor="{DynamicResource ButtonBorderProfile}"
                                         BorderWidth="1"
                                         WidthRequest="70"
                                         HeightRequest="40"
@@ -202,7 +202,7 @@
                                     Margin="0,10,0,10"/>
                         
                         <HorizontalStackLayout HorizontalOptions="End" Grid.Row="2">
-                            <Border Padding="-5" Margin="0,5,0,0">
+                            <Border Padding="-5" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="15,15,15,15"/>
                                 </Border.StrokeShape>
@@ -212,8 +212,8 @@
                                         TextColor="White"
                                         BackgroundColor="{DynamicResource ShowAllProfile}"
                                         CornerRadius="0"
-                                        BorderColor="White"
-                                        BorderWidth="0.1"
+                                        
+                                        BorderWidth="0"
                                         WidthRequest="110"
                                         HeightRequest="40"
                                         Clicked="OnShowAllEventsClicked"/>
@@ -378,7 +378,7 @@
                                          Grid.Column="2"/>
                         </Grid>
                         <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-5,0,0">
-                            <Border Padding="-15" Margin="0,5,0,0">
+                            <Border Padding="-15" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="15,0,15,0"/>
                                 </Border.StrokeShape>
@@ -388,13 +388,13 @@
                                         TextColor="White"
                                         BackgroundColor="{DynamicResource ActiveButtonColorProfile}"
                                         CornerRadius="0"
-                                        BorderColor="White"
+                                        BorderColor="{DynamicResource ButtonBorderProfile}"
                                         BorderWidth="0.1"
                                         WidthRequest="80"
                                         HeightRequest="60"
                                         Clicked="OnPublicPrivateButtonClicked"/>
                             </Border>
-                            <Border Padding="-15" Margin="0,5,5,0">
+                            <Border Padding="-15" Margin="0,5,5,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="0,15,0,15"/>
                                 </Border.StrokeShape>
@@ -404,7 +404,7 @@
                                         TextColor="White"
                                         BackgroundColor="{DynamicResource ButtonColorProfile}"
                                         CornerRadius="0"
-                                        BorderColor="White"
+                                        BorderColor="{DynamicResource ButtonBorderColorProfile}"
                                         BorderWidth="0.1"
                                         WidthRequest="80"
                                         HeightRequest="60"
@@ -532,7 +532,7 @@
                                Padding="10"
                                BorderColor="Transparent">
                             <HorizontalStackLayout>
-                                <Image Source="calendar_icon.png"
+                                <Image Source="{DynamicResource CalendarIcon}"
                                        WidthRequest="24"
                                        HeightRequest="24"
                                        VerticalOptions="Center"/>
@@ -580,7 +580,7 @@
                                     </ScrollView>
                                 </Frame>
                                 <HorizontalStackLayout HorizontalOptions="End">
-                                    <Border Padding="-20" Margin="0,0,0,92">
+                                    <Border Padding="-20" Margin="0,0,0,92" Stroke="{DynamicResource ButtonBorderProfile}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="15,0,15,0"/>
                                         </Border.StrokeShape>
@@ -597,7 +597,7 @@
                                             Clicked="OnLocationButtonClicked"/>
 
                                     </Border>
-                                    <Border Padding="-20" Margin="0,0,0,92">
+                                    <Border Padding="-20" Margin="0,0,0,92" Stroke="{DynamicResource ButtonBorderProfile}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="0,15,0,15"/>
                                         </Border.StrokeShape>
