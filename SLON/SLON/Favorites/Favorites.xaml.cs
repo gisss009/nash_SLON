@@ -12,6 +12,8 @@ namespace SLON
         private bool showingEvents = true;
         // true – All, false – Mutual
         private bool showingAll = true;
+        // true – показывать только Public события, false – только Private
+        private bool showingPublic = true;
         public static Favorites Instance { get; private set; }
 
         private ObservableCollection<LikeItem> LikeItems { get; set; } = new();
@@ -55,9 +57,15 @@ namespace SLON
 
             if (showingEvents)
             {
+                // вместо скрытия AllMutualStack теперь:
                 AllMutualStack.IsVisible = false;
+                EventFilterStack.IsVisible = true;
 
-                foreach (var ev in Favourites.favoriteEvents)
+                // фильтруем любимые события по Public/Private
+                var filtered = Favourites.favoriteEvents
+                    .Where(ev => ev.IsPublic == showingPublic);
+
+                foreach (var ev in filtered)
                 {
                     LikeItems.Add(new LikeItem
                     {
@@ -72,8 +80,12 @@ namespace SLON
             }
             else
             {
+                EventFilterStack.IsVisible = false;
                 AllMutualStack.IsVisible = true;
-                var userCollection = showingAll ? Favourites.favorites.OfType<User>() : Favourites.mutual;
+
+                var userCollection = showingAll
+                    ? Favourites.favorites.OfType<User>()
+                    : Favourites.mutual;
 
                 foreach (var user in userCollection)
                 {
@@ -92,6 +104,23 @@ namespace SLON
             likesCollectionView.ItemsSource = LikeItems;
             UpdateEmptyView();
         }
+
+        private void OnPublicClicked(object sender, EventArgs e)
+        {
+            showingPublic = true;
+            PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
+            PrivateButton.BackgroundColor = Colors.DarkGray;
+            RefreshLikes();
+        }
+
+        private void OnPrivateClicked(object sender, EventArgs e)
+        {
+            showingPublic = false;
+            PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
+            PublicButton.BackgroundColor = Colors.DarkGray;
+            RefreshLikes();
+        }
+
 
         #region Обработчики переключения
 
@@ -116,6 +145,7 @@ namespace SLON
             showingEvents = true;
             EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
             ProfilesButton.BackgroundColor = Colors.DarkGray;
+            // оставляем previous public/private выбор, просто обновляем список
             RefreshLikes();
         }
 
@@ -126,6 +156,7 @@ namespace SLON
             EventsButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
         }
+
 
         #endregion
 
