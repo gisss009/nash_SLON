@@ -228,18 +228,24 @@ namespace SLON
             }
             else if (!item.IsEvent && item.UserData != null)
             {
-                Console.WriteLine(item.UserData.Username);
-
-                bool isSuccess = await AuthService.DeleteProfileSwipedUserAsync(item.UserData.Username);
-
-                if (isSuccess)
+                if (showingAll)
                 {
+                    // как было: удаляем свайп
+                    await AuthService.DeleteProfileSwipedUserAsync(item.UserData.Username);
                     Favourites.favorites.Remove(item.UserData);
-                    Favourites.mutual.Remove(item.UserData);
-                    LikeItems.Remove(item);
                 }
                 else
-                    await DisplayAlert("Try again", "Error deleting the user.", "OK");
+                {
+                    // мы в режиме Mutual — удаляем взаимку
+                    bool ok = await AuthService.RemoveMutualUserAsync(AuthService.GetUsernameAsync(), item.UserData.Username);
+                    if (!ok)
+                    {
+                        await DisplayAlert("Error", "Не удалось удалить взаимный лайк", "OK");
+                        return;
+                    }
+                    Favourites.mutual.Remove(item.UserData);
+                }
+                LikeItems.Remove(item);
             }
         }
 

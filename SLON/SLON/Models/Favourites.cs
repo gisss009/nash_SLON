@@ -79,6 +79,10 @@ namespace SLON.Models
                 };
                 favoriteEvents.Add(ev);
             }
+
+            var mutualUsers = await AuthService.GetMutualUsersAsync(username);
+            mutual = new ObservableCollection<User>(mutualUsers);
+
         }
 
     }

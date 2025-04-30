@@ -127,6 +127,28 @@ namespace SLON.Services
             }
         }
 
+        // 1) Получение взаимных лайков
+        public static async Task<List<User>> GetMutualUsersAsync(string username)
+        {
+            string url = $"http://139.28.223.134:5000/likes/get_mutual?username={Uri.EscapeDataString(username)}";
+            var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode) return new List<User>();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(await resp.Content.ReadAsStringAsync());
+            if (jr?.ok != true || !jr.response.HasValue) return new List<User>();
+            var data = JsonSerializer.Deserialize<List<UserData>>(jr.response.Value.GetRawText());
+            return data.Select(u => new User(u.username, u.name, u.surname, new List<string>(), u.vocation, u.info, "")).ToList();
+        }
+
+        // 2) Удаление взаимного лайка
+        public static async Task<bool> RemoveMutualUserAsync(string username, string other)
+        {
+            string url = $"http://139.28.223.134:5000/likes/remove_mutual?username={Uri.EscapeDataString(username)}&username_to={Uri.EscapeDataString(other)}";
+            var resp = await _httpClient.PostAsync(url, null);
+            var jr = JsonSerializer.Deserialize<JsonResponse>(await resp.Content.ReadAsStringAsync());
+            return jr?.ok ?? false;
+        }
+
+
         public class UserProfile
         {
             public string username { get; set; }
