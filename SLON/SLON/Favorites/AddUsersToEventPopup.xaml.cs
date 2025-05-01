@@ -1,6 +1,6 @@
 using CommunityToolkit.Maui.Views;
 using SLON.Models;
-using System;
+using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -16,65 +16,109 @@ namespace SLON
             InitializeComponent();
             _event = ev;
             EventNameLabel.Text = $"Event: {ev.Name}";
-            LoadMutualUsers();
+            _ = InitializeAsync();
         }
 
-        private void LoadMutualUsers()
+        private async Task InitializeAsync()
         {
-            _mutualUsers = new ObservableCollection<UserSelectable>();
-
-            var addedUsers = _event.AddedParticipants.ToList();
-            var notAddedUsers = Favourites.mutual.Except(addedUsers).ToList();
-
-            foreach (var user in notAddedUsers)
+            // 1) Получаем детали события (включая members)
+            var data = await AuthService.GetEventDetailsAsync(_event.Hash);
+            if (data?.members != null)
             {
-                _mutualUsers.Add(new UserSelectable
+                _event.AddedParticipants.Clear();
+                foreach (var username in data.members)
+                {
+                    // Для каждого юзера подтягиваем профиль и строим модель User
+                    var profile = await AuthService.GetUserProfileAsync(username);
+                    if (profile != null)
+                    {
+                        var tagsList = profile.tags != null
+                            ? profile.tags.Values
+                                .SelectMany(t => t.Split(','))
+                                .Select(x => x.Trim())
+                                .Where(x => !string.IsNullOrEmpty(x))
+                                .ToList()
+                            : new List<string>();
+
+                        var skillsList = profile.skills != null
+                            ? profile.skills.Values.ToList()
+                            : new List<string>();
+
+                        var userModel = new User(
+                            profile.username,
+                            profile.name,
+                            profile.surname,
+                            tagsList,
+                            profile.vocation,
+                            profile.description,
+                            string.Join(", ", skillsList)
+                        );
+                        _event.AddedParticipants.Add(userModel);
+                    }
+                }
+            }
+            await LoadMutualUsers();
+        }
+
+        private async Task LoadMutualUsers()
+        {
+            // 2) Разбиваем mutual-пользователей на две группы
+            var notAdded = new List<UserSelectable>();
+            var already = new List<UserSelectable>();
+
+            foreach (var user in Favourites.mutual)
+            {
+                bool isAdded = _event.AddedParticipants.Any(u => u.Username == user.Username);
+                var item = new UserSelectable
                 {
                     User = user,
-                    Name = user.Name,
-                    IsSelected = false,
-                    IsAlreadyAdded = false
-                });
+                    Name = user.FullName,
+                    IsAlreadyAdded = isAdded,
+                    IsSelected = isAdded
+                };
+
+                if (isAdded) already.Add(item);
+                else notAdded.Add(item);
             }
 
-            foreach (var user in addedUsers)
-            {
-                _mutualUsers.Add(new UserSelectable
-                {
-                    User = user,
-                    Name = user.Name,
-                    IsSelected = true,
-                    IsAlreadyAdded = true
-                });
-            }
-
+            // Сначала не добавленные, потом уже добавленные
+            _mutualUsers = new ObservableCollection<UserSelectable>(notAdded.Concat(already));
             UsersCollectionView.ItemsSource = _mutualUsers;
-        }
-
-        private void OnCloseButtonClicked(object sender, EventArgs e)
-        {
-            Close();
         }
 
         private async void OnAddButtonClicked(object sender, EventArgs e)
         {
-            var selectedUsers = _mutualUsers
-                .Where(u => u.IsSelected && !u.IsAlreadyAdded)
-                .Select(u => u.User)
+            // 3) Выбираем только новых отмеченных
+            var toAdd = _mutualUsers
+                .Where(x => x.IsSelected && !x.IsAlreadyAdded)
+                .Select(x => x.User)
                 .ToList();
 
-            if (!selectedUsers.Any())
+            foreach (var user in toAdd)
             {
-                Close();
-                return;
+                // a) добавить в members события
+                bool okEv = await AuthService.AddEventMemberAsync(user.Username, _event.Hash);
+                // b) добавить ивент в профиль пользователя
+                bool okProf = await AuthService.AddProfileEventAsync(user.Username, _event.Hash);
+
+                if (okEv && okProf)
+                {
+                    _event.AddedParticipants.Add(user);
+                }
             }
 
-            _event.AddedParticipants.AddRange(selectedUsers);
-            string names = string.Join(", ", selectedUsers.Select(u => u.Name));
+            // 4) Перезагружаем список, чтобы новые добавленные ушли вниз и были с галочкой
+            await LoadMutualUsers();
 
-            await Application.Current.MainPage.DisplayAlert("Added",$"Пользователи [{names}] добавлены в группу ивента \"{_event.Name}\"", "OK");
-            Close();
+            await Application.Current.MainPage.DisplayAlert(
+                "Added",
+                $"Добавлено: {string.Join(", ", toAdd.Select(u => u.FullName))}",
+                "OK"
+            );
         }
+
+        private void OnCloseButtonClicked(object sender, EventArgs e)
+            => Close();
     }
 
     public class UserSelectable

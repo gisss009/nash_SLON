@@ -35,6 +35,10 @@ namespace SLON
             try
             {
                 await Models.Favourites.RefreshFavoritesAsync();
+                // Предзагружаем mutual пользователей
+                var username = AuthService.GetUsernameAsync();
+                var mutualUsers = await AuthService.GetMutualUsersAsync(username);
+                Favourites.mutual = new ObservableCollection<User>(mutualUsers);
             }
             catch (Exception ex)
             {
@@ -133,13 +137,24 @@ namespace SLON
             RefreshLikes();
         }
 
-        private void OnMutualClicked(object sender, EventArgs e)
+        private async void OnMutualClicked(object sender, EventArgs e)
         {
             showingAll = false;
             MutualButton.BackgroundColor = Color.FromArgb("#915AC5");
             AllButton.BackgroundColor = Colors.DarkGray;
+            try
+            {
+                var username = AuthService.GetUsernameAsync();
+                var fresh = await AuthService.GetMutualUsersAsync(username);
+                Favourites.mutual = new ObservableCollection<User>(fresh);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to refresh mutual: {ex}");
+            }
             RefreshLikes();
         }
+
 
         private void OnEventsClicked(object sender, EventArgs e)
         {
@@ -257,11 +272,13 @@ namespace SLON
                 if (item.IsEvent && item.EventData != null)
                 {
                     var ev = item.EventData;
-                    if (!ev.IsPublic)
+
+                    if (Favourites.mutual == null || Favourites.mutual.Count == 0)
                     {
-                        await DisplayAlert("Event", "Событие не является публичным, добавление пользователей недоступно", "OK");
+                        await DisplayAlert("Нет взаимных пользователей", "Ваш список взаимных лайков пуст. Вы не можете добавить никого в это событие.", "OK");
                         return;
                     }
+
                     var popup = new AddUsersToEventPopup(ev);
                     this.ShowPopup(popup);
                 }
@@ -273,6 +290,7 @@ namespace SLON
                 }
             }
         }
+
 
         private async void OnItemTapped(object sender, EventArgs e)
         {

@@ -138,7 +138,6 @@ namespace SLON.Services
             var data = JsonSerializer.Deserialize<List<UserData>>(jr.response.Value.GetRawText());
             return data.Select(u => new User(u.username, u.name, u.surname, new List<string>(), u.vocation, u.info, "")).ToList();
         }
-
         // 2) Удаление взаимного лайка
         public static async Task<bool> RemoveMutualUserAsync(string username, string other)
         {
@@ -164,7 +163,34 @@ namespace SLON.Services
             public Dictionary<string, string> skills { get; set; }
         }
 
+        /// <summary>
+        /// Получаем полные данные события, включая список участников.
+        /// </summary>
+        public static async Task<EventData> GetEventDetailsAsync(string hash)
+        {
+            string url = $"http://139.28.223.134:5000/events/get_event?hash={Uri.EscapeDataString(hash)}";
+            var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode) return null;
 
+            var body = await resp.Content.ReadAsStringAsync();
+            var jr = JsonSerializer.Deserialize<JsonResponse>(body);
+            if (jr.ok && jr.response.HasValue)
+                return JsonSerializer.Deserialize<EventData>(jr.response.Value.GetRawText());
+
+            return null;
+        }
+
+        /// <summary>
+        /// Добавляем ивент в список ивентов пользователя.
+        /// </summary>
+        public static async Task<bool> AddProfileEventAsync(string username, string eventHash)
+        {
+            string url = $"http://139.28.223.134:5000/users/add_profile_event?username={Uri.EscapeDataString(username)}&hash={Uri.EscapeDataString(eventHash)}";
+            var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode) return false;
+            var jr = JsonSerializer.Deserialize<JsonResponse>(await resp.Content.ReadAsStringAsync());
+            return jr?.ok ?? false;
+        }
         public static async Task<bool> UpdateProfileCategory(string username, string category,
     string tags, string skills)
         {
