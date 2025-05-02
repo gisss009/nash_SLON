@@ -68,12 +68,23 @@ namespace SLON
         {
             base.OnAppearing();
 
-            var username = AuthService.GetUsernameAsync();
-            Settings.Init(username);
+            // 1) Определяем своего пользователя
+            var myUsername = AuthService.GetUsernameAsync();
 
+            // 2) Обновляем локальный список взаимных лайков
+            await Models.Favourites.RefreshFavoritesAsync();
+            var mutualUsers = await AuthService.GetMutualUsersAsync(myUsername);
+            Models.Favourites.mutual = new ObservableCollection<User>(mutualUsers);
+
+            // 3) Инициализируем фильтры из сохранённых настроек
+            Settings.Init(myUsername);
+
+            // 4) Загружаем карточки и сразу применяем фильтрацию
             await FillEventsCardsAsync();
             await FilterCards();
         }
+
+
 
         public async void FillUserCards()
         {
@@ -207,34 +218,56 @@ namespace SLON
         public async Task FillEventsCardsAsync()
         {
             var allEventsData = await AuthService.GetAllEventsAsync();
-            if (allEventsData == null) return;
+            if (allEventsData == null)
+                return;
 
             if (_allEventsCache == null)
                 _allEventsCache = new List<Event>();
 
             var currentUser = AuthService.GetUsernameAsync();
+
             foreach (var ed in allEventsData)
             {
-                if (ed.owner == currentUser) continue;
-                if (_allEventsCache.Any(e => e.Hash == ed.hash)) continue;
+                // 1) Никогда не показываем СВОИ ивенты
+                if (ed.owner == currentUser)
+                    continue;
 
+                // 2) Приватные ивенты (public == 0) показываем ТОЛЬКО взаимным лайкам
+                if (ed.@public == 0 &&
+                    !Models.Favourites.mutual.Any(u => u.Username == ed.owner))
+                {
+                    continue;
+                }
+
+                // 3) Скипаем уже загруженные
+                if (_allEventsCache.Any(e => e.Hash == ed.hash))
+                    continue;
+
+                // 4) Парсим и добавляем
                 var start = DateTime.ParseExact(ed.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture);
                 var end = DateTime.ParseExact(ed.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+
                 _allEventsCache.Add(new Event(
-                    ed.hash, ed.name,
+                    ed.hash,
+                    ed.name,
                     ed.categories ?? new List<string>(),
-                    ed.description, ed.location,
-                    ed.@public == 1, ed.online == 1)
+                    ed.description,
+                    ed.location,
+                    ed.@public == 1,
+                    ed.online == 1)
                 {
                     StartDate = start,
                     EndDate = end
                 });
             }
 
+            // 5) Обновляем ObservableCollection для UI
             Events.Clear();
             foreach (var ev in _allEventsCache)
                 Events.Add(ev);
         }
+
+
 
         public async Task FilterCards()
         {

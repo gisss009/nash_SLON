@@ -35,7 +35,8 @@ namespace SLON
             // ������������� ��������� ����
             startDatePicker.Date = tempStartDate;
             endDatePicker.Date = tempEndDate;
-
+            startDatePicker.DateSelected += OnFilterStartDateSelected;
+            endDatePicker.DateSelected += OnFilterEndDateSelected;
             // ���������� ���� �������� ��� ������� ������ ���� ������ ����� �������
             ForEvent.IsVisible = (mainPage.ProfilesEventsButtonStatus == 1);
 
@@ -116,6 +117,45 @@ namespace SLON
                 }
             }
         }
+
+        /// <summary>
+        /// Срабатывает, когда пользователь меняет дату начала в фильтрах.
+        /// Обновляет минимально допустимую дату конца и, если нужно, поднимает конец до начала.
+        /// </summary>
+        private void OnFilterStartDateSelected(object sender, DateChangedEventArgs e)
+        {
+            tempStartDate = e.NewDate;
+
+            // Устанавливаем минимально допустимую дату в endDatePicker
+            endDatePicker.MinimumDate = e.NewDate;
+
+            // Если выбранная ранее tempEndDate была раньше нового начала — подтягиваем её
+            if (endDatePicker.Date < e.NewDate)
+                endDatePicker.Date = e.NewDate;
+        }
+
+        /// <summary>
+        /// Срабатывает, когда пользователь меняет дату конца в фильтрах.
+        /// Если новая дата < начала — отменяем выбор и показываем ошибку.
+        /// </summary>
+        private async void OnFilterEndDateSelected(object sender, DateChangedEventArgs e)
+        {
+            if (e.NewDate < startDatePicker.Date)
+            {
+                // Сообщаем об ошибке
+                await Application.Current.MainPage.DisplayAlert("Ошибка",
+                    "Дата окончания не может быть раньше даты начала.",
+                    "OK");
+
+                // Откатываем на максимально допустимую (равную началу)
+                endDatePicker.Date = startDatePicker.Date;
+            }
+            else
+            {
+                tempEndDate = e.NewDate;
+            }
+        }
+
 
         private void OnCancelClicked(object sender, EventArgs e)
         {
