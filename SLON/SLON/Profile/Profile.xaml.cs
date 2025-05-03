@@ -102,6 +102,22 @@ namespace SLON
             var profile = await AuthService.GetUserProfileAsync(usernameToLoad);
             _currentProfile = profile;
 
+            TagColorConverter.TagToCategory.Clear();
+            if (profile.tags != null)
+            {
+                foreach (var kv in profile.tags)
+                {
+                    string category = kv.Key;
+                    // profile.tags[kv.Key] — это строка "tag1, tag2, tag3"
+                    foreach (var raw in kv.Value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        var tag = raw.Trim();
+                        if (!string.IsNullOrEmpty(tag))
+                            TagColorConverter.TagToCategory[tag] = category;
+                    }
+                }
+            }
+
             foreach (var item in profile.categories)
             {
                 Console.WriteLine(item);

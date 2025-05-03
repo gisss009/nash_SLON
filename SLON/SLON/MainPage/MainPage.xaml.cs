@@ -88,43 +88,62 @@ namespace SLON
 
         public async void FillUserCards()
         {
+            // 1) Очищаем текущие результаты
             Users.Clear();
+
+            // 2) Сбрасываем словарь конвертера перед новой загрузкой
+            TagColorConverter.TagToCategory.Clear();
+
             try
             {
-                Users.Clear();
-
                 var currentUsername = AuthService.GetUsernameAsync();
-
                 var allUsers = await AuthService.GetAllUsersAsync();
+
                 if (allUsers == null || !allUsers.Any())
                 {
                     Debug.WriteLine("No users found in database");
                     return;
                 }
 
-                // Фильтруем: исключаем текущего пользователя и тех, кто уже был свайпнут
-                var filteredUsers = allUsers
-                    .Where(u => (u.username != currentUsername) 
-                                && (u.description != "") 
-                                && (u.username != "")
-                                && (u.surname != "")
-                                && (u.vocation != "")
-                                && (u.categories.Count >= 1))
+                // 3) Фильтруем: исключаем себя и неполные профили
+                var filteredProfiles = allUsers
+                    .Where(u =>
+                        u.username != currentUsername &&
+                        !string.IsNullOrWhiteSpace(u.description) &&
+                        !string.IsNullOrWhiteSpace(u.username) &&
+                        !string.IsNullOrWhiteSpace(u.surname) &&
+                        !string.IsNullOrWhiteSpace(u.vocation) &&
+                        u.categories != null && u.categories.Count >= 1)
                     .ToList();
 
-                // Применяем фильтр по категориям, если они выбраны
+                // 4) Если выбраны категории — применяем дополнительный фильтр
                 if (Settings.selectedUserCategories.Any())
                 {
-                    var selectedCategoriesList = Settings.selectedUserCategories.ToList();
-                    filteredUsers = FilterUsersByCategories(filteredUsers, selectedCategoriesList);
+                    filteredProfiles = FilterUsersByCategories(filteredProfiles, Settings.selectedUserCategories.ToList());
                 }
 
-                // Добавляем в коллекцию
-                foreach (var user in filteredUsers)
+                // 5) Проходим по каждому профилю, наполняем конвертер и создаём User-модель
+                foreach (var profile in filteredProfiles)
                 {
+                    // --- Наполняем словарь Tag -> Category для конвертера ---
+                    if (profile.tags != null)
+                    {
+                        foreach (var kv in profile.tags)
+                        {
+                            string category = kv.Key;
+                            foreach (var rawTag in kv.Value
+                                                      .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                      .Select(t => t.Trim())
+                                                      .Where(t => !string.IsNullOrEmpty(t)))
+                            {
+                                TagColorConverter.TagToCategory[rawTag] = category;
+                            }
+                        }
+                    }
+                    // ---------------------------------------------------------
 
-                    Users.Add(await CreateUserModelAsync(user));
-                    //Users.Add(CreateUserModel(user));
+                    // 6) Создаём и добавляем в коллекцию готовый User-объект
+                    Users.Add(await CreateUserModelAsync(profile));
                 }
             }
             catch (Exception ex)
@@ -132,6 +151,7 @@ namespace SLON
                 Debug.WriteLine($"Error loading users: {ex.Message}");
             }
         }
+
 
         private async Task<User> CreateUserModelAsync(AuthService.UserProfile profile)
         {
