@@ -150,7 +150,7 @@
                                     </Frame>
                                     <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
-                                        <Label Text="{Binding Info}" TextColor="White" FontSize="16" />
+                                        <Label Text="{Binding Info}" TextColor="White" FontSize="16" LineBreakMode="TailTruncation" MaxLines="3"/>
                                     </Frame>
                                 </VerticalStackLayout>
                             </Frame>
@@ -181,7 +181,7 @@
                                    BorderColor="#44414B">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <Label Text="{Binding Name}" TextColor="White" FontSize="22" FontAttributes="Bold"
-                                           HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                                           HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" MaxLines="2"/>
                                     <Label Text="{Binding DateRange}" TextColor="White" FontSize="18" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
                                     <Label Text="Categories" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Categories}"
@@ -209,9 +209,9 @@
                                     </FlexLayout>
                                     <Label Text="Location" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
-                                        <Label Text="{Binding Place}" TextColor="White" FontSize="17" />
+                                        <Label Text="{Binding Place}" TextColor="White" FontSize="17" LineBreakMode="TailTruncation" MaxLines="1"/>
                                     </Frame>
-                                    <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
+                                    <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" LineBreakMode="TailTruncation" MaxLines="2"/>
                                     <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
                                         <Label Text="{Binding Info}" TextColor="White" FontSize="17" />
                                     </Frame>

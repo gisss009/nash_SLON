@@ -18,6 +18,7 @@ namespace SLON
         private string _requestedUsername = string.Empty;
         private AuthService.UserProfile _currentProfile;
         private UserProfileEditModel _originalProfileData;
+        private bool _isForeignProfile = false;
 
         // Переключатель In/My: true – мои события, false – события, где я участвую
         private bool _showMyEvents = true;
@@ -83,6 +84,7 @@ namespace SLON
 
                 Shell.SetTabBarIsVisible(this, false);
             }
+            _isForeignProfile = _fromPage == "FavoritesPage";
 
             _ = LoadProfileAsync();
 
@@ -1047,10 +1049,14 @@ namespace SLON
                 OfflineButton.BackgroundColor = Color.FromArgb("#915AC5");
                 EventLocationInput.Placeholder = "Venue...";
             }
-            if (!eventData.IsMyEvent)
+            // разрешаем редактировать только свои ивенты в своём профиле
+            bool canEditEvent = !_isForeignProfile && eventData.IsMyEvent;
+            if (!canEditEvent)
             {
                 SaveEventButton.IsVisible = false;
                 DeleteEventButton.IsVisible = false;
+
+                // превращаем все поля в readonly
                 EventNameInput.IsReadOnly = true;
                 EventDescriptionInput.IsReadOnly = true;
                 EventLocationInput.IsReadOnly = true;
@@ -1060,6 +1066,7 @@ namespace SLON
             }
             else
             {
+                // свой ивент в своём профиле — показываем возможность редактировать
                 SaveEventButton.IsVisible = true;
                 DeleteEventButton.IsVisible = !_isCreatingEvent;
                 _isEditingEvent = false;
