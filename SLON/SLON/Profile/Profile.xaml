@@ -583,20 +583,39 @@
                                 <Frame BackgroundColor="#3D3D3D"
                                        CornerRadius="15"
                                        Padding="10"
-                                       BorderColor="Transparent">
-                                    <ScrollView VerticalOptions="FillAndExpand" HeightRequest="100">
-                                        <Editor x:Name="EventLocationInput"
-                                                Placeholder="Venue..."
-                                                TextColor="#FFFFFF"
-                                                FontSize="16"
-                                                AutoSize="TextChanges"
-                                                BackgroundColor="Transparent"
-                                                IsReadOnly="False"
-                                                Margin="0,8,0,0"/>
+                                       BorderColor="Transparent"
+                                       HeightRequest="120">
+                                    <!-- Фиксированная высота фрейма -->
+                                    <ScrollView VerticalOptions="FillAndExpand"
+                                                HorizontalOptions="FillAndExpand"
+                                                Orientation="Vertical">
+                                        <Grid Margin="0,15,0,0">
+                                            <Editor x:Name="EventLocationInput"
+                                                    Placeholder="Venue..."
+                                                    TextColor="#FFFFFF"
+                                                    FontSize="16"
+                                                    AutoSize="TextChanges"
+                                                    BackgroundColor="Transparent"
+                                                    IsVisible="False"
+                                                    VerticalOptions="Start"
+                                                    HorizontalOptions="FillAndExpand"/>
+
+                                            <Label x:Name="EventLocationLabel"
+                                                   VerticalOptions="Start"
+                                                   HorizontalOptions="FillAndExpand"
+                                                   FontSize="16"
+                                                   LineBreakMode="WordWrap"
+                                                   MaxLines="0">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Grid>
                                     </ScrollView>
                                 </Frame>
                                 <HorizontalStackLayout HorizontalOptions="End">
-                                    <Border Padding="-20" Margin="0,0,0,92">
+                                    <Border Padding="-10" Margin="0,0,0,90">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="15,0,15,0"/>
                                         </Border.StrokeShape>
@@ -608,11 +627,11 @@
                                                 CornerRadius="0"
                                                 BorderColor="White"
                                                 BorderWidth="0.1"
-                                                WidthRequest="80"
-                                                HeightRequest="40"
+                                                WidthRequest="70"
+                                                HeightRequest="45"
                                                 Clicked="OnLocationButtonClicked"/>
                                     </Border>
-                                    <Border Padding="-20" Margin="0,0,0,92">
+                                    <Border Padding="-10" Margin="0,0,0,90">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="0,15,0,15"/>
                                         </Border.StrokeShape>
@@ -624,8 +643,8 @@
                                                 CornerRadius="0"
                                                 BorderColor="White"
                                                 BorderWidth="0.1"
-                                                WidthRequest="80"
-                                                HeightRequest="40"
+                                                WidthRequest="70"
+                                                HeightRequest="45"
                                                 Clicked="OnLocationButtonClicked"/>
                                     </Border>
                                 </HorizontalStackLayout>

@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Maui.Controls;
 using SLON.Models;
-
+using System.Text.RegularExpressions;
 namespace SLON
 {
     public partial class Profile : ContentPage
@@ -54,6 +54,7 @@ namespace SLON
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
+            EventLocationInput.TextChanged += EventLocationInput_TextChanged;
 
             _showMyEvents = true;
             MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
@@ -615,6 +616,7 @@ namespace SLON
                 SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
                 EventPopupHeaderLabel.Text = _isEditingEvent ? "Edit event card" : "Event card";
                 UpdateEventPopupUI();
+                UpdateLocationDisplay();
             }
         }
 
@@ -857,6 +859,7 @@ namespace SLON
                     _isCreatingEvent = false;
                     EventPopup.IsVisible = false;
                     RefreshEventsUI();
+                    UpdateLocationDisplay();
                 }
                 else
                 {
@@ -1103,6 +1106,10 @@ namespace SLON
             bool canEditDates = _isEditingEvent || _isCreatingEvent;
             StartDatePicker.IsEnabled = EndDatePicker.IsEnabled = canEditDates;
             EnableCategoryButtons(canEditDates);
+            bool canEdit = _isEditingEvent || _isCreatingEvent;
+            EventLocationInput.IsReadOnly = !canEdit;
+            EventLocationInput.IsEnabled = canEdit;
+            UpdateLocationDisplay();
             UpdateCategoryButtons();
         }
 
@@ -1141,12 +1148,91 @@ namespace SLON
                 PublicButton.BackgroundColor = Colors.DarkGray;
             }
         }
+        private void UpdateLocationDisplay()
+        {
+            bool isEditable = _isEditingEvent || _isCreatingEvent;
+            EventLocationInput.IsVisible = isEditable;
+            EventLocationLabel.IsVisible = !isEditable;
+            if (!isEditable)
+            {
+                var formattedString = new FormattedString();
+                var text = EventLocationInput.Text;
 
+                if (string.IsNullOrEmpty(text))
+                {
+                    EventLocationLabel.FormattedText = formattedString;
+                    return;
+                }
+
+                // Регулярное выражение для поиска URL
+                var urlRegex = new Regex(@"(https?://[^\s]+)");
+                var matches = urlRegex.Matches(text);
+
+                int lastPos = 0;
+                foreach (Match match in matches)
+                {
+                    // Текст до ссылки
+                    if (match.Index > lastPos)
+                    {
+                        formattedString.Spans.Add(new Span
+                        {
+                            Text = text.Substring(lastPos, match.Index - lastPos),
+                            TextColor = Colors.White
+                        });
+                    }
+
+                    // Сама ссылка
+                    var urlSpan = new Span
+                    {
+                        Text = match.Value,
+                        TextColor = Color.FromArgb("#00BFFF"),
+                        TextDecorations = TextDecorations.Underline
+                    };
+
+                    urlSpan.GestureRecognizers.Add(new TapGestureRecognizer
+                    {
+                        Command = new Command(async () =>
+                        {
+                            try
+                            {
+                                await Launcher.OpenAsync(match.Value);
+                            }
+                            catch
+                            {
+                                await DisplayAlert("Error", "Could not open link", "OK");
+                            }
+                        })
+                    });
+
+                    formattedString.Spans.Add(urlSpan);
+                    lastPos = match.Index + match.Length;
+                }
+
+                // Остаток текста после последней ссылки
+                if (lastPos < text.Length)
+                {
+                    formattedString.Spans.Add(new Span
+                    {
+                        Text = text.Substring(lastPos),
+                        TextColor = Colors.White
+                    });
+                }
+
+                EventLocationLabel.FormattedText = formattedString;
+            }
+        }
         private void OnCancelEventClicked(object sender, EventArgs e)
         {
             EventPopup.IsVisible = false;
+            UpdateLocationDisplay();
         }
-
+        private void EventLocationInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (EventLocationLabel.IsVisible)
+            {
+                UpdateLocationDisplay();
+            }
+        }
         #endregion
 
         #region Категории для события

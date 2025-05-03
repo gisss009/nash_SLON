@@ -174,16 +174,30 @@
                         <Frame BackgroundColor="#3D3D3D"
                                CornerRadius="15"
                                Padding="10"
-                               BorderColor="Transparent">
-                            <ScrollView VerticalOptions="FillAndExpand" HeightRequest="100">
-                                <Editor x:Name="EventLocationEditor"
-                                        Placeholder="Venue..."
-                                        TextColor="#FFFFFF"
-                                        FontSize="16"
-                                        AutoSize="TextChanges"
-                                        BackgroundColor="Transparent"
-                                        IsReadOnly="True"
-                                        Margin="0,8,0,0"/>
+                               BorderColor="Transparent"
+                               HeightRequest="120">
+                            <ScrollView VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Orientation="Vertical">
+                                <Grid Margin="0,15,0,0">
+                                    <Editor x:Name="EventLocationEditor"
+                                            Placeholder="Venue..."
+                                            TextColor="#FFFFFF"
+                                            FontSize="16"
+                                            AutoSize="TextChanges"
+                                            BackgroundColor="Transparent"
+                                            IsVisible="False"/>
+
+                                    <Label x:Name="EventLocationLabel"
+                                           VerticalOptions="Start"
+                                           HorizontalOptions="FillAndExpand"
+                                           FontSize="16"
+                                           LineBreakMode="WordWrap"
+                                           MaxLines="0">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Grid>
                             </ScrollView>
                         </Frame>
                         <HorizontalStackLayout HorizontalOptions="End">
