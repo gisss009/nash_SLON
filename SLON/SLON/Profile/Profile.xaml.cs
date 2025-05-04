@@ -1,12 +1,15 @@
 using Microsoft.Maui.Controls;
 using SLON.Services;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Maui.Controls;
 using SLON.Models;
 using System.Text.RegularExpressions;
+using SLON.Models;
+using ImageCropper.Maui;
+using SLON.SocialLinks;
+
+
 namespace SLON
 {
     public partial class Profile : ContentPage
@@ -20,6 +23,11 @@ namespace SLON
         private UserProfileEditModel _originalProfileData;
         private bool _isForeignProfile = false;
 
+        private double _lastPanX; // Последняя X позиция рамки (пропорциональная)
+        private double _lastPanY; // Последняя Y позиция рамки (пропорциональная)
+        private double _lastScale = 0.5; // Начальный масштаб рамки (50%)
+        private byte[] _selectedImageBytes;
+
         // Переключатель In/My: true – мои события, false – события, где я участвую
         private bool _showMyEvents = true;
 
@@ -30,6 +38,8 @@ namespace SLON
         private readonly List<(string Hash, string Name, string Categories, string Description, string Location,
                                bool IsOnline, bool IsPublic, DateTime StartDate, DateTime EndDate, bool IsMyEvent)> events = new();
         private readonly List<string> selectedCategories = new();
+
+        private List<string> socialLinks = new List<string>();
 
         private bool _isPublic = true;
         private bool _isOnline = false;
@@ -149,7 +159,8 @@ namespace SLON
                     Surname = profile.surname,
                     Vocation = profile.vocation,
                     Description = profile.description,
-                    Categories = profile.categories ?? new()
+                    Categories = profile.categories ?? new(),
+                    Urls = profile.urls
                 };
 
                 UpdateProfileUI(profile);
@@ -241,6 +252,7 @@ namespace SLON
             public string Vocation { get; set; }
             public string Description { get; set; }
             public List<string> Categories { get; set; }
+            public List<string> Urls { get; set; }
         }
 
         private void UpdateProfileUI(AuthService.UserProfile profile)
@@ -349,6 +361,13 @@ namespace SLON
             UpdateProfileUI(_currentProfile);
         }
 
+        private async void OnUrlIconClicked(object sender, EventArgs e)
+        {
+            LinksPopupCtrl.IsEditable = true;
+
+            await LinksPopupCtrl.Show(AuthService.GetUsernameAsync());
+        }
+
         #region Редактирование профиля
 
         private async void OnEditIconClicked(object sender, EventArgs e)
@@ -416,52 +435,60 @@ namespace SLON
             if (!_isEditing) return;
             try
             {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
+                new ImageCropper.Maui.ImageCropper()
                 {
-                    PickerTitle = "Выберите изображение:",
-                    FileTypes = FilePickerFileType.Images
-                });
-                if (result == null) return;
+                    PageTitle = "Test Title",
+                    AspectRatioX = 1,
+                    AspectRatioY = 1,
+                    CropShape = ImageCropper.Maui.ImageCropper.CropShapeType.Oval,
+                    SelectSourceTitle = "Select source",
+                    TakePhotoTitle = "Take Photo",
+                    PhotoLibraryTitle = "Photo Library",
+                    CancelButtonTitle = "Cancel",
+                    Success = async (imageFile) =>
+                    {
+                        // Preview locally
+                        Dispatcher.Dispatch(() =>
+                        {
+                            AvatarButton.Source = ImageSource.FromFile(imageFile);
+                        });
 
-                // Локальный preview
-                AvatarButton.Source = ImageSource.FromFile(result.FullPath);
+                        // Read cropped image into byte array
+                        byte[] data;
+                        using (var stream = File.OpenRead(imageFile))
+                        {
+                            using var ms = new MemoryStream();
+                            await stream.CopyToAsync(ms);
+                            data = ms.ToArray();
+                        }
 
-                // Получаем поток напрямую из FileResult
-                using var stream = await result.OpenReadAsync();
+                        // Upload to server
+                        var ok = await AuthService.UploadUserAvatarAsync(data, Path.GetFileName(imageFile));
+                        if (!ok)
+                        {
+                            await DisplayAlert("Error", "Failed to upload avatar", "OK");
+                            return;
+                        }
 
-                byte[] data;
-                using (var ms = new MemoryStream())
-                {
-                    await stream.CopyToAsync(ms);
-                    data = ms.ToArray();
-                }
-
-
-                // Вызываем новый апи-метод
-                var ok = await AuthService.UploadUserAvatarAsync(data, result.FileName);
-                if (!ok)
-                {
-                    await DisplayAlert("Ошибка", "Не удалось загрузить аватар", "OK");
-                    return;
-                }
-
-                // Снова подгружаем с сервера
-
-                string username = AuthService.GetUsernameAsync();
-                var url = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
-                AvatarButton.Source = ImageSource.FromUri(url);
+                        // Reload from server
+                        //string username = AuthService.GetUsernameAsync();
+                        //var url = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
+                        Dispatcher.Dispatch(() =>
+                        {
+                            AvatarButton.Source = ImageSource.FromFile(imageFile);
+                        });
+                    }
+                }.Show(this);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Что-то пошло не так: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"Something went wrong: {ex.Message}", "OK");
             }
         }
 
 
 
         #endregion
-
-
 
         #region Управление категориями
 

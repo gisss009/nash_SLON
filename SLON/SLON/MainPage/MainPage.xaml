@@ -222,7 +222,65 @@
                     </DataTemplate>
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
-            
+
+            <!-- b) Оверлей с индикатором загрузки -->
+            <Grid
+                IsVisible="{Binding IsLoading}"
+                BackgroundColor="#66000000">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <ActivityIndicator
+                  IsRunning="{Binding IsLoading}"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Empty state для профилей -->
+            <Grid
+                  IsVisible="{Binding IsUsersEmpty}"
+                  BackgroundColor="Transparent">
+                <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                    <Image IsVisible="{Binding IsUsersEmpty}" 
+                        HorizontalOptions="Center"
+                           Source="Resources/Images/bad_slon_2.png"
+                          WidthRequest="150"
+                           HeightRequest="150"/>
+
+                    <Label IsVisible="{Binding IsUsersEmpty}" 
+                        Margin="50"
+                      Text="Карточек нет. Возможно, они закончились. Попробуйте изменить условия поиска или попробовать позже."
+                      TextColor="White"
+                      FontSize="18"
+                        WidthRequest="200"
+                      HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Empty state для ивентов -->
+            <Grid
+                  IsVisible="{Binding IsEventsEmpty}"
+                  BackgroundColor="Transparent">
+                <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+                    <Label IsVisible="{Binding IsEventsEmpty}"
+                        Margin="50"
+                      Text="Карточек нет. Возможно, они закончились. Попробуйте изменить условия поиска или попробовать позже."
+                      TextColor="White"
+                      FontSize="18"
+                        WidthRequest="200"
+                      HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Grid>
+
         </Grid>
     </StackLayout>
 </ContentPage>

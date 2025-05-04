@@ -4,6 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:models="clr-namespace:SLON.Models"
+    xmlns:sl="clr-namespace:SLON.SocialLinks"
+    xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
     x:Name="FavoritesPage"
     BackgroundColor="Black">
 
@@ -219,9 +221,36 @@
                                    Margin="5"
                                    HeightRequest="70">
                                 <StackLayout Orientation="Horizontal" Spacing="10">
-                                    <Image Source="{Binding IconSource}"
-                                           WidthRequest="50"
-                                           HeightRequest="50"/>
+                                    <Image
+                                          Source="{Binding AvatarSource}"
+                                          WidthRequest="50"
+                                          HeightRequest="50"
+                                          Aspect="AspectFill">                      
+                                        <Image.Triggers>
+                                            <!-- Круглая обрезка для пользователей -->
+                                            <DataTrigger
+                                                    TargetType="Image"
+                                                    Binding="{Binding IsEvent}"
+                                                    Value="False">
+                                                <Setter Property="Clip">
+                                                    <Setter.Value>
+                                                        <EllipseGeometry
+                                                            Center="25,25"
+                                                            RadiusX="25"
+                                                            RadiusY="25" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <!-- Сброс обрезки для событий -->
+                                            <DataTrigger
+                                                  TargetType="Image"
+                                                  Binding="{Binding IsEvent}"
+                                                  Value="True">
+                                                <Setter Property="Clip" Value="{x:Null}" />
+                                            </DataTrigger>
+                                        </Image.Triggers>
+                                    </Image>
+
                                     <VerticalStackLayout HorizontalOptions="FillAndExpand" Spacing="2">
                                         <!-- Title (Name + Surname) -->
                                         <Label Text="{Binding Title}" 
@@ -249,6 +278,9 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+
+            <sl:SocialLinksPopup x:Name="LinksPopupCtrl" />
         </Grid>
     </Grid>
 </ContentPage>

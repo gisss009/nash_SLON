@@ -42,7 +42,8 @@ namespace SLON
                     tags: default,
                     vocation: user.vocation,
                     info: default,
-                    skills: default
+                    skills: default,
+                    urls: default
                 );
                 acceptedList.Add(u);
             }

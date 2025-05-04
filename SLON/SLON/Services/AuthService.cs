@@ -57,7 +57,6 @@ namespace SLON.Services
             return Task.CompletedTask;
         }
 
-
         public class JsonResponse
         {
             public bool ok { get; set; }
@@ -136,8 +135,9 @@ namespace SLON.Services
             var jr = JsonSerializer.Deserialize<JsonResponse>(await resp.Content.ReadAsStringAsync());
             if (jr?.ok != true || !jr.response.HasValue) return new List<User>();
             var data = JsonSerializer.Deserialize<List<UserData>>(jr.response.Value.GetRawText());
-            return data.Select(u => new User(u.username, u.name, u.surname, new List<string>(), u.vocation, u.info, "")).ToList();
+            return data.Select(u => new User(u.username, u.name, u.surname, new List<string>(), u.vocation, u.info, "", u.urls)).ToList();
         }
+
         // 2) Удаление взаимного лайка
         public static async Task<bool> RemoveMutualUserAsync(string username, string other)
         {
@@ -161,6 +161,7 @@ namespace SLON.Services
             public string vocation { get; set; }
             public Dictionary<string, string> tags { get; set; }
             public Dictionary<string, string> skills { get; set; }
+            public List<string> urls {  get; set; }
         }
 
         /// <summary>
@@ -608,7 +609,8 @@ namespace SLON.Services
                         tags: new List<string>(),
                         vocation: u.vocation,
                         info: u.info,
-                        skills: ""  
+                        skills: "",
+                        urls: default
                     )).ToList();
                 }
 
@@ -737,7 +739,8 @@ namespace SLON.Services
                                 tags: new List<string>(),      // можно расширить при необходимости
                                 vocation: voc,
                                 info: info,
-                                skills: ""                     // нет данных — пустая строка
+                                skills: "",                     // нет данных — пустая строка
+                                urls: default
                             );
                             Console.WriteLine($"{name} {surname}");
                             list.Add(user);
@@ -775,21 +778,17 @@ namespace SLON.Services
                     string currentUser = await SecureStorage.GetAsync(UsernameKey) ?? string.Empty;
                     string url = $"{endpoint}?username={Uri.EscapeDataString(currentUser)}";
 
-                    // 2) Создаём HttpWebRequest с буферизацией
                     var request = (HttpWebRequest)WebRequest.Create(url);
                     request.Method = "GET";
                     request.AllowReadStreamBuffering = true;
                     request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-                    // 3) Получаем ответ
                     using var response = (HttpWebResponse)await request.GetResponseAsync();
                     using var stream = response.GetResponseStream();
                     using var reader = new StreamReader(stream);
 
-                    // 4) Читаем весь ответ разом
                     string json = await reader.ReadToEndAsync();
 
-                    // 5) Десериализуем и собираем UserData
                     var wrapper = JsonSerializer.Deserialize<JsonResponse>(json);
                     if (wrapper?.ok == true && wrapper.response.HasValue)
                     {
@@ -1034,6 +1033,135 @@ namespace SLON.Services
             return jr?.ok ?? false;
         }
 
+        #region Urls
+
+        public static async Task<List<string>> GetProfileUrlsAsync(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                return new List<string>();
+
+            using var client = new HttpClient();
+            string requestUrl = $"http://139.28.223.134:5000/users/get_urls?username={Uri.EscapeDataString(username)}";
+
+            const int maxRetries = 3;
+            HttpResponseMessage? resp = null;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    resp = await client.PostAsync(requestUrl, null);
+                    if (resp.IsSuccessStatusCode)
+                        break;
+                }
+                catch
+                {
+                }
+
+                if (attempt < maxRetries)
+                    await Task.Delay(TimeSpan.FromSeconds(attempt));
+            }
+
+            if (resp == null || !resp.IsSuccessStatusCode)
+                return new List<string>();
+
+            string content = await resp.Content.ReadAsStringAsync();
+
+            JsonDocument doc;
+            try
+            {
+                doc = JsonDocument.Parse(content);
+            }
+            catch
+            {
+                return new List<string>();
+            }
+
+            var root = doc.RootElement;
+            if (!root.GetProperty("ok").GetBoolean())
+                return new List<string>();
+
+            var result = new List<string>();
+            if (root.TryGetProperty("urls", out JsonElement urlsElem) && urlsElem.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in urlsElem.EnumerateArray())
+                {
+                    if (item.ValueKind == JsonValueKind.String)
+                        result.Add(item.GetString()!);
+                }
+            }
+
+            return result;
+        }
+
+
+        public static async Task<bool> SetProfileUrlsAsync(IEnumerable<string> urls)
+        {
+            const int maxRetries = 3;
+            string username = GetUsernameAsync();
+
+            if (string.IsNullOrWhiteSpace(username) || urls == null)
+            {
+                Console.WriteLine("SetProfileUrlsAsync: invalid arguments (empty username or urls).");
+                return false;
+            }
+
+            string urlsParam = urls.Count() == 0 ? "none" : string.Join(",", urls);
+            Console.WriteLine("urlsParam: " + urlsParam);
+            string requestUrl = $"http://139.28.223.134:5000/users/set_urls"
+                              + $"?username={Uri.EscapeDataString(username)}"
+                              + $"&urls={Uri.EscapeDataString(urlsParam)}";
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    Console.WriteLine($"SetProfileUrlsAsync: Attempt {attempt} – POST {requestUrl}");
+                    var response = await _httpClient.PostAsync(requestUrl, null);
+
+                    Console.WriteLine($"SetProfileUrlsAsync: Attempt {attempt} – Response status {(int)response.StatusCode} {response.ReasonPhrase}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        using var doc = JsonDocument.Parse(json);
+
+                        bool ok = doc.RootElement.GetProperty("ok").GetBoolean();
+                        Console.WriteLine($"SetProfileUrlsAsync: Attempt {attempt} – ok = {ok}");
+                        return ok;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"SetProfileUrlsAsync: Attempt {attempt} – non-success status code.");
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"SetProfileUrlsAsync: Attempt {attempt} – HttpRequestException: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"SetProfileUrlsAsync: Attempt {attempt} – Unexpected exception: {ex.GetType().Name}: {ex.Message}");
+                    break;
+                }
+
+                if (attempt < maxRetries)
+                {
+                    int delaySeconds = attempt;
+                    Console.WriteLine($"SetProfileUrlsAsync: Waiting {delaySeconds}s before retry...");
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+                }
+            }
+
+            Console.WriteLine("SetProfileUrlsAsync: All attempts failed.");
+            return false;
+        }
+
+
+
+        #endregion
+
+
+
         public class UserData
         {
             public string username { get; set; }
@@ -1041,6 +1169,7 @@ namespace SLON.Services
             public string surname { get; set; }
             public string vocation { get; set; }
             public string info { get; set; }
+            public List<string> urls { get; set; }
         }
     }
 }

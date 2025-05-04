@@ -45,6 +45,7 @@ namespace SLON
                 Debug.WriteLine($"Error refreshing favorites: {ex.Message}");
             }
             RefreshLikes();
+            
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -100,7 +101,6 @@ namespace SLON
                         UserData = user,
                         Title = $"{user.Name} {user.Surname}".Trim(),
                         Subtitle = user.Vocation,
-                        IconSource = "default_profile_icon1.png",
                         LeftSwipeIcon = "chat_icon.png"
                     });
                 }
@@ -126,6 +126,13 @@ namespace SLON
             RefreshLikes();
         }
 
+        private void OnPrivateClicked(object sender, EventArgs e)
+        {
+            showingPublic = false;
+            PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
+            PublicButton.BackgroundColor = Colors.DarkGray;
+            RefreshLikes();
+        }
 
         #region Обработчики переключения
 
@@ -286,7 +293,9 @@ namespace SLON
                 {
                     if (!IsChatAvailable)
                         return;
-                    await DisplayAlert("Chat", $"Открыт чат с {item.Title}", "OK");
+
+                    LinksPopupCtrl.IsEditable = false;
+                    await LinksPopupCtrl.Show(item.UserData.Username);
                 }
             }
         }
@@ -327,6 +336,7 @@ namespace SLON
         #endregion
     }
 
+
     public class LikeItem
     {
         public bool IsEvent { get; set; }
@@ -334,7 +344,12 @@ namespace SLON
         public User UserData { get; set; }
         public string Title { get; set; }
         public string Subtitle { get; set; }
-        public string IconSource { get; set; }
         public string LeftSwipeIcon { get; set; }
+
+        public ImageSource AvatarSource =>
+        IsEvent
+            ? ImageSource.FromFile("calendar.png")
+            : (UserData?.Avatar
+               ?? ImageSource.FromFile("default_profile_icon.png"));
     }
 }

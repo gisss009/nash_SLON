@@ -6,10 +6,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Globalization;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SLON
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         public ObservableCollection<User> Users { get; set; } = new();
         public ObservableCollection<Event> Events { get; set; } = new();
@@ -29,6 +31,16 @@ namespace SLON
 
             swipeCardView.Dragging += OnDragging;
             swipeCardViewEvent.Dragging += OnDragging;
+
+            // подписываемся на изменения коллекций
+            Users.CollectionChanged += (_, __) => RaiseEmptyFlags();
+            Events.CollectionChanged += (_, __) => RaiseEmptyFlags();
+        }
+
+        void RaiseEmptyFlags()
+        {
+            OnPropertyChanged(nameof(IsUsersEmpty));
+            OnPropertyChanged(nameof(IsEventsEmpty));
         }
 
         private void OnDragging(object sender, DraggingCardEventArgs e)
@@ -87,6 +99,18 @@ namespace SLON
 
 
         public async void FillUserCards()
+            IsLoading = true;
+            var username = AuthService.GetUsernameAsync();
+            Settings.Init(username);
+
+            await FillEventsCardsAsync();
+            await FilterCards();
+
+            IsLoading = false;
+            RaiseEmptyFlags();
+        }
+
+        public async Task FillUserCards()
         {
             // 1) Очищаем текущие результаты
             Users.Clear();
@@ -150,8 +174,11 @@ namespace SLON
             {
                 Debug.WriteLine($"Error loading users: {ex.Message}");
             }
+            finally
+            {
+                RaiseEmptyFlags();
+            }
         }
-
 
         private async Task<User> CreateUserModelAsync(AuthService.UserProfile profile)
         {
@@ -211,7 +238,8 @@ namespace SLON
                 filteredTags,
                 profile.vocation ?? "Не указано",
                 profile.description ?? "Нет описания",
-                string.Join(", ", filteredSkills)
+                string.Join(", ", filteredSkills),
+                new List<string>()
             );
 
             var avatarImage = await AuthService.GetUserAvatarAsync(profile.username);
@@ -237,9 +265,10 @@ namespace SLON
 
         public async Task FillEventsCardsAsync()
         {
+            IsLoading = true;
+
             var allEventsData = await AuthService.GetAllEventsAsync();
-            if (allEventsData == null)
-                return;
+            if (allEventsData == null) return;
 
             if (_allEventsCache == null)
                 _allEventsCache = new List<Event>();
@@ -281,20 +310,22 @@ namespace SLON
                 });
             }
 
-            // 5) Обновляем ObservableCollection для UI
             Events.Clear();
             foreach (var ev in _allEventsCache)
                 Events.Add(ev);
+
+            IsLoading = false;
+            RaiseEmptyFlags();
         }
-
-
 
         public async Task FilterCards()
         {
+            IsLoading = true;
+
             if (ProfilesEventsButtonStatus == 0)
             {
                 Users.Clear();
-                FillUserCards();
+                await FillUserCards();
 
                 if (Settings.selectedUserCategories.Count > 0)
                 {
@@ -401,6 +432,9 @@ namespace SLON
                 foreach (var ev in final)
                     Events.Add(ev);
             }
+
+            IsLoading = false;
+            RaiseEmptyFlags();
         }
 
 
@@ -475,6 +509,8 @@ namespace SLON
 
         public async void OnEventsButtonClicked(object sender, EventArgs e)
         {
+            IsLoading = true;
+
             if (ProfilesEventsButtonStatus == 1) return;
             ProfilesEventsButtonStatus = 1;
             EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
@@ -483,11 +519,14 @@ namespace SLON
             swipeCardViewEvent.IsVisible = true;
 
             await FilterCards();
+            IsLoading = false;
         }
 
 
-        public void OnProfilesButtonClicked(object sender, EventArgs e)
+        public async void OnProfilesButtonClicked(object sender, EventArgs e)
         {
+            IsLoading = true;
+
             if (ProfilesEventsButtonStatus == 0) return;
             ProfilesEventsButtonStatus = 0;
             ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
@@ -495,7 +534,8 @@ namespace SLON
             swipeCardView.IsVisible = true;
             swipeCardViewEvent.IsVisible = false;
 
-            FillUserCards();
+            await FillUserCards();
+            IsLoading = false;
         }
 
 

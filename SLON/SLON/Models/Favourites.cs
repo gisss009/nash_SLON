@@ -32,6 +32,7 @@ namespace SLON.Models
 
         private async static void InitializeTestData()
         {
+            mutual.Add(new User("test2", "Test", "Test", new List<string>(), "sdf", "sdf", "asfd", new List<string>()));
             favorites = await AuthService.GetSwipedUsersAsync(AuthService.GetUsernameAsync());
 
             if (_initialized) return;
