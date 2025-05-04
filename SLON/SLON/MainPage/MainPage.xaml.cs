@@ -333,60 +333,7 @@ namespace SLON
         {
             if (ProfilesEventsButtonStatus == 0)
             {
-                Users.Clear();
                 await FillUserCards();
-
-                if (Settings.selectedUserCategories.Count > 0)
-                {
-                    List<User> filteredUsers = new List<User>();
-
-                    if (Settings.selectedUserCategories.Count == 1)
-                    {
-                        var selectedCategory = Settings.selectedUserCategories.First();
-                        if (!TagCategories.Categories.ContainsKey(selectedCategory))
-                        {
-                            Debug.WriteLine($"Не найдены теги для категории: {selectedCategory}");
-                            return;
-                        }
-                        var allowedTags = TagCategories.Categories[selectedCategory];
-
-                        filteredUsers = Users.Where(user =>
-                            user.Tags.Any() && user.Tags.All(tag => allowedTags.Contains(tag))
-                        ).ToList();
-                    }
-                    else
-                    {
-                        var allowedTags = new HashSet<string>();
-                        foreach (var category in Settings.selectedUserCategories)
-                        {
-                            if (TagCategories.Categories.ContainsKey(category))
-                            {
-                                foreach (var tag in TagCategories.Categories[category])
-                                {
-                                    allowedTags.Add(tag);
-                                }
-                            }
-                        }
-
-                        var group1 = Users.Where(user =>
-                            user.Tags.Any() && user.Tags.All(tag => allowedTags.Contains(tag))
-                        ).ToList();
-
-                        var group2 = Users.Where(user =>
-                            user.Tags.Any(tag => allowedTags.Contains(tag)) &&
-                            user.Tags.Any(tag => !allowedTags.Contains(tag))
-                        ).ToList();
-
-                        filteredUsers = group1.Concat(group2).ToList();
-                    }
-
-                    Users.Clear();
-                    foreach (var user in filteredUsers)
-                    {
-                        Users.Add(user);
-                        Debug.WriteLine($"Добавлен пользователь: {user.Name}");
-                    }
-                }
             }
             else {
                 await FillEventsCardsAsync();
