@@ -23,11 +23,6 @@ namespace SLON
         private UserProfileEditModel _originalProfileData;
         private bool _isForeignProfile = false;
 
-        private double _lastPanX; // Последняя X позиция рамки (пропорциональная)
-        private double _lastPanY; // Последняя Y позиция рамки (пропорциональная)
-        private double _lastScale = 0.5; // Начальный масштаб рамки (50%)
-        private byte[] _selectedImageBytes;
-
         // Переключатель In/My: true – мои события, false – события, где я участвую
         private bool _showMyEvents = true;
 
@@ -58,6 +53,8 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
+        private ImageSource _originalAvatarSource;
+
         public Profile()
         {
             InitializeComponent();
@@ -80,6 +77,8 @@ namespace SLON
             Console.WriteLine(_fromPage);
             bool isForeign = _fromPage == "FavoritesPage";
             Shell.SetTabBarIsVisible(this, !isForeign);
+
+
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -95,9 +94,10 @@ namespace SLON
                 Shell.SetTabBarIsVisible(this, false);
             }
             _isForeignProfile = _fromPage == "FavoritesPage";
+            UrlIcon.IsVisible = !_isForeignProfile;
 
             _ = LoadProfileAsync();
-
+            
         }
 
         private async Task LoadProfileAsync()
@@ -166,8 +166,9 @@ namespace SLON
                 UpdateProfileUI(profile);
                 await LoadAndRefreshEvents(usernameToLoad);
                 await LoadAndUpdateAvatar(usernameToLoad);
-            });
 
+                _originalAvatarSource = AvatarButton.Source;
+            });
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -402,11 +403,12 @@ namespace SLON
                 ResumeEditor.TextColor = Colors.White;
             }
 
-            AvatarButton.Source = isEditing ? "edit_profile_avatar.png" : "default_profile_icon.png";
+            if (isEditing)
+                AvatarButton.Source = "edit_profile_avatar.png";
+            else
+                AvatarButton.Source = _originalAvatarSource;
 
             RefreshCategoriesUI(_currentProfile);
-
-            // Включаем/выключаем кнопки удаления
             ToggleDeleteButtons(isEditing);
         }
 

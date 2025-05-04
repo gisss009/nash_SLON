@@ -4,6 +4,8 @@ using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using SLON.Services;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SLON
 {
@@ -328,11 +330,32 @@ namespace SLON
     }
 
 
-    public class LikeItem
+    public class LikeItem : INotifyPropertyChanged
     {
         public bool IsEvent { get; set; }
         public Event EventData { get; set; }
-        public User UserData { get; set; }
+        private User _userData;
+        public User UserData
+        {
+            get => _userData;
+            set
+            {
+                if (_userData != value)
+                {
+                    if (_userData != null)
+                    {
+                        _userData.PropertyChanged -= UserData_PropertyChanged;
+                    }
+                    _userData = value;
+                    if (_userData != null)
+                    {
+                        _userData.PropertyChanged += UserData_PropertyChanged;
+                    }
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(AvatarSource));
+                }
+            }
+        }
         public string Title { get; set; }
         public string Subtitle { get; set; }
         public string LeftSwipeIcon { get; set; }
@@ -342,5 +365,17 @@ namespace SLON
             ? ImageSource.FromFile("calendar.png")
             : (UserData?.Avatar
                ?? ImageSource.FromFile("default_profile_icon.png"));
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private void UserData_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(User.Avatar))
+            {
+                OnPropertyChanged(nameof(AvatarSource));
+            }
+        }
     }
 }
