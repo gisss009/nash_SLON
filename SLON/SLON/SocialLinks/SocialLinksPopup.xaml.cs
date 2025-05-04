@@ -122,12 +122,12 @@ namespace SLON.SocialLinks
 
                 if (!isSuccess)
                 {
-                    Application.Current.MainPage.DisplayAlert("Ошибка", "Ошибка сервера. Пожалуйста, попробуйте еще раз.", "OK");
+                    Application.Current.MainPage.DisplayAlert("Error", "Server error. Please try again.", "OK");
                     socialLinks.Remove(li);
                 }
             }
             else
-                Application.Current.MainPage.DisplayAlert("Ошибка", "Введите корректный URL", "OK");
+                Application.Current.MainPage.DisplayAlert("Error", "Enter the correct URL", "OK");
         }
         private async void OnDeleteSocialLinkClicked(object sender, EventArgs e)
         {
@@ -155,8 +155,8 @@ namespace SLON.SocialLinks
                 LinksCollectionView.ItemsSource = socialLinks;
 
                 await Application.Current.MainPage.DisplayAlert(
-                    "Ошибка",
-                    "Не удалось удалить ссылку. Пожалуйста, попробуйте ещё раз.",
+                    "Error",
+                    "The link could not be deleted. Please try again.",
                     "OK"
                 );
             }

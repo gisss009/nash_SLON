@@ -135,7 +135,7 @@ namespace SLON
             if (profile == null)
             {
                 MainThread.BeginInvokeOnMainThread(async () =>
-                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK"));
+                    await DisplayAlert("Error", "Couldn't upload profile.", "OK"));
                 return;
             }
 
@@ -192,8 +192,8 @@ namespace SLON
         {
             string username = UsernameLabel.Text;
 
-            bool confirm = await DisplayAlert("Подтверждение",
-                 $"Вы уверены, что хотите выйти из аккаунта {username}?", "Да", "Нет");
+            bool confirm = await DisplayAlert("Confirmation",
+                 $"Are you sure you want to log out of your account {username}?", "Yes", "No");
 
             if (!confirm)
                 return;
@@ -241,7 +241,7 @@ namespace SLON
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при загрузке мероприятий: {ex}");
-                await DisplayAlert("Ошибка", "Не удалось загрузить мероприятия", "OK");
+                await DisplayAlert("Error", "Couldn't upload events", "OK");
             }
         }
 
@@ -334,18 +334,18 @@ namespace SLON
                     _originalProfileData.Vocation = VocationInput.Text;
                     _originalProfileData.Description = ResumeEditor.Text;
 
-                    await DisplayAlert("Успех", "Изменения профиля сохранены", "OK");
+                    await DisplayAlert("Success", "Profile changes are saved", "OK");
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось сохранить изменения", "OK");
+                    await DisplayAlert("Error", "Couldn't save changes", "OK");
                     RevertProfileChanges();
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при сохранении профиля: {ex}");
-                await DisplayAlert("Ошибка", "Произошла ошибка при сохранении", "OK");
+                await DisplayAlert("Error", "An error occurred while saving", "OK");
                 RevertProfileChanges();
             }
         }
@@ -449,22 +449,17 @@ namespace SLON
                     CancelButtonTitle = "Cancel",
                     Success = async (imageFile) =>
                     {
-                        // Preview locally
+                        var newSource = ImageSource.FromFile(imageFile);
                         Dispatcher.Dispatch(() =>
                         {
-                            AvatarButton.Source = ImageSource.FromFile(imageFile);
+                            AvatarButton.Source = newSource;
                         });
 
-                        // Read cropped image into byte array
                         byte[] data;
                         using (var stream = File.OpenRead(imageFile))
-                        {
-                            using var ms = new MemoryStream();
-                            await stream.CopyToAsync(ms);
-                            data = ms.ToArray();
-                        }
+                        using (var ms = new MemoryStream())
+                        { await stream.CopyToAsync(ms); data = ms.ToArray(); }
 
-                        // Upload to server
                         var ok = await AuthService.UploadUserAvatarAsync(data, Path.GetFileName(imageFile));
                         if (!ok)
                         {
@@ -472,14 +467,9 @@ namespace SLON
                             return;
                         }
 
-                        // Reload from server
-                        //string username = AuthService.GetUsernameAsync();
-                        //var url = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
-                        Dispatcher.Dispatch(() =>
-                        {
-                            AvatarButton.Source = ImageSource.FromFile(imageFile);
-                        });
+                        _originalAvatarSource = newSource;
                     }
+
                 }.Show(this);
             }
             catch (Exception ex)
@@ -504,13 +494,13 @@ namespace SLON
 
             if (availableCategories.Length == 0)
             {
-                await DisplayAlert("Информация", "Все категории уже добавлены", "OK");
+                await DisplayAlert("Information", "All categories have already been added", "OK");
                 return;
             }
 
-            string selectedCategory = await DisplayActionSheet("Выберите категорию", "Отмена", null, availableCategories);
+            string selectedCategory = await DisplayActionSheet("Select a category", "Cancel", null, availableCategories);
 
-            if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "Отмена")
+            if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "Cancel")
             {
                 OpenCategoryPopup(selectedCategory);
             }
@@ -725,8 +715,8 @@ namespace SLON
 
         private async Task DeleteCategory(string categoryName)
         {
-            bool confirm = await DisplayAlert("Подтверждение",
-                $"Удалить категорию {categoryName}?", "Да", "Нет");
+            bool confirm = await DisplayAlert("Confirmation",
+                $"Delete a {categoryName} category?", "Yes", "No");
 
             if (!confirm) return;
 
@@ -742,13 +732,13 @@ namespace SLON
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось удалить категорию", "OK");
+                    await DisplayAlert("Error", "Couldn't delete category.", "OK");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при удалении категории: {ex}");
-                await DisplayAlert("Ошибка", "Произошла ошибка при удалении", "OK");
+                await DisplayAlert("Error", "An error occurred while deleting", "OK");
             }
         }
 
@@ -777,34 +767,34 @@ namespace SLON
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось сохранить изменения", "OK");
+                    await DisplayAlert("Error", "Couldn't save changes", "OK");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при сохранении категории: {ex}");
-                await DisplayAlert("Ошибка", "Произошла ошибка при сохранении", "OK");
+                await DisplayAlert("Error", "An error occurred while saving", "OK");
             }
         }
 
         private async void OnDeleteEventClicked(object sender, EventArgs e)
         {
             string eventHash = _originalEventHash;
-            bool confirm = await DisplayAlert("Удаление мероприятия",
-                $"Вы уверены, что хотите удалить мероприятие \"{EventNameInput.Text}\"?", "Да", "Нет");
+            bool confirm = await DisplayAlert("Deleting an event",
+                $"Are you sure you want to delete the event \"{EventNameInput.Text}\"?", "Yes", "No");
 
             if (confirm)
             {
                 bool success = await AuthService.DeleteEventAsync(eventHash);
                 if (success)
                 {
-                    await DisplayAlert("Успех", "Мероприятие успешно удалено", "OK");
+                    await DisplayAlert("Success", "The event was successfully deleted", "OK");
                     EventPopup.IsVisible = false;
                     await RefreshEventsFromServer();
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось удалить мероприятие", "OK");
+                    await DisplayAlert("Error", "Couldn't delete event", "OK");
                 }
             }
         }
@@ -830,19 +820,19 @@ namespace SLON
                     || string.IsNullOrWhiteSpace(location)
                     || selectedCategories.Count == 0)
                 {
-                    await DisplayAlert("Ошибка", "Все поля должны быть заполнены", "OK");
+                    await DisplayAlert("Error", "All fields must be filled in.", "OK");
                     return;
                 }
 
                 if (name.Length > 50)
                 {
-                    await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
+                    await DisplayAlert("Error", "The name is too long (max. 50 characters)", "OK");
                     return;
                 }
 
                 if (_endDate < _startDate)
                 {
-                    await DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала", "OK");
+                    await DisplayAlert("Error", "The end date cannot be earlier than the start date.", "OK");
                     return;
                 }
 
@@ -853,7 +843,7 @@ namespace SLON
 
                 if (isDuplicate)
                 {
-                    await DisplayAlert("Ошибка", "Мероприятие с таким именем уже существует", "OK");
+                    await DisplayAlert("Error", "An event with that name already exists.", "OK");
                     return;
                 }
 
@@ -898,9 +888,9 @@ namespace SLON
                         events.Add(tuple);
 
                     string successMsg = wasCreating
-                        ? "Мероприятие успешно создано!"
-                        : "Мероприятие успешно обновлено!";
-                    await DisplayAlert("Успех", successMsg, "OK");
+                        ? "The event was successfully created!"
+                        : "The event has been successfully updated!";
+                    await DisplayAlert("Success", successMsg, "OK");
 
                     // Сброс флага создания и закрытие попапа
                     _isCreatingEvent = false;
@@ -912,9 +902,9 @@ namespace SLON
                 {
                     // Обработка неудачи
                     string failMsg = wasCreating
-                        ? "Не удалось создать мероприятие"
-                        : "Не удалось обновить мероприятие";
-                    await DisplayAlert("Ошибка", failMsg, "OK");
+                        ? "Event could not be created"
+                        : "Event could not be updated";
+                    await DisplayAlert("Error", failMsg, "OK");
                 }
             }
             catch (Exception ex)
@@ -922,15 +912,15 @@ namespace SLON
                 Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
                 if (ex is TaskCanceledException)
                 {
-                    await DisplayAlert("Ошибка", "Время ожидания истекло. Возможно, сервер не отвечает.", "OK");
+                    await DisplayAlert("Error", "The waiting time has expired. The server may not be responding.", "OK");
                 }
                 else if (ex is HttpRequestException httpEx)
                 {
-                    await DisplayAlert("Ошибка сети", $"Проблема с сетью: {httpEx.Message}", "OK");
+                    await DisplayAlert("Network error", $"Network issue: {httpEx.Message}", "OK");
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+                    await DisplayAlert("Error", $"An error has occurred: {ex.Message}", "OK");
                 }
             }
         }
@@ -964,7 +954,7 @@ namespace SLON
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при обновлении мероприятий: {ex}");
-                await DisplayAlert("Ошибка", "Не удалось обновить список мероприятий", "OK");
+                await DisplayAlert("Error", "Couldn't update the list of events", "OK");
             }
         }
 
@@ -1143,7 +1133,7 @@ namespace SLON
             _endDate = e.NewDate.Date;
             if (_endDate < _startDate)
             {
-                DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала.", "OK");
+                DisplayAlert("Error", "The end date cannot be earlier than the start date.", "OK");
                 EndDatePicker.Date = _startDate;
             }
         }

@@ -67,7 +67,7 @@ namespace SLON
 
             bool reg = await AuthService.Register(UsernameEntry.Text, PasswordEntry.Text);
 
-            if (reg) // ����� �������� � ���� �� ������������ ��������� ������
+            if (reg) 
             {
                 AuthService.SetAuthenticated(true);
                 AuthService.SaveCredentialsAsync(UsernameEntry.Text, PasswordEntry.Text);
@@ -78,7 +78,7 @@ namespace SLON
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage.DisplayAlert("������", "This username is already exists!", "��");
+                    Application.Current.MainPage.DisplayAlert("Warning", "This username is already exists!", "OK");
                 });
             }
         }

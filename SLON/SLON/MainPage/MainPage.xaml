@@ -240,7 +240,7 @@
 
                     <Label IsVisible="{Binding IsUsersEmpty}" 
                         Margin="50"
-                      Text="Карточек нет. Возможно, они закончились. Попробуйте изменить условия поиска или попробовать позже."
+                      Text="There are no cards. Maybe they're over. Try to change the search terms or try again later."
                       TextColor="White"
                       FontSize="18"
                         WidthRequest="200"
@@ -255,9 +255,16 @@
                 <VerticalStackLayout
                         HorizontalOptions="Center"
                         VerticalOptions="Center">
+
+                    <Image IsVisible="{Binding IsEventsEmpty}" 
+                            HorizontalOptions="Center"
+                               Source="Resources/Images/bad_slon_2.png"
+                              WidthRequest="150"
+                               HeightRequest="150"/>            
+
                     <Label IsVisible="{Binding IsEventsEmpty}"
                         Margin="50"
-                      Text="Карточек нет. Возможно, они закончились. Попробуйте изменить условия поиска или попробовать позже."
+                      Text="There are no cards. Maybe they're over. Try to change the search terms or try again later."
                       TextColor="White"
                       FontSize="18"
                         WidthRequest="200"

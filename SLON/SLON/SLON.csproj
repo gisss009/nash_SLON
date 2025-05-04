@@ -66,6 +66,7 @@
 
 	<ItemGroup>
 	  <Compile Remove="NewPage1.xaml.cs" />
+	  <Compile Remove="Platforms\Android\CustomShellRenderer.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

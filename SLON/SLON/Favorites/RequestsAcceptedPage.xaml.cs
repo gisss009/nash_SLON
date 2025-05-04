@@ -116,7 +116,7 @@ namespace SLON
                 }
                 else
                 {
-                    await DisplayAlert("Error :(", $"An error occurred during acceptance", "OK");
+                    await DisplayAlert("Error", $"An error occurred during acceptance. Try again, please.", "OK");
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace SLON
                 bool isSuccess = await AuthService.AcceptUserAsync(user.Username);
                 if (!isSuccess)
                 {
-                    await DisplayAlert("Error", "Не удалось принять запрос", "OK");
+                    await DisplayAlert("Error", "Couldn't accept the request. Try again, please.", "OK");
                     return;
                 }
 
@@ -146,8 +146,6 @@ namespace SLON
                 {
                     UsersCollectionView.ItemsSource = Favourites.mutual;
                 }
-
-                await DisplayAlert("Успех", $"Вы и {user.FullName} теперь взаимные лайки", "OK");
             }
         }
 

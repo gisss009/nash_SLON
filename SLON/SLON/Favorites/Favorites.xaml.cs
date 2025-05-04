@@ -255,7 +255,7 @@ namespace SLON
                     bool ok = await AuthService.RemoveMutualUserAsync(AuthService.GetUsernameAsync(), item.UserData.Username);
                     if (!ok)
                     {
-                        await DisplayAlert("Error", "Не удалось удалить взаимный лайк", "OK");
+                        await DisplayAlert("Error", "Couldn't delete mutual like. Try again, please.", "OK");
                         return;
                     }
                     Favourites.mutual.Remove(item.UserData);
@@ -275,7 +275,7 @@ namespace SLON
 
                     if (Favourites.mutual == null || Favourites.mutual.Count == 0)
                     {
-                        await DisplayAlert("Нет взаимных пользователей", "Ваш список взаимных лайков пуст. Вы не можете добавить никого в это событие.", "OK");
+                        await DisplayAlert("There are no mutual users", "Let's have your list of mutual likes. You can't add anyone to this event.", "OK");
                         return;
                     }
 

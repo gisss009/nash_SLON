@@ -111,11 +111,11 @@ namespace SLON
             // 4) Перезагружаем список, чтобы новые добавленные ушли вниз и были с галочкой
             await LoadMutualUsers();
 
-            await Application.Current.MainPage.DisplayAlert(
-                "Added",
-                $"Добавлено: {string.Join(", ", toAdd.Select(u => u.FullName))}",
-                "OK"
-            );
+            //await Application.Current.MainPage.DisplayAlert(
+            //    "Added",
+            //    $"Добавлено: {string.Join(", ", toAdd.Select(u => u.FullName))}",
+            //    "OK"
+            //);
         }
 
         private void OnCloseButtonClicked(object sender, EventArgs e)

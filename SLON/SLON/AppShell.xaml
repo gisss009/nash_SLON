@@ -22,18 +22,21 @@
 
     <TabBar>
         <ShellContent
-            Icon="  Resources/Images/favorite.png"
+            Icon="Resources/Images/favorite.png"
             ContentTemplate="{DataTemplate local:Favorites}"
-            Route="Favorites" />
+            Route="Favorites"
+            />
         
         <ShellContent
             Icon="Resources/Images/search.png"
             ContentTemplate="{DataTemplate local:MainPage}"
-            Route="MainPage" />
+            Route="MainPage"
+            Title=""/>
 
         <ShellContent
             Icon="Resources/Images/account.png"
             ContentTemplate="{DataTemplate local:Profile}"
-            Route="Profile" />
+            Route="Profile"
+            Title=""/>
     </TabBar>
 </Shell>

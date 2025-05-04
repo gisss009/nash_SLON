@@ -143,8 +143,8 @@ namespace SLON
             if (e.NewDate < startDatePicker.Date)
             {
                 // Сообщаем об ошибке
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    "Дата окончания не может быть раньше даты начала.",
+                await Application.Current.MainPage.DisplayAlert("Error",
+                    "The end date cannot be earlier than the start date.",
                     "OK");
 
                 // Откатываем на максимально допустимую (равную началу)

@@ -35,7 +35,7 @@
                         CornerRadius="8"
                         Clicked="OnAddSocialLinkClicked" />
 
-                <Label Text="Ссылок нет"
+                <Label Text="There are no links"
                        TextColor="White"
                             HorizontalOptions="Center"
                             VerticalOptions="Start"
