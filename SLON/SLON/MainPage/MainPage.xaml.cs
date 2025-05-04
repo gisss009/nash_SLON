@@ -544,7 +544,7 @@ namespace SLON
         }
 
 
-        public void OnEventsButtonClicked(object sender, EventArgs e)
+        public async void OnEventsButtonClicked(object sender, EventArgs e)
         {
             if (ProfilesEventsButtonStatus == 1) return;
             ProfilesEventsButtonStatus = 1;

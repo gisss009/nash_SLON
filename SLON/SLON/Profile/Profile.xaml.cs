@@ -59,7 +59,6 @@ namespace SLON
 
 
 
-        private AuthService.UserProfile _currentProfile;
         public Profile()
         {
 

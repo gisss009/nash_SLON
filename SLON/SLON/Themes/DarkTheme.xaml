@@ -58,8 +58,9 @@
     <Color x:Key="TabBarBGColor">#1c1c1c</Color>
     <!-- Цвет выбранной иконки в нижней менюшке -->
     <Color x:Key="TabBarFGColor">White</Color>
-    
-    
+
+    <!-- DarkTheme.xaml -->
+    <x:String x:Key="DeleteIcon">delete_light.png</x:String>
 
 
     <!-- Для файла Profile -->

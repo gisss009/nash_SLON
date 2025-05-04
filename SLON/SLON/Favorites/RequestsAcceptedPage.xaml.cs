@@ -85,6 +85,8 @@ namespace SLON
 
             // вместо acceptedList используем из Favourites
             UsersCollectionView.ItemsSource = Favourites.mutual;
+            ThemeAccepted();
+            ShowAccepted();
         }
 
 
@@ -99,13 +101,6 @@ namespace SLON
                 Button.BackgroundColorProperty,
                 "BackGroundColorButtonGray" // ���������� ������ (�����)
             );
-        }
-
-        private void OnAcceptedClicked(object sender, EventArgs e)
-        {
-            var mp = new MainPage();
-            ThemeAccepted();
-            ShowAccepted();
         }
 
         public void ThemeAccepted()

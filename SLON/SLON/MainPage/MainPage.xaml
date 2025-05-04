@@ -198,7 +198,7 @@
                                     <Label Text="{Binding Name}" TextColor="{DynamicResource TextColorMain}" FontSize="22" FontAttributes="Bold"
                                            HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" MaxLines="2"/>
                                     <Label Text="{Binding DateRange}" TextColor="{DynamicResource TextColorMain}" FontSize="18" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-                                    <Label Text="Categories" TextColor="White" FontSize="20" FontAttributes="Bold" />
+                                    <Label Text="Categories" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Categories}"
                                                 Wrap="Wrap" Direction="Row"
                                                 JustifyContent="Start" AlignItems="Center" Margin="0,5,0,10">
@@ -225,9 +225,9 @@
                                     <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}" >
                                         <Label Text="{Binding Place}" TextColor="{DynamicResource TextColorMain}" FontSize="17" LineBreakMode="TailTruncation" MaxLines="3"/>
                                     </Frame>
-                                    <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
+                                    <Label Text="Info" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
                                     <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}" >
-                                        <Label Text="{Binding Info}" TextColor="White" FontSize="17" LineBreakMode="TailTruncation" MaxLines="4"/>
+                                        <Label Text="{Binding Info}" TextColor="{DynamicResource TextColorMain}" FontSize="17" LineBreakMode="TailTruncation" MaxLines="4"/>
                                     </Frame>
                                 </VerticalStackLayout>
                             </Frame>

@@ -19,7 +19,7 @@
     <Color x:Key="BackGroundColorDescName">White</Color>
     <Color x:Key="BackGroundColorEvent">White</Color>
     <x:String x:Key="LogoImage">slon_light.png</x:String>
-    <x:String x:Key="ImageProfile">default_profile_icon2.png</x:String>
+    <x:String x:Key="ImageProfile">default_profile_icon.png</x:String>
     <x:String x:Key="ImageButton">sun_light_theme.png</x:String>
 
     
@@ -48,8 +48,9 @@
     <Color x:Key="ButtonCatsBorderColor">#D3D3D3</Color>
     <!-- Цвет пассивных кнопок категорий-->
     <Color x:Key="ButtonCatsColor">#B9B9B9</Color>
-    
 
+    <!-- LightTheme.xaml -->
+    <x:String x:Key="DeleteIcon">delete_dark.png</x:String>
 
     <!-- Иконка шестеренки -->
     <x:String x:Key="SettingsImage">settings_light_theme.png</x:String>

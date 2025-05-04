@@ -381,7 +381,7 @@ namespace SLON
         IsEvent
             ? ImageSource.FromFile("calendar.png")
             : (UserData?.Avatar
-               ?? ImageSource.FromFile("default_profile_icon.png"));
+               ?? ImageSource.FromFile("default_profile_icon1.png"));
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>

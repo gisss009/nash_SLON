@@ -86,7 +86,7 @@ namespace SLON.Models
             {
                 Debug.WriteLine($"Avatar load error: {ex}");
             }
-            return ImageSource.FromFile("default_profile_icon1.png");
+            return ImageSource.FromFile("default_profile_icon2.png");
         }
 
 
