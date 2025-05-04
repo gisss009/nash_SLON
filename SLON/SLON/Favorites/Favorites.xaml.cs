@@ -79,7 +79,6 @@ namespace SLON
                         EventData = ev,
                         Title = ev.Name,
                         Subtitle = string.Join(", ", ev.Categories),
-                        IconSource = "calendar_icon.png",
                         LeftSwipeIcon = "add_icon2.png"
                     });
                 }
@@ -115,14 +114,6 @@ namespace SLON
             showingPublic = true;
             PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
             PrivateButton.BackgroundColor = Colors.DarkGray;
-            RefreshLikes();
-        }
-
-        private void OnPrivateClicked(object sender, EventArgs e)
-        {
-            showingPublic = false;
-            PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
-            PublicButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
         }
 

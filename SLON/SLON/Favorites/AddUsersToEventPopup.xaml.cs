@@ -51,7 +51,8 @@ namespace SLON
                             tagsList,
                             profile.vocation,
                             profile.description,
-                            string.Join(", ", skillsList)
+                            string.Join(", ", skillsList),
+                            profile.urls
                         );
                         _event.AddedParticipants.Add(userModel);
                     }

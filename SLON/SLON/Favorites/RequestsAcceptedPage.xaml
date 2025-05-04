@@ -103,9 +103,9 @@
                             </Grid.ColumnDefinitions>
 
                         <!-- Кнопки Decline/Accept -->
-                        <Grid ColumnDefinitions="*,*"
+                            <Grid ColumnDefinitions="*,*"
                               ColumnSpacing="10"
-                              IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}">
+                              IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"/>
                             <Button Text="Decline"
                                     TextColor="White"
                                     BackgroundColor="#D9534F"

@@ -223,22 +223,6 @@
                 </swipeCardView:SwipeCardView.ItemTemplate>
             </swipeCardView:SwipeCardView>
 
-            <!-- b) Оверлей с индикатором загрузки -->
-            <Grid
-                IsVisible="{Binding IsLoading}"
-                BackgroundColor="#66000000">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <ActivityIndicator
-                  IsRunning="{Binding IsLoading}"
-                  HorizontalOptions="Center"
-                  VerticalOptions="Center" />
-            </Grid>
 
             <!-- Empty state для профилей -->
             <Grid

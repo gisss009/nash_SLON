@@ -20,6 +20,19 @@ namespace SLON
         public int ProfilesEventsButtonStatus = 0;
         private List<Event> _allEventsCache;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        void OnPropertyChanged([CallerMemberName] string prop = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        // Флаги пустого состояния
+        public bool IsUsersEmpty =>
+            ProfilesEventsButtonStatus == 0
+            && Users.Count == 0;
+
+        public bool IsEventsEmpty =>
+            ProfilesEventsButtonStatus == 1
+            && Events.Count == 0;
+
         public MainPage()
         {
             InitializeComponent();
@@ -98,17 +111,18 @@ namespace SLON
 
 
 
-        public async void FillUserCards()
-            IsLoading = true;
-            var username = AuthService.GetUsernameAsync();
-            Settings.Init(username);
+        //public async void FillUserCards()
+        //{ 
+        //    IsLoading = true;
+        //    var username = AuthService.GetUsernameAsync();
+        //    Settings.Init(username);
 
-            await FillEventsCardsAsync();
-            await FilterCards();
+        //    await FillEventsCardsAsync();
+        //    await FilterCards();
 
-            IsLoading = false;
-            RaiseEmptyFlags();
-        }
+        //    IsLoading = false;
+        //    RaiseEmptyFlags();
+        //}
 
         public async Task FillUserCards()
         {
@@ -265,8 +279,6 @@ namespace SLON
 
         public async Task FillEventsCardsAsync()
         {
-            IsLoading = true;
-
             var allEventsData = await AuthService.GetAllEventsAsync();
             if (allEventsData == null) return;
 
@@ -314,14 +326,11 @@ namespace SLON
             foreach (var ev in _allEventsCache)
                 Events.Add(ev);
 
-            IsLoading = false;
             RaiseEmptyFlags();
         }
 
         public async Task FilterCards()
         {
-            IsLoading = true;
-
             if (ProfilesEventsButtonStatus == 0)
             {
                 Users.Clear();
@@ -433,7 +442,6 @@ namespace SLON
                     Events.Add(ev);
             }
 
-            IsLoading = false;
             RaiseEmptyFlags();
         }
 
@@ -509,8 +517,6 @@ namespace SLON
 
         public async void OnEventsButtonClicked(object sender, EventArgs e)
         {
-            IsLoading = true;
-
             if (ProfilesEventsButtonStatus == 1) return;
             ProfilesEventsButtonStatus = 1;
             EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
@@ -519,14 +525,11 @@ namespace SLON
             swipeCardViewEvent.IsVisible = true;
 
             await FilterCards();
-            IsLoading = false;
         }
 
 
         public async void OnProfilesButtonClicked(object sender, EventArgs e)
         {
-            IsLoading = true;
-
             if (ProfilesEventsButtonStatus == 0) return;
             ProfilesEventsButtonStatus = 0;
             ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
@@ -535,7 +538,6 @@ namespace SLON
             swipeCardViewEvent.IsVisible = false;
 
             await FillUserCards();
-            IsLoading = false;
         }
 
 
