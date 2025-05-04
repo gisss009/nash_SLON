@@ -1,12 +1,14 @@
 using CommunityToolkit.Maui.Views;
 using Plugin.Maui.SwipeCardView.Core;
 using SLON.Models;
+using SLON.Themes;
 using SLON.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Globalization;
 using System.ComponentModel;
+using Microsoft.Maui.Layouts;
 using System.Runtime.CompilerServices;
 
 namespace SLON
@@ -58,18 +60,19 @@ namespace SLON
 
         private void OnDragging(object sender, DraggingCardEventArgs e)
         {
+            var defaultCardColor = (Color)Application.Current.Resources["CardBackgroundColor"];
+
             if (e.Item is User user)
             {
                 switch (e.Position)
                 {
                     case DraggingCardPosition.OverThreshold:
-                        if (e.Direction == SwipeCardDirection.Left)
-                            user.CardColor = Colors.Green;
-                        else if (e.Direction == SwipeCardDirection.Right)
-                            user.CardColor = Colors.Red;
+                        user.CardColor = e.Direction == SwipeCardDirection.Left
+                            ? Colors.Green
+                            : Colors.Red;
                         break;
                     default:
-                        user.CardColor = Color.FromArgb("#292929");
+                        user.CardColor = defaultCardColor;
                         break;
                 }
             }
@@ -78,13 +81,12 @@ namespace SLON
                 switch (e.Position)
                 {
                     case DraggingCardPosition.OverThreshold:
-                        if (e.Direction == SwipeCardDirection.Left)
-                            ev.CardColor = Colors.Green;
-                        else if (e.Direction == SwipeCardDirection.Right)
-                            ev.CardColor = Colors.Red;
+                        ev.CardColor = e.Direction == SwipeCardDirection.Left
+                            ? Colors.Green
+                            : Colors.Red;
                         break;
                     default:
-                        ev.CardColor = Color.FromArgb("#292929");
+                        ev.CardColor = defaultCardColor;
                         break;
                 }
             }
@@ -484,12 +486,70 @@ namespace SLON
             this.ShowPopupAsync(new MainPageSettings(this));
         }
 
-        public async void OnEventsButtonClicked(object sender, EventArgs e)
+        public void OnButtonLupaClicked(object sender, EventArgs e)
+        {
+            Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
+        }
+
+        private bool theme = true;
+        public void OnImageButtonClicked(object sender, EventArgs e)
+        {
+            ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
+            if (mergedDictionaries != null)
+            {
+                mergedDictionaries.Clear();
+                if (theme)
+                {
+                    mergedDictionaries.Add(new LightTheme());
+                    theme = false;
+                }
+                else
+                {
+                    mergedDictionaries.Add(new DarkTheme());
+                    theme = true;
+                }
+
+                // Принудительно обновляем цвета кнопок
+                UpdateButtonColors();
+
+                // Обновляем цвета карточек
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    foreach (var user in Users)
+                    {
+                        user.UpdateCardColor();
+                    }
+                    foreach (var ev in Events)
+                    {
+                        ev.UpdateCardColor();
+                    }
+                });
+            }
+        } 
+
+        private void UpdateButtonColors()
+        {
+            // Обновляем цвета на основе текущего состояния
+            if (ProfilesEventsButtonStatus == 1)
+            {
+                EventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                ProfilesButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+
+            }
+            else
+            {
+                ProfilesButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorPurpleMain"];
+                EventsButton.BackgroundColor = (Color)Application.Current.Resources["ButtonColorMain"];
+            }
+        }
+
+
+        public void OnEventsButtonClicked(object sender, EventArgs e)
         {
             if (ProfilesEventsButtonStatus == 1) return;
             ProfilesEventsButtonStatus = 1;
-            EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            ProfilesButton.BackgroundColor = Color.FromArgb("#292929");
+
+            UpdateButtonColors();
             swipeCardView.IsVisible = false;
             swipeCardViewEvent.IsVisible = true;
 
@@ -501,8 +561,8 @@ namespace SLON
         {
             if (ProfilesEventsButtonStatus == 0) return;
             ProfilesEventsButtonStatus = 0;
-            ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
-            EventsButton.BackgroundColor = Color.FromArgb("#292929");
+
+            UpdateButtonColors();
             swipeCardView.IsVisible = true;
             swipeCardViewEvent.IsVisible = false;
 
@@ -510,9 +570,5 @@ namespace SLON
         }
 
 
-        public void OnButtonLupaClicked(object sender, EventArgs e)
-        {
-            Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
-        }
     }
 }

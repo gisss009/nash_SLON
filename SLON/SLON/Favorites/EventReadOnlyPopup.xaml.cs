@@ -8,12 +8,12 @@ namespace SLON
 {
     public partial class EventReadOnlyPopup : Popup
     {
+        
         public EventReadOnlyPopup(Event ev)
         {
             InitializeComponent();
             BindEvent(ev);
         }
-
         private void BindEvent(Event ev)
         {
             EventNameEntry.Text = ev.Name;
@@ -26,22 +26,22 @@ namespace SLON
             if (ev.IsPublic)
             {
                 PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
-                PrivateButton.BackgroundColor = Colors.DarkGray;
+                PrivateButton.BackgroundColor = Color.FromArgb("#515151");
             }
             else
             {
-                PublicButton.BackgroundColor = Colors.DarkGray;
+                PublicButton.BackgroundColor = Color.FromArgb("#515151");
                 PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
             }
 
             if (ev.IsOnline)
             {
                 OnlineButton.BackgroundColor = Color.FromArgb("#915AC5");
-                OfflineButton.BackgroundColor = Colors.DarkGray;
+                OfflineButton.BackgroundColor = Color.FromArgb("#515151");
             }
             else
             {
-                OnlineButton.BackgroundColor = Colors.DarkGray;
+                OnlineButton.BackgroundColor = Color.FromArgb("#515151");
                 OfflineButton.BackgroundColor = Color.FromArgb("#915AC5");
             }
         }
@@ -75,7 +75,7 @@ namespace SLON
                 var urlSpan = new Span
                 {
                     Text = match.Value,
-                    TextColor = Color.FromArgb("#00BFFF"), // Голубой цвет
+                    TextColor = Color.FromArgb("#00BFFF"), // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
                     TextDecorations = TextDecorations.Underline
                 };
 

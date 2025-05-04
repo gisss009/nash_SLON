@@ -5,8 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
 
-    <ScrollView BackgroundColor="Gray">
-        <Frame BackgroundColor="#141414" CornerRadius="10" Padding="20" Margin="40">
+    <ScrollView BackgroundColor="{DynamicResource BackGroundColorHeader}">
+        <Frame BackgroundColor="{DynamicResource BackGroundColorHeaderStack}" CornerRadius="10" Padding="20" Margin="40">
             <VerticalStackLayout Spacing="20">
                 <!-- Заголовок: кнопка закрытия и заголовок окна -->
                 <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
@@ -19,7 +19,7 @@
                     <Label Text="Event card"
                            FontSize="20"
                            FontAttributes="Bold"
-                           TextColor="White"
+                           TextColor="{DynamicResource TextColor}"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
                            Grid.Column="1"/>
@@ -36,10 +36,10 @@
                         <Button x:Name="PublicButton"
                                 Text="Public"
                                 FontSize="11"
-                                TextColor="White"
-                                BackgroundColor="DarkGray"
+                                TextColor="{DynamicResource TextColor}"
+                                BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                 CornerRadius="0"
-                                BorderColor="White"
+                                BorderColor="{DynamicResource TextColor}"
                                 BorderWidth="0.1"
                                 WidthRequest="80"
                                 HeightRequest="60"
@@ -52,10 +52,10 @@
                         <Button x:Name="PrivateButton"
                                 Text="Private"
                                 FontSize="11"
-                                TextColor="White"
-                                BackgroundColor="DarkGray"
+                                TextColor="{DynamicResource TextColor}"
+                                BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                 CornerRadius="0"
-                                BorderColor="White"
+                                BorderColor="{DynamicResource BackGroundColor}"
                                 BorderWidth="0.1"
                                 WidthRequest="80"
                                 HeightRequest="60"
@@ -64,13 +64,13 @@
                 </HorizontalStackLayout>
 
                 <!-- Название ивента -->
-                <Frame BackgroundColor="#292929"
+                <Frame BackgroundColor="{DynamicResource BackGroundColorDesc}"
                        CornerRadius="10"
                        Padding="10"
                        BorderColor="Transparent">
                     <Entry x:Name="EventNameEntry"
                            Placeholder="Event's name"
-                           TextColor="#FFFFFF"
+                           TextColor="{DynamicResource TextColor}"
                            FontSize="18"
                            BackgroundColor="Transparent"
                            IsReadOnly="True"
@@ -82,10 +82,9 @@
                     <Label Text="Categories"
                            FontSize="16"
                            FontAttributes="Bold"
-                           TextColor="White"
+                           TextColor="{DynamicResource TextColor}"
                            HorizontalOptions="Center"/>
-
-                    <Frame BackgroundColor="#3D3D3D"
+                    <Frame BackgroundColor="{DynamicResource BackGroundColorEvent}"
                            CornerRadius="10"
                            Padding="10"
                            BorderColor="Transparent"
@@ -96,13 +95,12 @@
                         <ScrollView Orientation="Horizontal"
                                     BackgroundColor="Transparent"
                                     HorizontalScrollBarVisibility="Never">
-                            <Label x:Name="CategoriesLabel"
-                                   TextColor="White"
-                                   FontSize="16"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="Start"
-                                   LineBreakMode="NoWrap"/>
+                        <Label x:Name="CategoriesLabel"
+                               TextColor="{DynamicResource TextColor}"
+                               HorizontalOptions="Start"
+                               FontSize="16"/>
                         </ScrollView>
+
                     </Frame>
                 </VerticalStackLayout>
 
@@ -112,17 +110,17 @@
                 <Label Text="Short description"
                        FontSize="16"
                        FontAttributes="Bold"
-                       TextColor="White"
+                       TextColor="{DynamicResource TextColor}"
                        HorizontalOptions="Center"
                        Margin="0,0,0,-15"/>
-                <Frame BackgroundColor="#3D3D3D"
+                <Frame BackgroundColor="{DynamicResource BackGroundColorEvent}"
                        CornerRadius="10"
                        Padding="10"
                        BorderColor="Transparent">
                     <ScrollView VerticalOptions="FillAndExpand" HeightRequest="120">
                         <Editor x:Name="EventDescriptionEditor"
                                 Placeholder="Describe the event..."
-                                TextColor="#FFFFFF"
+                                TextColor="{DynamicResource TextColor}"
                                 FontSize="16"
                                 AutoSize="TextChanges"
                                 BackgroundColor="Transparent"
@@ -134,10 +132,10 @@
                 <Label Text="Date"
                        FontSize="16"
                        FontAttributes="Bold"
-                       TextColor="White"
+                       TextColor="{DynamicResource TextColor}"
                        HorizontalOptions="Center"
                        Margin="0,-5,0,-15"/>
-                <Frame BackgroundColor="#3D3D3D"
+                <Frame BackgroundColor="{DynamicResource BackGroundColorEvent}"
                        CornerRadius="10"
                        Padding="10"
                        BorderColor="Transparent">
@@ -147,16 +145,16 @@
                                HeightRequest="24"
                                VerticalOptions="Center"/>
                         <Label x:Name="StartDateLabel"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColor}"
                                VerticalOptions="Center"
                                Margin="5,0,5,0"/>
                         <Label Text=" - "
                                FontSize="Medium"
-                               TextColor="#FFFFFF"
+                               TextColor="{DynamicResource TextColor}"
                                VerticalOptions="Center"
                                Margin="5,0,5,0"/>
                         <Label x:Name="EndDateLabel"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColor}"
                                VerticalOptions="Center"
                                Margin="5,0,5,0"/>
                     </HorizontalStackLayout>
@@ -166,12 +164,12 @@
                 <VerticalStackLayout>
                     <Label Text="Location"
                            FontSize="16"
-                           TextColor="White"
+                           TextColor="{DynamicResource TextColor}"
                            HorizontalOptions="Center"
                            FontAttributes="Bold"
                            Margin="0,5,0,5"/>
                     <Grid VerticalOptions="FillAndExpand" BackgroundColor="Transparent">
-                        <Frame BackgroundColor="#3D3D3D"
+                        <Frame BackgroundColor="{DynamicResource BackGroundColorEvent}"
                                CornerRadius="15"
                                Padding="10"
                                BorderColor="Transparent"
@@ -180,7 +178,7 @@
                                 <Grid Margin="0,15,0,0">
                                     <Editor x:Name="EventLocationEditor"
                                             Placeholder="Venue..."
-                                            TextColor="#FFFFFF"
+                                            TextColor="{DynamicResource TextColor}"
                                             FontSize="16"
                                             AutoSize="TextChanges"
                                             BackgroundColor="Transparent"
@@ -208,10 +206,10 @@
                                 <Button x:Name="OnlineButton"
                                         Text="online"
                                         FontSize="11"
-                                        TextColor="White"
-                                        BackgroundColor="DarkGray"
+                                        TextColor="{DynamicResource TextColor}"
+                                        BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
                                         CornerRadius="0"
-                                        BorderColor="White"
+                                        BorderColor="{DynamicResource BorderColor}"
                                         BorderWidth="0.1"
                                         WidthRequest="80"
                                         HeightRequest="40"
@@ -224,10 +222,10 @@
                                 <Button x:Name="OfflineButton"
                                         Text="offline"
                                         FontSize="11"
-                                        TextColor="White"
-                                        BackgroundColor="#915AC5"
+                                        TextColor="{DynamicResource TextColor}"
+                                        BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
                                         CornerRadius="0"
-                                        BorderColor="White"
+                                        BorderColor="{DynamicResource BorderColor}"
                                         BorderWidth="0.1"
                                         WidthRequest="80"
                                         HeightRequest="40"

@@ -7,6 +7,8 @@ namespace SLON
 {
     public partial class RequestsAcceptedPage : ContentPage
     {
+
+        bool theme = true;
         private ObservableCollection<User> requestsList = new();
         private ObservableCollection<User> acceptedList = new();
 
@@ -86,6 +88,38 @@ namespace SLON
         }
 
 
+        public void ThemeRequests()
+        {
+            // ������������� ������������ ������� ������ ����������� ������
+            RequestsButton.SetDynamicResource(
+                Button.BackgroundColorProperty,
+                "BackGroundColorButtonPurple" // �������� ������ (����������)
+            );
+            AcceptedButton.SetDynamicResource(
+                Button.BackgroundColorProperty,
+                "BackGroundColorButtonGray" // ���������� ������ (�����)
+            );
+        }
+
+        private void OnAcceptedClicked(object sender, EventArgs e)
+        {
+            var mp = new MainPage();
+            ThemeAccepted();
+            ShowAccepted();
+        }
+
+        public void ThemeAccepted()
+        {
+    // ������������� ������������ ������� ������ ����������� ������
+    AcceptedButton.SetDynamicResource(
+        Button.BackgroundColorProperty, 
+        "BackGroundColorButtonPurple" // �������� ������ (����������)
+    );
+    RequestsButton.SetDynamicResource(
+        Button.BackgroundColorProperty, 
+        "BackGroundColorButtonGray" // ���������� ������ (�����)
+    );
+        }
         private void ShowRequests()
         {
             IsRequestsMode = true;

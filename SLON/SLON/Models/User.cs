@@ -35,7 +35,7 @@ namespace SLON.Models
             }
         }
 
-        private Color _cardColor = Color.FromArgb("#292929"); // исходный цвет
+        private Color _cardColor = (Color)Application.Current.Resources["CardBackgroundColor"]; // исходный цвет
         public Color CardColor
         {
             get => _cardColor;
@@ -48,6 +48,7 @@ namespace SLON.Models
                 }
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
@@ -92,6 +93,27 @@ namespace SLON.Models
         public async Task InitAvatarAsync(string username)
         {
             Avatar = await LoadAvatarSourceAsync(username);
+
+
+            // Инициализация цвета карточки
+            UpdateCardColor();
+
+            // Подписка на смену темы
+            Application.Current.RequestedThemeChanged += (s, e) => UpdateCardColor();
+        }
+
+        public void UpdateCardColor()
+        {
+            // Используем TryGetValue для безопасного получения ресурса
+            if (Application.Current.Resources.TryGetValue("CardBackgroundColor", out var color))
+            {
+                CardColor = (Color)color;
+            }
+            else
+            {
+                // Fallback-цвет, если ресурс не найден
+                CardColor = Color.FromArgb("#292929");
+            }
         }
     }
 }

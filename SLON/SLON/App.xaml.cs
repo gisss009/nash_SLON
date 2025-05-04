@@ -5,6 +5,9 @@ namespace SLON
 {
     public partial class App : Application
     {
+
+        public static event Action ThemeChanged;
+
         public App()
         {
             InitializeComponent();
@@ -18,6 +21,12 @@ namespace SLON
         protected override void OnStart()
         {
             base.OnStart();
+        }
+
+        // Этот метод можно вызвать при смене темы
+        public static void NotifyThemeChanged()
+        {
+            ThemeChanged?.Invoke();
         }
     }
 }

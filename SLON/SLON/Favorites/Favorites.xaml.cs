@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui.Views;
 using SLON.Models;
 using SLON.Services;
+using SLON.Themes;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using SLON.Services;
@@ -12,6 +13,8 @@ namespace SLON
     public partial class Favorites : ContentPage
     {
         // true – Events, false – Profiles
+        
+        // ����� �����������: Events (true) ��� Profiles (false)
         private bool showingEvents = true;
         // true – All, false – Mutual
         private bool showingAll = true;
@@ -28,6 +31,7 @@ namespace SLON
             InitializeComponent();
             BindingContext = this;
             Instance = this;
+            UpdateButtonColors();
         }
 
         // Изменённый метод OnAppearing: теперь он обновляет данные с сервера перед обновлением UI
@@ -128,13 +132,25 @@ namespace SLON
         }
 
         #region Обработчики переключения
+        private void UpdateButtonColors()
+        {
+            // Для кнопок All/Mutual
+            AllButton.SetDynamicResource(Button.BackgroundColorProperty,
+                showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+            MutualButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
 
+            // Для кнопок Events/Profiles
+            EventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+            ProfilesButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+        }
         private void OnAllClicked(object sender, EventArgs e)
         {
             showingAll = true;
-            AllButton.BackgroundColor = Color.FromArgb("#915AC5");
-            MutualButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors(); // Теперь этот метод вызывается автоматически при изменении темы
         }
 
         private async void OnMutualClicked(object sender, EventArgs e)
@@ -153,6 +169,7 @@ namespace SLON
                 Debug.WriteLine($"Failed to refresh mutual: {ex}");
             }
             RefreshLikes();
+            UpdateButtonColors();
         }
 
 
@@ -163,14 +180,14 @@ namespace SLON
             ProfilesButton.BackgroundColor = Colors.DarkGray;
             // оставляем previous public/private выбор, просто обновляем список
             RefreshLikes();
+            UpdateButtonColors();
         }
 
         private void OnProfilesClicked(object sender, EventArgs e)
         {
             showingEvents = false;
-            ProfilesButton.BackgroundColor = Color.FromArgb("#915AC5");
-            EventsButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors();
         }
 
 

@@ -4,8 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="ThisPage"
-    Title="Requests / Accepted"
-    BackgroundColor="#141414">
+    Title="      Requests / Accepted"
+    BackgroundColor="{DynamicResource BackGroundColor}">
 
     <!-- Делаем две строки: шапка и список -->
     <Grid RowDefinitions="Auto,*" Padding="10">
@@ -17,37 +17,46 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Center">
-                <Border Padding="-10" Margin="0,5,0,0">
+                <!-- Кнопка Requests -->
+                <Border Padding="-10" 
+            Margin="0,5,0,0"
+            Stroke="{DynamicResource BorderColor}"
+            StrokeThickness="1">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15,0,15,0"/>
                     </Border.StrokeShape>
                     <Button x:Name="RequestsButton"
-                            Text="Requests"
-                            FontSize="12"
-                            TextColor="White"
-                            BackgroundColor="#915AC5"
-                            CornerRadius="0"
-                            BorderColor="White"
-                            BorderWidth="0.1"
-                            WidthRequest="85"
-                            HeightRequest="55"
-                            Clicked="OnRequestsClicked"/>
+                Text="Requests"
+                FontSize="12"
+                TextColor="White"
+                BackgroundColor="{DynamicResource BackGroundColorButtonPurple}"
+                CornerRadius="0"
+                BorderColor="Transparent"
+                BorderWidth="0"
+                WidthRequest="85"
+                HeightRequest="55"
+                Clicked="OnRequestsClicked"/>
                 </Border>
-                <Border Padding="-10" Margin="0,5,0,0">
+
+                <!-- Кнопка Accepted -->
+                <Border Padding="-10" 
+            Margin="0,5,0,0"
+            Stroke="{DynamicResource BorderColor}"
+            StrokeThickness="1">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="0,15,0,15"/>
                     </Border.StrokeShape>
                     <Button x:Name="AcceptedButton"
-                            Text="Accepted"
-                            FontSize="12"
-                            TextColor="White"
-                            BackgroundColor="DarkGray"
-                            CornerRadius="0"
-                            BorderColor="White"
-                            BorderWidth="0.1"
-                            WidthRequest="85"
-                            HeightRequest="55"
-                            Clicked="OnAcceptedClicked"/>
+                Text="Accepted"
+                FontSize="12"
+                TextColor="White"
+                BackgroundColor="{DynamicResource BackGroundColorButtonGray}"
+                CornerRadius="0"
+                BorderColor="Transparent"
+                BorderWidth="0"
+                WidthRequest="85"
+                HeightRequest="55"
+                Clicked="OnAcceptedClicked"/>
                 </Border>
             </HorizontalStackLayout>
         </Grid>
@@ -60,7 +69,11 @@
             VerticalOptions="FillAndExpand">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Padding="10" Margin="5" BackgroundColor="#222222" Spacing="10">
+                    <StackLayout Orientation="Horizontal"
+                                 Padding="5"
+                                 Margin="5"
+                                 BackgroundColor="{DynamicResource BackGroundColorCardInfo}">
+
                         <!-- Тап по профилю -->
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnUserTapped" />
@@ -68,7 +81,7 @@
 
                         <!-- Аватар + имя + описание -->
                         <HorizontalStackLayout Spacing="10">
-                            <Image Source="default_profile_icon1.png"
+                            <Image Source="default_profile_icon.png"
                                    WidthRequest="50"
                                    HeightRequest="50"
                                    VerticalOptions="Start"
@@ -76,7 +89,7 @@
 
                             <VerticalStackLayout Spacing="2" VerticalOptions="CenterAndExpand">
                                 <Label Text="{Binding FullName}"
-                                    TextColor="White"
+                                    TextColor="{DynamicResource TextColor}"
                                     FontAttributes="Bold"
                                     FontSize="16"
                                     LineBreakMode="TailTruncation"
@@ -84,7 +97,7 @@
                                     WidthRequest="280" />
 
                                 <Label Text="{Binding Vocation}"
-                                    TextColor="White"
+                                    TextColor="{DynamicResource TextColor}"
                                     FontSize="14"
                                     LineBreakMode="TailTruncation"
                                     MaxLines="1"
@@ -107,14 +120,17 @@
                               ColumnSpacing="10"
                               IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"/>
                             <Button Text="Decline"
-                                    TextColor="White"
-                                    BackgroundColor="#D9534F"
-                                    CornerRadius="10"
-                                    Clicked="OnDeclineClicked"/>
+                                    TextColor="white"
+                                    BackgroundColor="{DynamicResource BackGroundColorSwapRed}"
+                                    Grid.Column="0"
+                                    IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsRequestsMode}"
+                                    Clicked="OnDeclineClicked"
+                                    Margin="5,0,5,0"
+                                    WidthRequest="80"
+                                    HeightRequest="40"/>
                             <Button Text="Accept"
                                     TextColor="White"
-                                    BackgroundColor="#5CB85C"
-                                    CornerRadius="10"
+                                    BackgroundColor="{DynamicResource BackGroundColorSwapGreen}"
                                     Grid.Column="1"
                                     Clicked="OnAcceptClicked"/>
                         </Grid>

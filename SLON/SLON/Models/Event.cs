@@ -21,7 +21,7 @@ namespace SLON.Models
 
         public List<User> AddedParticipants { get; set; } = new List<User>();
 
-        private Color _cardColor = Color.FromArgb("#292929");
+        private Color _cardColor = (Color)Application.Current.Resources["CardBackgroundColor"];
         public Color CardColor
         {
             get => _cardColor;
@@ -34,6 +34,7 @@ namespace SLON.Models
                 }
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -48,8 +49,25 @@ namespace SLON.Models
             Place = place;
             IsPublic = isPublic;
             IsOnline = isOnline;
+            // Инициализация цвета карточки
+            UpdateCardColor();
+
+            // Подписка на смену темы
+            Application.Current.RequestedThemeChanged += (s, e) => UpdateCardColor();
         }
 
+        public void UpdateCardColor()
+        {
+            if (Application.Current.Resources.TryGetValue("CardBackgroundColor", out var color))
+            {
+                CardColor = (Color)color;
+            }
+            else
+            {
+                // Fallback-цвет
+                CardColor = Color.FromArgb("#292929");
+            }
+        }
 
     }
 }

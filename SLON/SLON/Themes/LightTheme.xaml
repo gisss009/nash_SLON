@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SLON.Themes.LightTheme">
+    <!-- Для файла Favorites-->
+    <Color x:Key="BackGroundColor">#F5F5F5</Color>
+    <Color x:Key="TextColor">#333333</Color>
+    <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
+    <Color x:Key="BorderColor">#F5F5F5</Color>
+    <Color x:Key="BackGroundColorButtonGray">#B9B9B9</Color>
+    <Color x:Key="BackGroundColorSwapRed">Red</Color>
+    <Color x:Key="BackGroundColorButtonRed">Red</Color>
+    <Color x:Key="BackGroundColorSwapGreen">Green</Color>
+    <Color x:Key="BackGroundColorButtonGreen">Green</Color>
+    <Color x:Key="BackGroundColorCardInfo">White</Color>
+    <Color x:Key="BackGroundColorHeader">White</Color>
+    <Color x:Key="BackGroundColorDesc">White</Color>
+    <Color x:Key="BackGroundColorHeaderStack">White</Color>
+    <Color x:Key="BackGroundColorDescName">White</Color>
+    <Color x:Key="BackGroundColorEvent">White</Color>
+    <x:String x:Key="LogoImage">slon_light.png</x:String>
+    <x:String x:Key="ImageProfile">default_profile_icon2.png</x:String>
+    <x:String x:Key="ImageButton">sun_light_theme.png</x:String>
+
+    
+    <!-- Для файла Main-->
+
+    <!-- Цвет заднего плана-->
+    <Color x:Key="BackGroundColorMain">#F5F5F5</Color>
+    <!-- Цвет текста-->
+    <Color x:Key="TextColorMain">#333333</Color>
+    <!-- Цвет пассивной кнопки профили ивенты-->
+    <Color x:Key="ButtonColorMain">#B9B9B9</Color>
+    <Color x:Key="ButtonColorSettingsMain">#B9B9B9</Color>
+    <!-- Цвет активной кнопки профили ивенты-->
+    <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
+    <!-- Цвет текста на кнопках-->
+    <Color x:Key="ButtonTextColorMain">White</Color>
+    <!-- Цвет заднего плана карточек-->
+    <Color x:Key="CardBackgroundColor">White</Color>
+    <!-- Цвет обводок карточек-->
+    <Color x:Key="CardBorderColor">#D8D8D8</Color>
+    <!-- Цвет для заднего плана текста в инфо скилс-->
+    <Color x:Key="BoxesColor">#EFEFEF</Color>
+    <!-- Цвет обводки кнопок в настройках -->
+    <Color x:Key="ButtonSettingsBorderColor">#292929</Color>
+    <!-- Цвет обводки кнопок категорий-->
+    <Color x:Key="ButtonCatsBorderColor">#D3D3D3</Color>
+    <!-- Цвет пассивных кнопок категорий-->
+    <Color x:Key="ButtonCatsColor">#B9B9B9</Color>
+    
+
+
+    <!-- Иконка шестеренки -->
+    <x:String x:Key="SettingsImage">settings_light_theme.png</x:String>
+    <!-- Иконка выбора даты -->
+    <x:String x:Key="DateTimeImage">data_time_light_theme.png</x:String>
+
+
+    <!-- Цвет нижней менюшки-->
+    <Color x:Key="TabBarBGColor">White</Color>
+    <!-- Цвет выбранной иконки в нижней менюшке -->
+    <Color x:Key="TabBarFGColor">#915AC5</Color>
+
+    <!-- Для файла Profile -->
+
+    <!-- Цвет заднего плана -->
+    <Color x:Key="BackGroundColorProfile">#F5F5F5</Color>
+    <!-- Цвет текста -->
+    <Color x:Key="TextColorProfile">#333333</Color>
+    <!-- Цвет блоков -->
+    <Color x:Key="BlockColorProfile">White</Color>
+    <!-- Цвет кнопки ShowAll -->
+    <Color x:Key="ShowAllProfile">#B9B9B9</Color>
+    <!-- Цвет ивентов -->
+    <Color x:Key="EventsColorProfile">#6D6D6D</Color>
+    <!-- Кнопка добавления ивента -->
+    <x:String x:Key="EventButton">addevent_icon2.png</x:String>
+    <!-- Кнопка редактирования -->
+    <x:String x:Key="EditButton">edit_icon2.png</x:String>
+    <!-- Кнопка сохранения -->
+    <x:String x:Key="SaveButton">save_icon2.png</x:String>
+    <!-- Кнопка добавления категории -->
+    <x:String x:Key="AddButton">add_icon2.png</x:String>
+    <!-- Цвет неактивной кнопки -->
+    <Color x:Key="ButtonColorProfile">#B9B9B9</Color>
+    <!-- Цвет активной кнопки -->
+    <Color x:Key="ActiveButtonColorProfile">#915AC5</Color>
+    <!-- Иконка календаря -->
+    <x:String x:Key="CalendarIcon">calendar_icon_w.png</x:String>
+    <!-- Цвет обводки кнопок -->
+    <Color x:Key="ButtonBorderProfile">Transparent</Color>
+</ResourceDictionary>

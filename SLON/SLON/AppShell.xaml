@@ -5,12 +5,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SLON"
     Shell.FlyoutBehavior="Disabled"
-    Title="SLON" BackgroundColor="#3C3C3C"
+    Title="SLON" BackgroundColor="{DynamicResource TabBarBGColor}"
     
-    Shell.ForegroundColor="White"
-    Shell.TabBarBackgroundColor="#1c1c1c"
-    Shell.TabBarForegroundColor="White"
+    Shell.ForegroundColor="{DynamicResource TextColor}"
+    Shell.TabBarBackgroundColor="{DynamicResource TabBarBGColor}"
+    Shell.TabBarForegroundColor="{DynamicResource TabBarFGColor}"
     Shell.TabBarTitleColor="White"
+    Shell.TitleColor="{DynamicResource TextColor}"
     Shell.TabBarUnselectedColor="Gray">
 
     <Shell.Resources>

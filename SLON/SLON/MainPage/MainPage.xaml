@@ -4,12 +4,12 @@
              xmlns:swipeCardView="clr-namespace:Plugin.Maui.SwipeCardView;assembly=Plugin.Maui.SwipeCardView"
              x:Class="SLON.MainPage"
              xmlns:local="clr-namespace:SLON.Models"
-             Padding="0" BackgroundColor="Black">
+             Padding="0" BackgroundColor="{DynamicResource BackGroundColorMain}">
 
     <Shell.TitleView>
         <HorizontalStackLayout HorizontalOptions="Center">
             <Image HorizontalOptions="Center" Source="Resources/Images/slon.png" />
-            <Label Text="SLON" Padding="10" TextColor="White" FontSize="Title" />
+            <Label Text="SLON" Padding="10" TextColor="{DynamicResource TextColorMain}" FontSize="Title" />
         </HorizontalStackLayout>
     </Shell.TitleView>
 
@@ -27,6 +27,9 @@
                          WidthRequest="36"
                          HeightRequest="36"
                          Clicked="OnButtonLupaClicked"/>
+
+            
+            <!-- Переключатель Events/Profile, выровненный по центру -->
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="-3">
                 <Border Stroke="Transparent">
                     <Border.StrokeShape>
@@ -34,31 +37,43 @@
                     </Border.StrokeShape>
                     <Button x:Name="EventsButton" 
                             Text="Events"
-                            BackgroundColor="#292929"
-                            TextColor="White"
+                            BackgroundColor="{DynamicResource ButtonColorMain}"
+                            TextColor="{DynamicResource ButtonTextColorMain}"
                             Padding="15,8"
                             Margin="0"
                             CornerRadius="0"
                             Clicked="OnEventsButtonClicked"/>
                 </Border>
+                
                 <Border Stroke="Transparent">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="0,15,0,15" />
                     </Border.StrokeShape>
                     <Button x:Name="ProfilesButton"
                             Text="Profile"
-                            BackgroundColor="#8E44AD"
-                            TextColor="White"
+                            BackgroundColor="{DynamicResource ButtonColorPurpleMain}"
+                            TextColor="{DynamicResource ButtonTextColorMain}"
                             Padding="15,8"
                             CornerRadius="0"
                             Clicked="OnProfilesButtonClicked"/>
                 </Border>
             </HorizontalStackLayout>
-            <ImageButton Source="Resources/Images/settings.png"
+
+
+            <ImageButton Source="{DynamicResource SettingsImage}"
                          HorizontalOptions="End"
-                         WidthRequest="36"
-                         HeightRequest="36"
+                         WidthRequest="65"
+                         HeightRequest="35"
                          Clicked="OnButtonSettingsClicked"/>
+            <HorizontalStackLayout HorizontalOptions="Start">
+                <ImageButton Source="{DynamicResource ImageButton}"
+                         HeightRequest="45"
+                         WidthRequest="55"
+                         CornerRadius="0"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Clicked="OnImageButtonClicked"/>
+            </HorizontalStackLayout>
         </Grid>
 
         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
@@ -81,7 +96,7 @@
                                    Padding="20"
                                    Margin="0,20,0,30"
                                    InputTransparent="True"
-                                   BorderColor="#44414B">
+                                   BorderColor="{DynamicResource CardBorderColor}">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                     <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
                                         <Grid>
@@ -101,7 +116,7 @@
                                         </Grid>
                                         <VerticalStackLayout VerticalOptions="Center" Spacing="2">
                                             <Label Text="{Binding FullName}" 
-                                                   TextColor="White" 
+                                                   TextColor="{DynamicResource TextColorMain}" 
                                                    FontSize="22" 
                                                    FontAttributes="Bold"
                                                    LineBreakMode="TailTruncation"
@@ -110,7 +125,7 @@
                                                    WidthRequest="200" />
 
                                             <Label Text="{Binding Vocation}" 
-                                                   TextColor="White" 
+                                                   TextColor="{DynamicResource TextColorMain}" 
                                                    FontSize="18"
                                                    LineBreakMode="TailTruncation"
                                                    MaxLines="2"
@@ -120,7 +135,7 @@
                                         </VerticalStackLayout>
 
                                     </HorizontalStackLayout>
-                                    <Label Text="Tags" TextColor="White" FontSize="20" FontAttributes="Bold" />
+                                    <Label Text="Tags" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Tags} "
                                                 Wrap="Wrap" Direction="Row"
                                                 JustifyContent="Start" AlignItems="Center" Margin="0,5,0,10" >
@@ -128,14 +143,13 @@
                                             <DataTemplate>
                                                 <Frame Padding="10,5"
                                                        CornerRadius="20"
-                                                       BorderColor="#44414B"
                                                        HasShadow="False"
                                                        Margin="1"
                                                        BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
                                                        MinimumWidthRequest="100"
                                                        HorizontalOptions="Start">
                                                     <Label Text="{Binding}" 
-                                                           TextColor="White" 
+                                                           TextColor="{DynamicResource ButtonTextColorMain}" 
                                                            FontSize="16" 
                                                            FontAttributes="Bold"
                                                            LineBreakMode="TailTruncation" MaxLines="1"
@@ -145,13 +159,13 @@
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </FlexLayout>
-                                    <Label Text="Skills" TextColor="White" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
-                                        <Label Text="{Binding Skills}" TextColor="White" FontSize="16" LineBreakMode="TailTruncation" MaxLines="3"/>
+                                    <Label Text="Skills" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}">
+                                        <Label Text="{Binding Skills}" TextColor="{DynamicResource TextColorMain}" FontSize="16" LineBreakMode="TailTruncation" MaxLines="3"/>
                                     </Frame>
-                                    <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
-                                        <Label Text="{Binding Info}" TextColor="White" FontSize="16" LineBreakMode="TailTruncation" MaxLines="5"/>
+                                    <Label Text="Info" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}">
+                                        <Label Text="{Binding Info}" TextColor="{DynamicResource TextColorMain}" FontSize="16" LineBreakMode="TailTruncation" MaxLines="5"/>
                                     </Frame>
                                 </VerticalStackLayout>
                             </Frame>
@@ -179,11 +193,11 @@
                                    Padding="20"
                                    Margin="0,20,0,30"
                                    InputTransparent="True"
-                                   BorderColor="#44414B">
+                                   BorderColor="{DynamicResource CardBorderColor}">
                                 <VerticalStackLayout Spacing="15" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                    <Label Text="{Binding Name}" TextColor="White" FontSize="22" FontAttributes="Bold"
+                                    <Label Text="{Binding Name}" TextColor="{DynamicResource TextColorMain}" FontSize="22" FontAttributes="Bold"
                                            HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" MaxLines="2"/>
-                                    <Label Text="{Binding DateRange}" TextColor="White" FontSize="18" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding DateRange}" TextColor="{DynamicResource TextColorMain}" FontSize="18" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
                                     <Label Text="Categories" TextColor="White" FontSize="20" FontAttributes="Bold" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding Categories}"
                                                 Wrap="Wrap" Direction="Row"
@@ -192,14 +206,13 @@
                                             <DataTemplate>
                                                 <Frame Padding="10,5"
                                                        CornerRadius="20"
-                                                       BorderColor="#44414B"
                                                        HasShadow="False"
                                                        Margin="1"
                                                        BackgroundColor="{Binding ., Converter={StaticResource TagColorConverter}}"
                                                        MinimumWidthRequest="100"
                                                        HorizontalOptions="Start">
                                                     <Label Text="{Binding}" 
-                                                           TextColor="White" 
+                                                           TextColor="{DynamicResource ButtonTextColorMain}" 
                                                            FontSize="16" 
                                                            FontAttributes="Bold"
                                                            HorizontalTextAlignment="Center"
@@ -208,12 +221,12 @@
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </FlexLayout>
-                                    <Label Text="Location" TextColor="White" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
-                                        <Label Text="{Binding Place}" TextColor="White" FontSize="17" LineBreakMode="TailTruncation" MaxLines="3"/>
+                                    <Label Text="Location" TextColor="{DynamicResource TextColorMain}" FontSize="20" FontAttributes="Bold" />
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}" >
+                                        <Label Text="{Binding Place}" TextColor="{DynamicResource TextColorMain}" FontSize="17" LineBreakMode="TailTruncation" MaxLines="3"/>
                                     </Frame>
                                     <Label Text="Info" TextColor="White" FontSize="20" FontAttributes="Bold" />
-                                    <Frame BackgroundColor="#44414B" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="#44414B">
+                                    <Frame BackgroundColor="{DynamicResource BoxesColor}" CornerRadius="5" Padding="5" HorizontalOptions="Fill" BorderColor="{DynamicResource BoxesColor}" >
                                         <Label Text="{Binding Info}" TextColor="White" FontSize="17" LineBreakMode="TailTruncation" MaxLines="4"/>
                                     </Frame>
                                 </VerticalStackLayout>

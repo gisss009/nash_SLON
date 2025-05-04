@@ -42,6 +42,8 @@ namespace SLON
         private DateTime _endDate = DateTime.Today;
         private string _originalEventHash = string.Empty; // Хранит хеш редактируемого события
 
+
+
         private readonly Dictionary<string, (string TagExample, string SkillExample)> categoryExamples = new() {
             {"IT", ("C# Python DevOps", "Backend Development, Cloud Architecture")},
             {"Creation", ("Photography Illustration Typography", "Graphic Design, 3D Modeling")},
@@ -55,18 +57,21 @@ namespace SLON
 
         private ImageSource _originalAvatarSource;
 
+
+
+        private AuthService.UserProfile _currentProfile;
         public Profile()
         {
+
             InitializeComponent();
+            UpdateButtonColorsProfile(); // Первоначальная установка цветов
+
 
             StartDatePicker.MinimumDate = DateTime.Today;
             EndDatePicker.MinimumDate = DateTime.Today;
             ResumeEditor.Placeholder = "Description is empty";
             EventLocationInput.TextChanged += EventLocationInput_TextChanged;
 
-            _showMyEvents = true;
-            MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            InEventsButton.BackgroundColor = Colors.DarkGray;
 
             RefreshEventsUI();
         }
@@ -77,8 +82,19 @@ namespace SLON
             Console.WriteLine(_fromPage);
             bool isForeign = _fromPage == "FavoritesPage";
             Shell.SetTabBarIsVisible(this, !isForeign);
+        }
 
 
+        public void UpdateButtonColorsProfile()
+        {
+            // Для кнопок in/my
+            MyEventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                _showMyEvents ? "ActiveButtonColorProfile" : "ButtonColorProfile");
+            InEventsButton.SetDynamicResource(Button.BackgroundColorProperty,
+                !_showMyEvents ? "ActiveButtonColorProfile" : "ButtonColorProfile");
+
+            MyEventsButton.SetDynamicResource(Button.BorderColorProperty, "ButtonBorderColorProfile");
+            InEventsButton.SetDynamicResource(Button.BorderColorProperty, "ButtonBorderColorProfile");
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -263,6 +279,8 @@ namespace SLON
             SurnameInput.Text = profile?.surname ?? "";
             VocationInput.Text = profile?.vocation ?? "";
             ResumeEditor.Text = profile?.description ?? "";
+
+            UpdateButtonColorsProfile();
 
             RefreshCategoriesUI(profile);
         }
@@ -607,14 +625,12 @@ namespace SLON
             _isPublic = true;
             _isOnline = false;
 
-            PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
-            PrivateButton.BackgroundColor = Colors.DarkGray;
-            OnlineButton.BackgroundColor = Colors.DarkGray;
-            OfflineButton.BackgroundColor = Color.FromArgb("#915AC5");
+            UpdatePublicPrivateButtonsUI();
+            UpdateOnlineOfflineButtonsUI();
 
             EventLocationInput.Placeholder = "Venue...";
             ResetCategoryButtons();
-            SaveEventButton.Source = "save_icon.png";
+            SaveEventButton.Source = (String)Application.Current.Resources["SaveButton"];
 
             SaveEventButton.IsVisible = true;
             DeleteEventButton.IsVisible = false;
@@ -970,6 +986,7 @@ namespace SLON
 
         private void RefreshEventsUI()
         {
+
             EventsContainer.Children.Clear();
 
             var filtered = _showMyEvents
@@ -982,6 +999,9 @@ namespace SLON
 
             foreach (var ev in sorted.Take(3))
                 AddEventCard(ev.Hash, ev.Name, ev.IsMyEvent);
+            ShowAllEventsButton.IsVisible = true;
+
+            UpdateButtonColorsProfile();
         }
 
 
@@ -990,7 +1010,7 @@ namespace SLON
             var frame = new Frame
             {
                 AutomationId = eventHash,
-                BackgroundColor = Color.FromArgb("#353535"),
+                BackgroundColor = (Color)Application.Current.Resources["EventsColorProfile"],
                 CornerRadius = 10,
                 Padding = 10,
                 Margin = 5,
@@ -1053,6 +1073,7 @@ namespace SLON
             }
 
             var eventData = _isCreatingEvent ? default : events.FirstOrDefault(e => e.Hash == eventHash);
+
             if (!_isCreatingEvent && string.IsNullOrEmpty(eventData.Name))
             {
                 DisplayAlert("Error", "Event not found.", "OK");
@@ -1078,8 +1099,6 @@ namespace SLON
             StartDatePicker.IsEnabled = EndDatePicker.IsEnabled = canEditDates;
 
             _isPublic = _isCreatingEvent ? true : eventData.IsPublic;
-            PublicButton.BackgroundColor = _isPublic ? Color.FromArgb("#915AC5") : Colors.DarkGray;
-            PrivateButton.BackgroundColor = _isPublic ? Colors.DarkGray : Color.FromArgb("#915AC5");
             _isOnline = _isCreatingEvent ? false : eventData.IsOnline;
 
             if (_isOnline)
@@ -1097,6 +1116,11 @@ namespace SLON
             // разрешаем редактировать только свои ивенты в своём профиле
             bool canEditEvent = !_isForeignProfile && eventData.IsMyEvent;
             if (!canEditEvent)
+            // Вот это новенькое место:
+            UpdatePublicPrivateButtonsUI();
+            UpdateOnlineOfflineButtonsUI();
+
+            if (!eventData.IsMyEvent)
             {
                 SaveEventButton.IsVisible = false;
                 DeleteEventButton.IsVisible = false;
@@ -1118,9 +1142,11 @@ namespace SLON
                 SaveEventButton.Source = "edit_icon.png";
                 UpdateEventPopupUI();
             }
+
             UpdateCategoryButtons();
             EventPopup.IsVisible = true;
         }
+
 
         private bool IsCurrentEventMine()
         {
@@ -1168,36 +1194,32 @@ namespace SLON
         private void OnLocationButtonClicked(object sender, EventArgs e)
         {
             if (!(_isEditingEvent || _isCreatingEvent)) return;
-            if (sender == OfflineButton)
-            {
-                _isOnline = false;
-                OnlineButton.BackgroundColor = Colors.DarkGray;
-                OfflineButton.BackgroundColor = Color.FromArgb("#915AC5");
-                EventLocationInput.Placeholder = "Venue...";
-            }
-            else if (sender == OnlineButton)
-            {
-                _isOnline = true;
-                OfflineButton.BackgroundColor = Colors.DarkGray;
-                OnlineButton.BackgroundColor = Color.FromArgb("#915AC5");
-                EventLocationInput.Placeholder = "Link to the meeting...";
-            }
+
+            _isOnline = sender == OnlineButton;
+            UpdateOnlineOfflineButtonsUI();
         }
+
 
         private void OnPublicPrivateButtonClicked(object sender, EventArgs e)
         {
             if (!(_isEditingEvent || _isCreatingEvent)) return;
-            if (sender == PublicButton)
+
+            _isPublic = sender == PublicButton;
+            UpdatePublicPrivateButtonsUI();
+        }
+
+
+        private void UpdatePublicPrivateButtonsUI()
+        {
+            if (_isPublic)
             {
-                _isPublic = true;
-                PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
-                PrivateButton.BackgroundColor = Colors.DarkGray;
+                PublicButton.SetDynamicResource(Button.BackgroundColorProperty, "ActiveButtonColorProfile");
+                PrivateButton.SetDynamicResource(Button.BackgroundColorProperty, "ButtonColorProfile");
             }
-            else if (sender == PrivateButton)
+            else
             {
-                _isPublic = false;
-                PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
-                PublicButton.BackgroundColor = Colors.DarkGray;
+                PrivateButton.SetDynamicResource(Button.BackgroundColorProperty, "ActiveButtonColorProfile");
+                PublicButton.SetDynamicResource(Button.BackgroundColorProperty, "ButtonColorProfile");
             }
         }
         private void UpdateLocationDisplay()
@@ -1273,6 +1295,25 @@ namespace SLON
                 EventLocationLabel.FormattedText = formattedString;
             }
         }
+
+        private void UpdateOnlineOfflineButtonsUI()
+        {
+            if (_isOnline)
+            {
+                OnlineButton.SetDynamicResource(Button.BackgroundColorProperty, "ActiveButtonColorProfile");
+                OfflineButton.SetDynamicResource(Button.BackgroundColorProperty, "ButtonColorProfile");
+                EventLocationInput.Placeholder = "Link to the meeting...";
+            }
+            else
+            {
+                OfflineButton.SetDynamicResource(Button.BackgroundColorProperty, "ActiveButtonColorProfile");
+                OnlineButton.SetDynamicResource(Button.BackgroundColorProperty, "ButtonColorProfile");
+                EventLocationInput.Placeholder = "Venue...";
+            }
+        }
+
+
+
         private void OnCancelEventClicked(object sender, EventArgs e)
         {
             EventPopup.IsVisible = false;
@@ -1305,7 +1346,7 @@ namespace SLON
                 {
                     selectedCategories.Add(category);
                     button.BackgroundColor = GetCategoryColor(category);
-                    button.BorderColor = Color.FromArgb("#00CED1");
+                    button.BorderColor = Colors.Transparent;
                     button.BorderWidth = 2;
                 }
             }
@@ -1355,21 +1396,21 @@ namespace SLON
         #region Переключатель In/My и Show all
 
         private void OnInMyEventsButtonClicked(object sender, EventArgs e)
-        {
-            if (sender == InEventsButton)
-            {
-                _showMyEvents = false;
-                InEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-                MyEventsButton.BackgroundColor = Colors.DarkGray;
-            }
-            else if (sender == MyEventsButton)
-            {
-                _showMyEvents = true;
-                MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-                InEventsButton.BackgroundColor = Colors.DarkGray;
-            }
-            RefreshEventsUI();
-        }
+{
+    if (sender == InEventsButton)
+    {
+        _showMyEvents = false;
+        InEventsButton.SetDynamicResource(Button.BackgroundColorProperty, "ActiveButtonColorProfile");
+        MyEventsButton.SetDynamicResource(Button.BackgroundColorProperty, "ButtonColorProfile");
+    }
+    else if (sender == MyEventsButton)
+    {
+        _showMyEvents = true;
+        MyEventsButton.SetDynamicResource(Button.BackgroundColorProperty, "ActiveButtonColorProfile");
+        InEventsButton.SetDynamicResource(Button.BackgroundColorProperty, "ButtonColorProfile");
+    }
+    RefreshEventsUI();
+}
 
         private void OnShowAllEventsClicked(object sender, EventArgs e)
         {
@@ -1431,7 +1472,7 @@ namespace SLON
                 var frame = new Frame
                 {
                     AutomationId = ev.Hash,
-                    BackgroundColor = Color.FromArgb("#353535"),
+                    BackgroundColor = (Color)Application.Current.Resources["BlockColorProfile"],
                     CornerRadius = 10,
                     Padding = 10,
                     Margin = 3,
@@ -1441,7 +1482,7 @@ namespace SLON
                 var label = new Label
                 {
                     Text = ev.Name,
-                    TextColor = Colors.White,
+                    TextColor = (Color)Application.Current.Resources["TextColorProfile"],
                     FontSize = 16,
                     VerticalOptions = LayoutOptions.Center
                 };

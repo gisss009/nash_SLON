@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sl="clr-namespace:SLON.SocialLinks"
              x:Class="SLON.Profile"
-             BackgroundColor="Black">
+             BackgroundColor="{DynamicResource BackGroundColorProfile}">
     <Grid>
         <ScrollView>
             <VerticalStackLayout Padding="20" Spacing="20">
@@ -43,7 +43,7 @@
                                 <Label x:Name="UsernameLabel"
                                        Text="username"
                                        FontSize="16"
-                                       TextColor="Azure"
+                                       TextColor="{DynamicResource TextColorProfile}"
                                        VerticalOptions="Center">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnUsernameTapped"/>
@@ -58,8 +58,9 @@
                     <!-- Правая часть: поля Name, Surname, Vocation -->
                     <VerticalStackLayout Padding="10,0,0,-5" VerticalOptions="Center" Grid.Column="1" Spacing="-20">
                         <Entry x:Name="NameInput"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                Placeholder="Name"
+                               PlaceholderColor="{DynamicResource TextColorProfile}"
                                FontSize="28"
                                FontAttributes="Bold"
                                IsReadOnly="True"
@@ -67,8 +68,9 @@
                                BackgroundColor="Transparent"/>
                         
                         <Entry x:Name="SurnameInput"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                Placeholder="Surname"
+                               PlaceholderColor="{DynamicResource TextColorProfile}"
                                FontSize="28"
                                FontAttributes="Bold"
                                IsReadOnly="True"
@@ -76,8 +78,9 @@
                                BackgroundColor="Transparent"/>
                         
                         <Entry x:Name="VocationInput"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                Placeholder="Vocation"
+                               PlaceholderColor="{DynamicResource TextColorProfile}"
                                FontSize="18"
                                IsReadOnly="True"
                                HorizontalTextAlignment="Start"
@@ -98,7 +101,7 @@
                                      Clicked="OnUrlIconClicked"/>
                         
                         <ImageButton x:Name="AddEventIcon"
-                                     Source="add_icon1.png"
+                                     Source="{DynamicResource EventButton}"
                                      BackgroundColor="Transparent"
                                      WidthRequest="32"
                                      HeightRequest="32"
@@ -108,7 +111,7 @@
                                      Clicked="OnAddEventIconClicked"/>
                         
                         <ImageButton x:Name="EditIcon"
-                                     Source="edit_icon.png"
+                                     Source="{DynamicResource EditButton}"
                                      BackgroundColor="Transparent"
                                      WidthRequest="24"
                                      HeightRequest="24"
@@ -118,7 +121,7 @@
                                      Clicked="OnEditIconClicked"/>
                         
                         <ImageButton x:Name="SaveIcon"
-                                     Source="save_icon.png"
+                                     Source="{DynamicResource SaveButton}"
                                      BackgroundColor="Transparent"
                                      WidthRequest="24"
                                      HeightRequest="24"
@@ -132,7 +135,7 @@
 
                 <!-- Categories Section -->
                 <Frame x:Name="CategoriesFrame"
-                       BackgroundColor="#1E1E1E"
+                       BackgroundColor="{DynamicResource BlockColorProfile}"
                        CornerRadius="10"
                        Padding="10">
                     <VerticalStackLayout>
@@ -140,11 +143,11 @@
                             <Label Text="Categories"
                                    FontSize="16"
                                    FontAttributes="Bold"
-                                   TextColor="White"
+                                   TextColor="{DynamicResource TextColorProfile}"
                                    VerticalOptions="Center"
                                    HorizontalOptions="Start"/>
                             <ImageButton x:Name="AddCategoryIcon"
-                                         Source="add_icon.png"
+                                         Source="{DynamicResource AddButton}"
                                          BackgroundColor="Transparent"
                                          WidthRequest="24"
                                          HeightRequest="24"
@@ -163,7 +166,7 @@
 
                 <!-- Events Section -->
                 <Frame x:Name="EventsFrame"
-                       BackgroundColor="#1E1E1E"
+                       BackgroundColor="{DynamicResource BlockColorProfile}"
                        CornerRadius="10"
                        Padding="10">
                     <Grid>
@@ -183,43 +186,43 @@
                             <Label Text="Events"
                                    FontSize="16"
                                    FontAttributes="Bold"
-                                   TextColor="White"
+                                   TextColor="{DynamicResource TextColorProfile}"
                                    VerticalOptions="Center"
                                    HorizontalOptions="Start"/>
                             
                             <HorizontalStackLayout HorizontalOptions="End" Grid.Column="1">
-                                <Border Padding="-10" Margin="0,5,0,0">
+                                <Border Padding="-10" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="InEventsButton"
-                                            Text="In"
-                                            FontSize="12"
-                                            TextColor="White"
-                                            BackgroundColor="#915AC5"
-                                            CornerRadius="0"
-                                            BorderColor="White"
-                                            BorderWidth="0.1"
-                                            WidthRequest="70"
-                                            HeightRequest="40"
-                                            Clicked="OnInMyEventsButtonClicked"/>
+                                        Text="In"
+                                        FontSize="12"
+                                        TextColor="White"
+                                        BackgroundColor="{DynamicResource ButtonColorProfile}" 
+                                        CornerRadius="0"
+                                        BorderColor="{DynamicResource ButtonBorderProfile}"
+                                        BorderWidth="1"
+                                        WidthRequest="70"
+                                        HeightRequest="40"
+                                        Clicked="OnInMyEventsButtonClicked"/>
                                 </Border>
 
-                                <Border Padding="-10" Margin="0,5,0,0">
+                                <Border Padding="-10" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="0,15,0,15"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="MyEventsButton"
-                                            Text="My"
-                                            FontSize="12"
-                                            TextColor="White"
-                                            BackgroundColor="DarkGray"
-                                            CornerRadius="0"
-                                            BorderColor="White"
-                                            BorderWidth="0.1"
-                                            WidthRequest="70"
-                                            HeightRequest="40"
-                                            Clicked="OnInMyEventsButtonClicked"/>
+                                        Text="My"
+                                        FontSize="12"
+                                        TextColor="White"
+                                        BackgroundColor="{DynamicResource ActiveButtonColorProfile}" 
+                                        CornerRadius="0"
+                                        BorderColor="{DynamicResource ButtonBorderProfile}"
+                                        BorderWidth="1"
+                                        WidthRequest="70"
+                                        HeightRequest="40"
+                                        Clicked="OnInMyEventsButtonClicked"/>
                                 </Border>
                             </HorizontalStackLayout>
 
@@ -231,7 +234,7 @@
                                     Margin="0,10,0,10"/>
                         
                         <HorizontalStackLayout HorizontalOptions="End" Grid.Row="2">
-                            <Border Padding="-5" Margin="0,5,0,0">
+                            <Border Padding="-5" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="15,15,15,15"/>
                                 </Border.StrokeShape>
@@ -239,10 +242,10 @@
                                         Text="Show all"
                                         FontSize="12"
                                         TextColor="White"
-                                        BackgroundColor="Black"
+                                        BackgroundColor="{DynamicResource ShowAllProfile}"
                                         CornerRadius="0"
-                                        BorderColor="White"
-                                        BorderWidth="0.1"
+                                        
+                                        BorderWidth="0"
                                         WidthRequest="110"
                                         HeightRequest="40"
                                         Clicked="OnShowAllEventsClicked"/>
@@ -253,16 +256,17 @@
                 </Frame>
 
                 <!-- Resume Section -->
-                <Frame BackgroundColor="#1E1E1E"
+                <Frame BackgroundColor="{DynamicResource BlockColorProfile}"
                        CornerRadius="10"
                        Padding="10"
                        VerticalOptions="FillAndExpand">
                     <ScrollView>
                         <Editor x:Name="ResumeEditor"
                                 Placeholder="Write about yourself..."
-                                BackgroundColor="Transparent"
-                                TextColor="White"
                                 FontAttributes="Bold"
+                                PlaceholderColor="{DynamicResource TextColorProfile}"
+                                BackgroundColor="{DynamicResource BlockColorProfile}"
+                                TextColor="{DynamicResource TextColorProfile}"
                                 FontSize="16"
                                 AutoSize="TextChanges"
                                 IsReadOnly="True"/>
@@ -275,7 +279,7 @@
         <ContentView x:Name="CategoryPopup"
                      IsVisible="False"
                      BackgroundColor="#80000000">
-            <Frame BackgroundColor="#2E2E2E"
+            <Frame BackgroundColor="{DynamicResource BackGroundColorProfile}"
                    CornerRadius="15"
                    Padding="20"
                    Margin="40">
@@ -292,17 +296,17 @@
                         <Label Text="Tags"
                                FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                HorizontalOptions="Start"/>
 
-                        <Frame BackgroundColor="#3D3D3D" CornerRadius="10" HeightRequest="160" Padding="0">
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}" CornerRadius="10" HeightRequest="160" Padding="0">
                             <ScrollView VerticalOptions="FillAndExpand">
                                 <Editor x:Name="TagsEditor"
                                         Placeholder="Enter tags... (e.g. C# Python DevOps)"
                                         PlaceholderColor="#AAAAAA"
                                         VerticalTextAlignment="Start"
                                         HorizontalTextAlignment="Start"
-                                        TextColor="White"
+                                        TextColor="{DynamicResource TextColorProfile}"
                                         FontSize="16"
                                         Margin="10,0"
                                         AutoSize="TextChanges"/>
@@ -315,17 +319,17 @@
                         <Label Text="Skills"
                                FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                HorizontalOptions="Start"/>
 
-                        <Frame BackgroundColor="#3D3D3D" CornerRadius="10" HeightRequest="160" Padding="0">
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}" CornerRadius="10" HeightRequest="160" Padding="0">
                             <ScrollView VerticalOptions="FillAndExpand">
                                 <Editor x:Name="SkillsEditor"
                                         Placeholder="Describe skills... (e.g. Backend Development, Cloud Architecture)"
                                         PlaceholderColor="#AAAAAA"
                                         VerticalTextAlignment="Start"
                                         HorizontalTextAlignment="Start"
-                                        TextColor="White"
+                                        TextColor="{DynamicResource TextColorProfile}"
                                         FontSize="16"
                                         Margin="10,0"
                                         AutoSize="TextChanges"/>
@@ -358,7 +362,7 @@
         <ContentView x:Name="AllEventsPopup"
                      IsVisible="False"
                      BackgroundColor="#80000000">
-            <Frame BackgroundColor="#141414"
+            <Frame BackgroundColor="{DynamicResource BackGroundColorProfile}"
                    CornerRadius="10"
                    Padding="20"
                    Margin="40">
@@ -382,7 +386,7 @@
                  IsVisible="False"
                  BackgroundColor="#80000000">
             <ScrollView>
-                <Frame BackgroundColor="#141414" CornerRadius="10" Padding="20" Margin="40">
+                <Frame BackgroundColor="{DynamicResource BackGroundColorProfile}" CornerRadius="10" Padding="20" Margin="40">
                     <VerticalStackLayout Spacing="20">
                         <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
                             <ImageButton x:Name="CancelEventButton"
@@ -395,12 +399,12 @@
                                    Text="Create event card"
                                    FontSize="20"
                                    FontAttributes="Bold"
-                                   TextColor="White"
+                                   TextColor="{DynamicResource TextColorProfile}"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
                                    Grid.Column="1"/>
                             <ImageButton x:Name="SaveEventButton"
-                                         Source="edit_icon.png"
+                                         Source="{DynamicResource SaveButton}"
                                          BackgroundColor="Transparent"
                                          WidthRequest="24"
                                          HeightRequest="24"
@@ -408,7 +412,7 @@
                                          Grid.Column="2"/>
                         </Grid>
                         <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-5,0,0">
-                            <Border Padding="-15" Margin="0,5,0,0">
+                            <Border Padding="-15" Margin="0,5,0,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="15,0,15,0"/>
                                 </Border.StrokeShape>
@@ -416,15 +420,15 @@
                                         Text="Public"
                                         FontSize="11"
                                         TextColor="White"
-                                        BackgroundColor="DarkGray"
+                                        BackgroundColor="{DynamicResource ActiveButtonColorProfile}"
                                         CornerRadius="0"
-                                        BorderColor="White"
+                                        BorderColor="{DynamicResource ButtonBorderProfile}"
                                         BorderWidth="0.1"
                                         WidthRequest="80"
                                         HeightRequest="60"
                                         Clicked="OnPublicPrivateButtonClicked"/>
                             </Border>
-                            <Border Padding="-15" Margin="0,5,5,0">
+                            <Border Padding="-15" Margin="0,5,5,0" Stroke="{DynamicResource ButtonBorderProfile}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="0,15,0,15"/>
                                 </Border.StrokeShape>
@@ -432,22 +436,23 @@
                                         Text="Private"
                                         FontSize="11"
                                         TextColor="White"
-                                        BackgroundColor="DarkGray"
+                                        BackgroundColor="{DynamicResource ButtonColorProfile}"
                                         CornerRadius="0"
-                                        BorderColor="White"
+                                        BorderColor="{DynamicResource ButtonBorderColorProfile}"
                                         BorderWidth="0.1"
                                         WidthRequest="80"
                                         HeightRequest="60"
                                         Clicked="OnPublicPrivateButtonClicked"/>
                             </Border>
                         </HorizontalStackLayout>
-                        <Frame BackgroundColor="#292929"
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}"
                                CornerRadius="10"
                                Padding="10"
                                BorderColor="Transparent">
                             <Entry x:Name="EventNameInput"
                                    Placeholder="Event's name"
-                                   TextColor="#FFFFFF"
+                                   PlaceholderColor="{DynamicResource TextColorProfile}"
+                                   TextColor="{DynamicResource TextColorProfile}"
                                    FontSize="18"
                                    BackgroundColor="Transparent"
                                    IsReadOnly="False"
@@ -458,7 +463,7 @@
                             <Label Text="Categories"
                                    FontSize="16"
                                    FontAttributes="Bold"
-                                   TextColor="White"
+                                   TextColor="{DynamicResource TextColorProfile}"
                                    HorizontalOptions="Center"/>
                             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto" Margin="0,5,0,0">
                                 <Button x:Name="CategoryIT"
@@ -532,17 +537,18 @@
                         <Label Text="Short description"
                                FontSize="16"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                HorizontalOptions="Center"
                                Margin="0,0,0,-15"/>
-                        <Frame BackgroundColor="#3D3D3D"
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}"
                                CornerRadius="10"
                                Padding="10"
                                BorderColor="Transparent">
                             <ScrollView VerticalOptions="FillAndExpand" HeightRequest="120">
                                 <Editor x:Name="EventDescriptionInput"
                                         Placeholder="Describe the event..."
-                                        TextColor="#FFFFFF"
+                                        PlaceholderColor="{DynamicResource TextColorProfile}"
+                                        TextColor="{DynamicResource TextColorProfile}"
                                         FontSize="16"
                                         AutoSize="TextChanges"
                                         BackgroundColor="Transparent"
@@ -552,32 +558,32 @@
                         <Label Text="Date"
                                FontSize="16"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{DynamicResource TextColorProfile}"
                                HorizontalOptions="Center"
                                Margin="0,-5,0,-15"/>
-                        <Frame BackgroundColor="#3D3D3D"
+                        <Frame BackgroundColor="{DynamicResource BlockColorProfile}"
                                CornerRadius="10"
                                Padding="10"
                                BorderColor="Transparent">
                             <HorizontalStackLayout>
-                                <Image Source="calendar_icon.png"
+                                <Image Source="{DynamicResource CalendarIcon}"
                                        WidthRequest="24"
                                        HeightRequest="24"
                                        VerticalOptions="Center"/>
                                 <DatePicker x:Name="StartDatePicker"
                                             Format="dd.MM.yyyy"
-                                            TextColor="White"
+                                            TextColor="{DynamicResource TextColorProfile}"
                                             BackgroundColor="Transparent"
                                             DateSelected="OnStartDateSelected"
                                             Margin="5,0,5,0"/>
-                                <Label Text=" - "
+                                <Label Text="-"
                                        FontSize="Medium"
-                                       TextColor="#FFFFFF"
+                                       TextColor="{DynamicResource TextColorProfile}"
                                        VerticalOptions="Center"
                                        Margin="5,0,5,0"/>
                                 <DatePicker x:Name="EndDatePicker"
                                             Format="dd.MM.yyyy"
-                                            TextColor="White"
+                                            TextColor="{DynamicResource TextColorProfile}"
                                             BackgroundColor="Transparent"
                                             DateSelected="OnEndDateSelected"
                                             Margin="5,0,5,0"/>
@@ -586,12 +592,12 @@
                         <VerticalStackLayout>
                             <Label Text="Location"
                                    FontSize="16"
-                                   TextColor="White"
+                                   TextColor="{DynamicResource TextColorProfile}"
                                    HorizontalOptions="Center"
                                    FontAttributes="Bold"
                                    Margin="0,5,0,5"/>
                             <Grid VerticalOptions="FillAndExpand" BackgroundColor="Transparent">
-                                <Frame BackgroundColor="#3D3D3D"
+                                <Frame BackgroundColor="{DynamicResource BlockColorProfile}"
                                        CornerRadius="15"
                                        Padding="10"
                                        BorderColor="Transparent"
@@ -603,7 +609,8 @@
                                         <Grid Margin="0,15,0,0">
                                             <Editor x:Name="EventLocationInput"
                                                     Placeholder="Venue..."
-                                                    TextColor="#FFFFFF"
+                                                    PlaceholderColor="{DynamicResource TextColorProfile}"
+                                                    TextColor="{DynamicResource TextColorProfile}"
                                                     FontSize="16"
                                                     AutoSize="TextChanges"
                                                     BackgroundColor="Transparent"
@@ -626,7 +633,7 @@
                                     </ScrollView>
                                 </Frame>
                                 <HorizontalStackLayout HorizontalOptions="End">
-                                    <Border Padding="-10" Margin="0,0,0,90">
+                                    <Border Padding="-20" Margin="0,0,0,92" Stroke="{DynamicResource ButtonBorderProfile}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="15,0,15,0"/>
                                         </Border.StrokeShape>
@@ -634,7 +641,7 @@
                                                 Text="online"
                                                 FontSize="11"
                                                 TextColor="White"
-                                                BackgroundColor="DarkGray"
+                                                BackgroundColor="{DynamicResource ButtonColorProfile}"
                                                 CornerRadius="0"
                                                 BorderColor="White"
                                                 BorderWidth="0.1"
@@ -642,7 +649,7 @@
                                                 HeightRequest="45"
                                                 Clicked="OnLocationButtonClicked"/>
                                     </Border>
-                                    <Border Padding="-10" Margin="0,0,0,90">
+                                    <Border Padding="-10" Margin="0,0,0,90" Stroke="{DynamicResource ButtonBorderProfile}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="0,15,0,15"/>
                                         </Border.StrokeShape>
@@ -650,7 +657,7 @@
                                                 Text="offline"
                                                 FontSize="11"
                                                 TextColor="White"
-                                                BackgroundColor="#915AC5"
+                                                BackgroundColor="{DynamicResource ButtonColorProfile}"
                                                 CornerRadius="0"
                                                 BorderColor="White"
                                                 BorderWidth="0.1"

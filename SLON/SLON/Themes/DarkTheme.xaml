@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SLON.Themes.DarkTheme">
+    <!-- Для файла Favorites-->
+    <Color x:Key="BackGroundColor">Black</Color>
+    <Color x:Key="TextColor">White</Color>
+    <Color x:Key="BackGroundColorButtonPurple">#915AC5</Color>
+    <Color x:Key="BorderColor">Black</Color>
+    <Color x:Key="BackGroundColorButtonGray">#292929</Color>
+    <Color x:Key="BackGroundColorSwapRed">Red</Color>
+    <Color x:Key="BackGroundColorSwapGreen">Green</Color>
+    <Color x:Key="BackGroundColorCardInfo">#222222</Color>
+    <Color x:Key="BackGroundColorHeader">#80000000</Color>
+    <Color x:Key="BackGroundColorHeaderStack">#141414</Color>
+    <Color x:Key="BackGroundColorDesc">#292929</Color>
+    <Color x:Key="BackGroundColorDescName">#292929</Color>
+    <Color x:Key="BackGroundColorEvent">#3D3D3D</Color>
+    <x:String x:Key="LogoImage">slon.png</x:String>
+    <x:String x:Key="ImageProfile">default_icon_profile2.png</x:String>
+    <x:String x:Key="ImageButton">loon_dark_theme.png</x:String>
+
+    <!-- Для файла Main-->
+    
+    <!-- Цвет заднего плана-->
+    <Color x:Key="BackGroundColorMain">Black</Color>
+    <!-- Цвет текста-->
+    <Color x:Key="TextColorMain">White</Color>
+    <!-- Цвет пассивной кнопки профили ивенты-->
+    <Color x:Key="ButtonColorMain">#292929</Color>
+    <Color x:Key="ButtonColorSettingsMain">#6D6D6D</Color>
+    <!-- Цвет активной кнопки профили ивенты-->
+    <Color x:Key="ButtonColorPurpleMain">#915AC5</Color>
+    <!-- Цвет текста на кнопках-->
+    <Color x:Key="ButtonTextColorMain">White</Color>
+    <!-- Цвет заднего плана карточек-->
+    <Color x:Key="CardBackgroundColor">#292929</Color>
+    <!-- Цвет обводок карточек-->
+    <Color x:Key="CardBorderColor">#44414B</Color>
+    <!-- Цвет для заднего плана текста в инфо скилс-->
+    <Color x:Key="BoxesColor">#44414B</Color>
+    <!-- Цвет обводки кнопок в настройках -->
+    <Color x:Key="ButtonSettingsBorderColor">White</Color>
+    <!-- Цвет обводки кнопок категорий-->
+    <Color x:Key="ButtonCatsBorderColor">#D3D3D3</Color>
+    <!-- Цвет пассивных кнопок категорий-->
+    <Color x:Key="ButtonCatsColor">#6D6D6D</Color>
+    
+
+
+    <!-- Иконка шестеренки -->
+    <x:String x:Key="SettingsImage">settings_dark_theme.png</x:String>
+    <!-- Иконка выбора даты -->
+    <x:String x:Key="DateTimeImage">data_time_dark_theme.png</x:String>
+
+
+    <!-- Цвет нижней менюшки-->
+    <Color x:Key="TabBarBGColor">#1c1c1c</Color>
+    <!-- Цвет выбранной иконки в нижней менюшке -->
+    <Color x:Key="TabBarFGColor">White</Color>
+    
+    
+
+
+    <!-- Для файла Profile -->
+
+    <!-- Цвет заднего плана-->
+    <Color x:Key="BackGroundColorProfile">Black</Color>
+    <!-- Цвет текста-->
+    <Color x:Key="TextColorProfile">White</Color>
+    <!-- Цвет блоков-->
+    <Color x:Key="BlockColorProfile">#292929</Color>
+    <!-- Цвет кнопки ShowAll-->
+    <Color x:Key="ShowAllProfile">#292929</Color>
+    <!-- Цвет ивентов-->
+    <Color x:Key="EventsColorProfile">#6D6D6D</Color>
+    <!-- Кнопка добавления ивента -->
+    <x:String x:Key="EventButton">addevent_icon1.png</x:String>
+    <!-- Кнопка редактирования -->
+    <x:String x:Key="EditButton">edit_icon.png</x:String>
+    <!-- Кнопка сохранения -->
+    <x:String x:Key="SaveButton">save_icon.png</x:String>
+    <!-- Кнопка добавления категории -->
+    <x:String x:Key="AddButton">add_icon.png</x:String>
+    <!-- Цвет неактивной кнопки -->
+    <Color x:Key="ButtonColorProfile">#292929</Color>
+    <!-- Цвет активной кнопки -->
+    <Color x:Key="ActiveButtonColorProfile">#915AC5</Color>
+    <!-- Иконка календаря -->
+    <x:String x:Key="CalendarIcon">calendar_icon_d.png</x:String>
+    <!-- Цвет обводки кнопок -->
+    <Color x:Key="ButtonBorderProfile">#6D6D6D</Color>
+
+</ResourceDictionary>

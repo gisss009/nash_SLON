@@ -5,7 +5,8 @@
            x:Class="SLON.MainPageSettings"
            Color="Transparent"
            CanBeDismissedByTappingOutsideOfPopup="False">
-    <Border Stroke="Transparent" BackgroundColor="#292929" Padding="15" WidthRequest="360" HeightRequest="600">
+
+    <Border Stroke="Transparent" BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" WidthRequest="360" HeightRequest="600">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="20" />
         </Border.StrokeShape>
@@ -15,7 +16,7 @@
                 <Label Text="Select the desired categories"
                        FontSize="20"
                        HorizontalOptions="Center"
-                       TextColor="White"
+                       TextColor="{DynamicResource TextColorMain}"
                        FontAttributes="Bold"/>
                 <!-- Основной блок с категориями и настройками событий -->
                 <Grid RowSpacing="15">
@@ -37,7 +38,7 @@
                         <Label Text="Event settings"
                                        FontSize="20"
                                        HorizontalOptions="Center"
-                                       TextColor="White"
+                                       TextColor="{DynamicResource TextColorMain}"
                                        FontAttributes="Bold"/>
                         <!-- Вместо Grid вставляем общий HorizontalStackLayout -->
                         <HorizontalStackLayout HorizontalOptions="Center"
@@ -46,28 +47,28 @@
                             <!-- Первая группа: Online + Offline -->
                             <HorizontalStackLayout Spacing="0">
                                 <!-- Кнопка Online -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="OnlineEvent"
                                             Text="Online"
-                                            BackgroundColor="#292929"
-                                            TextColor="White"
+                                            BackgroundColor="{DynamicResource ButtonColorSettingsMain}"
+                                            TextColor="{DynamicResource ButtonTextColorMain}"
                                             Padding="15,8"
                                             CornerRadius="0"
                                             Clicked="OnEventTypeClicked"/>
                                 </Border>
 
                                 <!-- Кнопка Offline -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="0,15,0,15"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="OfflineEvent"
                                             Text="Offline"
-                                            BackgroundColor="#8E44AD"
-                                            TextColor="White"
+                                            BackgroundColor="{DynamicResource ButtonColorPurpleMain}"
+                                            TextColor="{DynamicResource ButtonTextColorMain}"
                                             Padding="15,8"
                                             CornerRadius="0"
                                             Clicked="OnEventTypeClicked"/>
@@ -77,28 +78,28 @@
                             <!-- Вторая группа: Public + Private -->
                             <HorizontalStackLayout Spacing="0">
                                 <!-- Кнопка Public -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="15,0,15,0"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="PublicEvent"
                                             Text="Public"
-                                            BackgroundColor="#292929"
-                                            TextColor="White"
+                                            BackgroundColor="{DynamicResource ButtonColorSettingsMain}"
+                                            TextColor="{DynamicResource ButtonTextColorMain}"
                                             Padding="15,8"
                                             CornerRadius="0"
                                             Clicked="OnEventTypeClicked"/>
                                 </Border>
 
                                 <!-- Кнопка Private -->
-                                <Border Stroke="#FFFFFF" StrokeThickness="1">
+                                <Border Stroke="Transparent" StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="0,15,0,15"/>
                                     </Border.StrokeShape>
                                     <Button x:Name="PrivateEvent"
                                             Text="Private"
-                                            BackgroundColor="#8E44AD"
-                                            TextColor="White"
+                                            BackgroundColor="{DynamicResource ButtonColorPurpleMain}"
+                                            TextColor="{DynamicResource ButtonTextColorMain}"
                                             Padding="15,8"
                                             CornerRadius="0"
                                             Clicked="OnEventTypeClicked"/>
@@ -109,7 +110,7 @@
                             <!-- Label для даты -->
                             <Label Text="Date"
                                      FontSize="20"
-                                     TextColor="White"
+                                     TextColor="{DynamicResource TextColorMain}"
                                      HorizontalOptions="Center"
                                      Margin="0,10,0,-10"
                                      FontAttributes="Bold"/>
@@ -121,7 +122,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <!-- Изображение -->
-                                <Image Source="Resources/Images/data_time.png"
+                                <Image Source="{DynamicResource DateTimeImage}"
                                        WidthRequest="40"
                                        HeightRequest="40"
                                        VerticalOptions="Center"
@@ -130,8 +131,8 @@
                                        Margin="0,19,0,0"/>
                                 <!-- Start Date Picker -->
                                 <DatePicker x:Name="startDatePicker"
-                                            BackgroundColor="#292929"
-                                            TextColor="White"
+                                            BackgroundColor="{DynamicResource CardBackgroundColor}"
+                                            TextColor="{DynamicResource TextColorMain}"
                                             Margin="0,10,0,0"
                                             VerticalOptions="Center"
                                             Grid.Column="1"
@@ -139,15 +140,15 @@
                                 <!-- Разделитель -->
                                 <Label Text="-"
                                        FontSize="20"
-                                       TextColor="White"
+                                       TextColor="{DynamicResource TextColorMain}"
                                        VerticalOptions="Center"
                                        HorizontalOptions="Center"
                                        Grid.Column="2"
                                        Margin="0,10,0,10"/>
                                 <!-- End Date Picker -->
                                 <DatePicker x:Name="endDatePicker"
-                                            BackgroundColor="#292929"
-                                            TextColor="White"
+                                            BackgroundColor="{DynamicResource CardBackgroundColor}"
+                                            TextColor="{DynamicResource TextColorMain}"
                                             Margin="0,10,0,0"
                                             VerticalOptions="Center"
                                             Grid.Column="3"
@@ -159,19 +160,19 @@
                 <!-- Кнопки управления -->
                 <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" Padding="10,0,0,0">
                     <Button Text="Close"
-                              BackgroundColor="#292929"
-                              TextColor="White"
+                              BackgroundColor="{DynamicResource CardBackgroundColor}"
+                              TextColor="{DynamicResource TextColorMain}"
                               CornerRadius="15"
-                              BorderColor="White"
+                              BorderColor="{DynamicResource ButtonSettingsBorderColor}"
                               BorderWidth="1"
                               WidthRequest="140"
                               FontAttributes="Bold"
                               Clicked="OnCancelClicked" />
                     <Button Text="Save"
-                              BackgroundColor="#292929"
-                              TextColor="White"
+                              BackgroundColor="{DynamicResource CardBackgroundColor}"
+                              TextColor="{DynamicResource TextColorMain}"
                               CornerRadius="15"
-                              BorderColor="White"
+                              BorderColor="{DynamicResource ButtonSettingsBorderColor}"
                               BorderWidth="1"
                               WidthRequest="140"
                               FontAttributes="Bold"
