@@ -50,6 +50,10 @@ namespace SLON.Models
             mutual.Clear();
             requests.Clear();
             accepted.Clear();
+            RejectedUsers.Clear();
+            RejectedEvents.Clear();
+            SecureStorage.Remove("RejectedUsers");
+            SecureStorage.Remove("RejectedEvents");
         }
 
         /// <summary>
@@ -84,6 +88,36 @@ namespace SLON.Models
             var mutualUsers = await AuthService.GetMutualUsersAsync(username);
             mutual = new ObservableCollection<User>(mutualUsers);
 
+        }
+
+        public static ObservableCollection<string> RejectedUsers { get; } = new();
+        public static ObservableCollection<string> RejectedEvents { get; } = new();
+
+        public static async Task LoadRejectedFromStorage()
+        {
+            var rejectedUsers = await SecureStorage.GetAsync("RejectedUsers");
+            if (!string.IsNullOrEmpty(rejectedUsers))
+            {
+                foreach (var user in rejectedUsers.Split(','))
+                {
+                    RejectedUsers.Add(user);
+                }
+            }
+
+            var rejectedEvents = await SecureStorage.GetAsync("RejectedEvents");
+            if (!string.IsNullOrEmpty(rejectedEvents))
+            {
+                foreach (var ev in rejectedEvents.Split(','))
+                {
+                    RejectedEvents.Add(ev);
+                }
+            }
+        }
+
+        public static async Task SaveRejectedToStorage()
+        {
+            await SecureStorage.SetAsync("RejectedUsers", string.Join(",", RejectedUsers));
+            await SecureStorage.SetAsync("RejectedEvents", string.Join(",", RejectedEvents));
         }
 
     }

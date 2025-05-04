@@ -68,7 +68,7 @@
                                          SupportedSwipeDirections="Left, Right"
                                          HorizontalOptions="FillAndExpand" 
                                          VerticalOptions="FillAndExpand"
-                                         LoopCards="True"
+                                         LoopCards="False"
                                          SwipedCommand="{Binding OnCardSwipedCommand}"
                                          SwipedCommandParameter="{Binding .}"
                                          IsVisible="True">
@@ -166,7 +166,7 @@
                                          SupportedSwipeDirections="Left, Right"
                                          HorizontalOptions="FillAndExpand" 
                                          VerticalOptions="FillAndExpand"
-                                         LoopCards="True"
+                                         LoopCards="False"
                                          SwipedCommand="{Binding OnCardSwipedCommand}"
                                          SwipedCommandParameter="{Binding .}"
                                          IsVisible="False">

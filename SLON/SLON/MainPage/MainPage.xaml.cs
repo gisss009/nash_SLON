@@ -95,7 +95,7 @@ namespace SLON
 
             // 1) Определяем своего пользователя
             var myUsername = AuthService.GetUsernameAsync();
-
+            await Favourites.LoadRejectedFromStorage();
             // 2) Обновляем локальный список взаимных лайков
             await Models.Favourites.RefreshFavoritesAsync();
             var mutualUsers = await AuthService.GetMutualUsersAsync(myUsername);
@@ -108,21 +108,6 @@ namespace SLON
             await FillEventsCardsAsync();
             await FilterCards();
         }
-
-
-
-        //public async void FillUserCards()
-        //{ 
-        //    IsLoading = true;
-        //    var username = AuthService.GetUsernameAsync();
-        //    Settings.Init(username);
-
-        //    await FillEventsCardsAsync();
-        //    await FilterCards();
-
-        //    IsLoading = false;
-        //    RaiseEmptyFlags();
-        //}
 
         public async Task FillUserCards()
         {
@@ -145,7 +130,9 @@ namespace SLON
 
                 // 3) Фильтруем: исключаем себя и неполные профили
                 var filteredProfiles = allUsers
-                    .Where(u =>
+                    .Where(u => u.username != currentUsername &&
+        !Favourites.favorites.Any(f => f.Username == u.username) &&
+        !Favourites.RejectedUsers.Contains(u.username) && !Favourites.mutual.Any(m => m.Username == u.username) &&
                         u.username != currentUsername &&
                         !string.IsNullOrWhiteSpace(u.description) &&
                         !string.IsNullOrWhiteSpace(u.username) &&
@@ -284,7 +271,8 @@ namespace SLON
 
             if (_allEventsCache == null)
                 _allEventsCache = new List<Event>();
-
+            else
+                _allEventsCache.Clear();
             var currentUser = AuthService.GetUsernameAsync();
 
             foreach (var ed in allEventsData)
@@ -292,7 +280,11 @@ namespace SLON
                 // 1) Никогда не показываем СВОИ ивенты
                 if (ed.owner == currentUser)
                     continue;
-
+                if (Favourites.favoriteEvents.Any(e => e.Hash == ed.hash) ||
+    Favourites.RejectedEvents.Contains(ed.hash))
+                {
+                    continue;
+                }
                 // 2) Приватные ивенты (public == 0) показываем ТОЛЬКО взаимным лайкам
                 if (ed.@public == 0 &&
                     !Models.Favourites.mutual.Any(u => u.Username == ed.owner))
@@ -478,13 +470,15 @@ namespace SLON
                 }
                 else if (e.Direction == SwipeCardDirection.Right)
                 {
-                    Debug.WriteLine($"Skipped: {swipedUser.Name}");
+                    Favourites.RejectedUsers.Add(swipedUser.Username);
+                    await Favourites.SaveRejectedToStorage();
                 }
             }
             else if (e.Item is Event swipedEvent)
             {
                 if (e.Direction == SwipeCardDirection.Left)
                 {
+                    Events.Remove(swipedEvent);
                     Debug.WriteLine($"Liked event: {swipedEvent.Name}");
 
                     var username = AuthService.GetUsernameAsync();
@@ -506,6 +500,13 @@ namespace SLON
                         }
                     }
                 }
+                else if (e.Direction == SwipeCardDirection.Right)
+                {
+                    Favourites.RejectedEvents.Add(swipedEvent.Hash);
+                    await Favourites.SaveRejectedToStorage();
+                }
+                // Дополнительно удаляем из кэша
+                _allEventsCache.RemoveAll(ev => ev.Hash == swipedEvent.Hash);
             }
         }
 
