@@ -1,9 +1,9 @@
-﻿using Microsoft.Maui.Controls;
 using SLON.Services;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using SLON.Models;
+using ImageCropper.Maui;
+using SLON.SocialLinks;
+
 
 namespace SLON
 {
@@ -12,6 +12,15 @@ namespace SLON
         private bool _isEditing = false;          // Режим редактирования профиля
         private bool _isEditingEvent = false;     // Режим редактирования события
         private bool _isCreatingEvent = false;    // Режим создания нового события
+        private string _fromPage = string.Empty;
+        private string _requestedUsername = string.Empty;
+        private AuthService.UserProfile _currentProfile;
+        private UserProfileEditModel _originalProfileData;
+
+        private double _lastPanX; // Последняя X позиция рамки (пропорциональная)
+        private double _lastPanY; // Последняя Y позиция рамки (пропорциональная)
+        private double _lastScale = 0.5; // Начальный масштаб рамки (50%)
+        private byte[] _selectedImageBytes;
 
         // Переключатель In/My: true – мои события, false – события, где я участвую
         private bool _showMyEvents = true;
@@ -23,6 +32,8 @@ namespace SLON
         private readonly List<(string Hash, string Name, string Categories, string Description, string Location,
                                bool IsOnline, bool IsPublic, DateTime StartDate, DateTime EndDate, bool IsMyEvent)> events = new();
         private readonly List<string> selectedCategories = new();
+
+        private List<string> socialLinks = new List<string>();
 
         private bool _isPublic = true;
         private bool _isOnline = false;
@@ -41,7 +52,6 @@ namespace SLON
             {"Health", ("Nutrition Therapy Fitness", "Diet Planning, Rehabilitation")}
         };
 
-        private AuthService.UserProfile _currentProfile;
         public Profile()
         {
             InitializeComponent();
@@ -54,49 +64,127 @@ namespace SLON
             MyEventsButton.BackgroundColor = Color.FromArgb("#915AC5");
             InEventsButton.BackgroundColor = Colors.DarkGray;
 
-            events.Add((Guid.NewGuid().ToString(), "InEvent1", "Science", "Event I'm in", "Venue D", false, true, DateTime.Today, DateTime.Today.AddDays(5), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent2", "Business", "Another event I'm in", "Venue E", false, true, DateTime.Today, DateTime.Today.AddDays(6), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent3", "Education", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), false));
-            events.Add((Guid.NewGuid().ToString(), "InEvent4", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
-            events.Add((Guid.NewGuid().ToString(), "In", "Education, Business", "Yet another event I'm in", "Venue F", false, false, DateTime.Today, DateTime.Today.AddDays(7), true));
             RefreshEventsUI();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            Console.WriteLine(_fromPage);
+            bool isForeign = _fromPage == "FavoritesPage";
+            Shell.SetTabBarIsVisible(this, !isForeign);
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
 
-            try
+            if (_fromPage == "FavoritesPage")
             {
-                var username = AuthService.GetUsernameAsync();
-                _currentProfile = await AuthService.GetUserProfileAsync(username);
+                UsernameLabel.GestureRecognizers.Clear();
+                EditIcon.IsVisible = false;
+                AddEventIcon.IsVisible = false;
 
-                if (_currentProfile == null)
+                Shell.SetTabBarIsVisible(this, false);
+            }
+
+            _ = LoadProfileAsync();
+
+            //ShowDisplayAlertIfNotFillingUp();
+        }
+
+        public void ShowDisplayAlertIfNotFillingUp()
+        {
+            var filledIn = new List<bool> { 
+                NameInput.Text.Count() > 0, 
+                SurnameInput.Text.Count() > 0, 
+                VocationInput.Text.Count() > 0, 
+                selectedCategories.Count() > 0,
+                ResumeEditor.Text.Count() > 0
+            };
+
+            foreach (var filled in filledIn)
+                if (!filled)
                 {
-                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK");
+                    DisplayAlert("Предупреждение", "Пожалуйста, заполните поля. Иначе ваш профиль не будет виден в поиске.", "OK");
                     return;
                 }
+        }
 
-                // Инициализируем оригинальные данные
+        private async Task LoadProfileAsync()
+        {
+            // 1) Решаем, кого грузим:
+            string usernameToLoad =
+                _fromPage == "FavoritesPage" && !string.IsNullOrWhiteSpace(_requestedUsername)
+                ? _requestedUsername
+                : AuthService.GetUsernameAsync();
+
+            // 2) Получаем профиль
+            var profile = await AuthService.GetUserProfileAsync(usernameToLoad);
+
+            Console.Write("Urls: ");
+            profile.urls.ForEach(Console.WriteLine);
+
+            _currentProfile = profile;
+
+            foreach (var item in profile.categories)
+            {
+                Console.WriteLine(item);
+            }
+            if (profile == null)
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                    await DisplayAlert("Ошибка", "Не удалось загрузить профиль", "OK"));
+                return;
+            }
+
+            Console.WriteLine(profile.username);
+            var eventsData = await AuthService.GetAllUserEventsAsync(usernameToLoad);
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                NavigationPage.SetBackButtonTitle(this, "@" + usernameToLoad);
+
+                ExitAccIcon.IsVisible = usernameToLoad == AuthService.GetUsernameAsync();
+                UsernameLabel.Text = profile.username;
+                NameInput.Text = profile.name;
+                SurnameInput.Text = profile.surname;
+                VocationInput.Text = profile.vocation;
+                ResumeEditor.Text = profile.description;
+
                 _originalProfileData = new UserProfileEditModel
                 {
-                    Name = _currentProfile.name ?? "",
-                    Surname = _currentProfile.surname ?? "",
-                    Vocation = _currentProfile.vocation ?? "",
-                    Description = _currentProfile.description ?? "",
-                    Categories = _currentProfile.categories ?? new List<string>()
+                    Name = profile.name,
+                    Surname = profile.surname,
+                    Vocation = profile.vocation,
+                    Description = profile.description,
+                    Categories = profile.categories ?? new(),
+                    Urls = profile.urls
                 };
 
-                UpdateProfileUI(_currentProfile);
-                await LoadAndRefreshEvents(username);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при загрузке данных: {ex}");
-                await DisplayAlert("Ошибка", "Произошла ошибка при загрузке данных", "OK");
-            }
+                UpdateProfileUI(profile);
+                await LoadAndRefreshEvents(usernameToLoad);
+                await LoadAndUpdateAvatar(usernameToLoad);
+            });
+
         }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("fromPage", out var fromPageObj))
+                _fromPage = fromPageObj?.ToString() ?? string.Empty;
+
+            if (query.TryGetValue("username", out var userObj))
+                _requestedUsername = userObj?.ToString() ?? string.Empty;
+        }
+
+        public async Task LoadAndUpdateAvatar(string username)
+        {
+            var avatarImage = await AuthService.GetUserAvatarAsync(username);
+
+            AvatarButton.Source = avatarImage ?? ImageSource.FromFile("default_profile_icon.png");
+        }
+
 
         private async void OnUsernameTapped(object sender, EventArgs e)
         {
@@ -108,11 +196,19 @@ namespace SLON
             if (!confirm)
                 return;
 
+            // Очищаем учетные данные
             await AuthService.ClearCredentialsAsync();
             AuthService.SetAuthenticated(false);
 
+            // Очищаем локальные коллекции избранного
+            Models.Favourites.ResetFavorites();
+            SLON.Models.Settings.Save();
+
+            Settings.Init("");
+            // Переходим на экран авторизации
             Application.Current.MainPage = new NavigationPage(new AuthPage());
         }
+
 
 
         private async Task LoadAndRefreshEvents(string username)
@@ -155,8 +251,8 @@ namespace SLON
             public string Vocation { get; set; }
             public string Description { get; set; }
             public List<string> Categories { get; set; }
+            public List<string> Urls { get; set; }
         }
-        private UserProfileEditModel _originalProfileData;
 
         private void UpdateProfileUI(AuthService.UserProfile profile)
         {
@@ -203,7 +299,6 @@ namespace SLON
             }
         }
 
-        // Keep only the async version that actually saves to server
         private async Task SaveProfileChanges()
         {
             try
@@ -211,7 +306,6 @@ namespace SLON
                 var username = AuthService.GetUsernameAsync();
                 var updates = new Dictionary<string, string>();
 
-                // Добавляем только измененные поля
                 if (NameInput.Text != _originalProfileData.Name)
                     updates["name"] = NameInput.Text;
 
@@ -224,7 +318,6 @@ namespace SLON
                 if (ResumeEditor.Text != _originalProfileData.Description)
                     updates["description"] = ResumeEditor.Text;
 
-                // Если нет изменений - просто выходим
                 if (updates.Count == 0)
                 {
                     return;
@@ -234,7 +327,6 @@ namespace SLON
 
                 if (success)
                 {
-                    // Обновляем оригинальные данные
                     _originalProfileData.Name = NameInput.Text;
                     _originalProfileData.Surname = SurnameInput.Text;
                     _originalProfileData.Vocation = VocationInput.Text;
@@ -260,14 +352,19 @@ namespace SLON
         {
             if (_originalProfileData == null) return;
 
-            // Восстанавливаем оригинальные значения
             NameInput.Text = _originalProfileData.Name;
             SurnameInput.Text = _originalProfileData.Surname;
             VocationInput.Text = _originalProfileData.Vocation;
             ResumeEditor.Text = _originalProfileData.Description;
 
-            // Обновляем UI
             UpdateProfileUI(_currentProfile);
+        }
+
+        private async void OnUrlIconClicked(object sender, EventArgs e)
+        {
+            LinksPopupCtrl.IsEditable = true;
+
+            await LinksPopupCtrl.Show(AuthService.GetUsernameAsync());
         }
 
         #region Редактирование профиля
@@ -306,7 +403,6 @@ namespace SLON
 
             AvatarButton.Source = isEditing ? "edit_profile_avatar.png" : "default_profile_icon.png";
 
-            // Обновляем UI категорий
             RefreshCategoriesUI(_currentProfile);
 
             // Включаем/выключаем кнопки удаления
@@ -338,25 +434,61 @@ namespace SLON
             if (!_isEditing) return;
             try
             {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
+                new ImageCropper.Maui.ImageCropper()
                 {
-                    PickerTitle = "Выберите изображение:",
-                    FileTypes = FilePickerFileType.Images
-                });
-                if (result != null)
-                {
-                    AvatarButton.Source = ImageSource.FromFile(result.FullPath);
-                }
+                    PageTitle = "Test Title",
+                    AspectRatioX = 1,
+                    AspectRatioY = 1,
+                    CropShape = ImageCropper.Maui.ImageCropper.CropShapeType.Oval,
+                    SelectSourceTitle = "Select source",
+                    TakePhotoTitle = "Take Photo",
+                    PhotoLibraryTitle = "Photo Library",
+                    CancelButtonTitle = "Cancel",
+                    Success = async (imageFile) =>
+                    {
+                        // Preview locally
+                        Dispatcher.Dispatch(() =>
+                        {
+                            AvatarButton.Source = ImageSource.FromFile(imageFile);
+                        });
+
+                        // Read cropped image into byte array
+                        byte[] data;
+                        using (var stream = File.OpenRead(imageFile))
+                        {
+                            using var ms = new MemoryStream();
+                            await stream.CopyToAsync(ms);
+                            data = ms.ToArray();
+                        }
+
+                        // Upload to server
+                        var ok = await AuthService.UploadUserAvatarAsync(data, Path.GetFileName(imageFile));
+                        if (!ok)
+                        {
+                            await DisplayAlert("Error", "Failed to upload avatar", "OK");
+                            return;
+                        }
+
+                        // Reload from server
+                        //string username = AuthService.GetUsernameAsync();
+                        //var url = new Uri($"http://139.28.223.134:5000/photos/image/{Uri.EscapeDataString(username)}");
+                        Dispatcher.Dispatch(() =>
+                        {
+                            AvatarButton.Source = ImageSource.FromFile(imageFile);
+                        });
+                    }
+                }.Show(this);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось загрузить изображение: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"Something went wrong: {ex.Message}", "OK");
             }
         }
 
+
+
+
         #endregion
-
-
 
         #region Управление категориями
 
@@ -364,7 +496,6 @@ namespace SLON
         {
             if (!_isEditing) return;
 
-            // Получаем список доступных категорий
             var availableCategories = allCategories
                 .Except(_currentProfile?.categories ?? new List<string>())
                 .ToArray();
@@ -388,17 +519,14 @@ namespace SLON
             CategoryPopup.IsVisible = true;
             CategoryNameLabel.Text = categoryName;
 
-            // Устанавливаем цвет категории
             CategoryNameLabel.TextColor = GetCategoryColor(categoryName);
 
-            // Получаем примеры для подсказок
             if (categoryExamples.TryGetValue(categoryName, out var examples))
             {
                 TagsEditor.Placeholder = $"Enter tags... (e.g. {examples.TagExample})";
                 SkillsEditor.Placeholder = $"Describe skills... (e.g. {examples.SkillExample})";
             }
 
-            // Получаем текущие теги и навыки для этой категории из профиля
             if (_currentProfile?.tags != null && _currentProfile.tags.TryGetValue(categoryName, out var currentTags))
             {
                 TagsEditor.Text = currentTags;
@@ -417,7 +545,6 @@ namespace SLON
                 SkillsEditor.Text = string.Empty;
             }
 
-            // Настройка режима редактирования
             if (!_isEditing)
             {
                 TagsEditor.IsReadOnly = true;
@@ -520,35 +647,23 @@ namespace SLON
                 button.IsEnabled = isEnabled;
         }
 
-        private void OnEditSaveEventClicked(object sender, EventArgs e)
+        private async void OnEditSaveEventClicked(object sender, EventArgs e)
         {
             if (_isCreatingEvent || _isEditingEvent)
             {
-                SaveEventChanges();
-                if (_isCreatingEvent)
-                {
-                    _isCreatingEvent = false;
-                    EventPopup.IsVisible = false;
-                    return;
-                }
+                await SaveEventChanges();
+                return;
             }
 
             if (IsCurrentEventMine())
             {
                 _isEditingEvent = !_isEditingEvent;
                 SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
-                if (_isEditingEvent)
-                {
-                    EventPopupHeaderLabel.Text = "Edit event card";
-                }
-                else
-                {
-                    EventPopupHeaderLabel.Text = "Event card";
-                }
-
+                EventPopupHeaderLabel.Text = _isEditingEvent ? "Edit event card" : "Event card";
                 UpdateEventPopupUI();
             }
         }
+
 
         private View CreateCategoryChip(string categoryName)
         {
@@ -619,7 +734,6 @@ namespace SLON
 
                 if (success)
                 {
-                    // Обновляем профиль после удаления
                     _currentProfile = await AuthService.GetUserProfileAsync(username);
                     RefreshCategoriesUI(_currentProfile);
                 }
@@ -641,7 +755,6 @@ namespace SLON
             string tags = TagsEditor.Text?.Trim() ?? "";
             string skills = SkillsEditor.Text?.Trim() ?? "";
 
-            // Проверка
             if (string.IsNullOrWhiteSpace(tags) || string.IsNullOrWhiteSpace(skills))
             {
                 await DisplayAlert("Error", "Both Tags and Skills fields must be filled.", "OK");
@@ -655,7 +768,6 @@ namespace SLON
 
                 if (success)
                 {
-                    // Обновляем UI
                     _currentProfile = await AuthService.GetUserProfileAsync(username);
                     RefreshCategoriesUI(_currentProfile);
                     CategoryPopup.IsVisible = false;
@@ -685,7 +797,7 @@ namespace SLON
                 {
                     await DisplayAlert("Успех", "Мероприятие успешно удалено", "OK");
                     EventPopup.IsVisible = false;
-                    await RefreshEventsFromServer(); // Обновляем данные с сервера
+                    await RefreshEventsFromServer();
                 }
                 else
                 {
@@ -696,102 +808,128 @@ namespace SLON
 
         private DateTime _lastSaveTime = DateTime.MinValue;
 
-        private async void SaveEventChanges()
+        private async Task SaveEventChanges()
         {
+            bool wasCreating = _isCreatingEvent;
+
             if ((DateTime.Now - _lastSaveTime).TotalSeconds < 1)
                 return;
-
             _lastSaveTime = DateTime.Now;
+
             try
             {
-                // 1. Валидация названия
-                string name = EventNameInput.Text?.Trim();
-                if (string.IsNullOrWhiteSpace(name))
+                string name = EventNameInput.Text?.Trim() ?? "";
+                string description = EventDescriptionInput.Text?.Trim() ?? "";
+                string location = EventLocationInput.Text?.Trim() ?? "";
+
+                if (string.IsNullOrWhiteSpace(name)
+                    || string.IsNullOrWhiteSpace(description)
+                    || string.IsNullOrWhiteSpace(location)
+                    || selectedCategories.Count == 0)
                 {
-                    await DisplayAlert("Ошибка", "Название мероприятия не может быть пустым", "OK");
+                    await DisplayAlert("Ошибка", "Все поля должны быть заполнены", "OK");
                     return;
                 }
+
                 if (name.Length > 50)
                 {
                     await DisplayAlert("Ошибка", "Название слишком длинное (макс. 50 символов)", "OK");
                     return;
                 }
 
-                // 2. Валидация дат
                 if (_endDate < _startDate)
                 {
                     await DisplayAlert("Ошибка", "Дата окончания не может быть раньше даты начала", "OK");
                     return;
                 }
 
-                // 3. Валидация категорий
-                if (selectedCategories.Count == 0)
+                bool isDuplicate = wasCreating
+                    ? events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    : events.Any(e => e.Hash != _originalEventHash
+                                      && e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                if (isDuplicate)
                 {
-                    await DisplayAlert("Ошибка", "Выберите хотя бы одну категорию", "OK");
+                    await DisplayAlert("Ошибка", "Мероприятие с таким именем уже существует", "OK");
                     return;
                 }
 
-                // 4. Подготовка данных
                 var username = AuthService.GetUsernameAsync();
-                var eventData = new AuthService.EventData
+                var payload = new AuthService.EventData
                 {
                     name = name,
                     owner = username,
                     categories = new List<string>(selectedCategories),
-                    description = EventDescriptionInput.Text?.Trim(),
-                    location = EventLocationInput.Text?.Trim(),
+                    description = description,
+                    location = location,
                     date_from = _startDate.ToString("dd.MM.yyyy"),
                     date_to = _endDate.ToString("dd.MM.yyyy"),
                     @public = _isPublic ? 1 : 0,
-                    online = _isOnline ? 1 : 0
+                    online = _isOnline ? 1 : 0,
+                    hash = wasCreating ? null : _originalEventHash
                 };
 
-                bool success;
-                string operation;
+                AuthService.EventData resultEvent = wasCreating
+                    ? await AuthService.AddEventAsync(payload)
+                    : await AuthService.UpdateEventAsync(payload);
 
-                // 5. Логика сохранения в зависимости от режима
-                if (_isCreatingEvent)
+                if (resultEvent != null)
                 {
-                    if (events.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsMyEvent))
-                    {
-                        await DisplayAlert("Ошибка", "Мероприятие с таким названием уже существует", "OK");
-                        return;
-                    }
+                    var idx = events.FindIndex(e => e.Hash == resultEvent.hash);
+                    var tuple = (
+                        resultEvent.hash,
+                        resultEvent.name,
+                        string.Join(", ", resultEvent.categories),
+                        resultEvent.description,
+                        resultEvent.location,
+                        resultEvent.online == 1,
+                        resultEvent.@public == 1,
+                        DateTime.ParseExact(resultEvent.date_from, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        DateTime.ParseExact(resultEvent.date_to, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                        true
+                    );
 
-                    if (string.IsNullOrEmpty(_originalEventHash))
-                    {
-                        _originalEventHash = Guid.NewGuid().ToString();
-                    }
-                    eventData.hash = _originalEventHash;
-                    operation = "создано";
-                    success = await AuthService.AddEventAsync(eventData);
-                }
-                else
-                {
-                    eventData.hash = _originalEventHash;
-                    operation = "обновлено";
-                    success = await AuthService.UpdateEventAsync(eventData);
-                }
+                    if (idx >= 0)
+                        events[idx] = tuple;
+                    else
+                        events.Add(tuple);
 
-                // 6. Обработка результата
-                if (success)
-                {
-                    await DisplayAlert("Успех", $"Мероприятие успешно {operation}!", "OK");
+                    string successMsg = wasCreating
+                        ? "Мероприятие успешно создано!"
+                        : "Мероприятие успешно обновлено!";
+                    await DisplayAlert("Успех", successMsg, "OK");
+
+                    // Сброс флага создания и закрытие попапа
+                    _isCreatingEvent = false;
                     EventPopup.IsVisible = false;
-                    await RefreshEventsFromServer();
+                    RefreshEventsUI();
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", $"Не удалось {operation} мероприятие", "OK");
+                    // Обработка неудачи
+                    string failMsg = wasCreating
+                        ? "Не удалось создать мероприятие"
+                        : "Не удалось обновить мероприятие";
+                    await DisplayAlert("Ошибка", failMsg, "OK");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при сохранении мероприятия: {ex}");
-                await DisplayAlert("Ошибка", "Произошла непредвиденная ошибка", "OK");
+                if (ex is TaskCanceledException)
+                {
+                    await DisplayAlert("Ошибка", "Время ожидания истекло. Возможно, сервер не отвечает.", "OK");
+                }
+                else if (ex is HttpRequestException httpEx)
+                {
+                    await DisplayAlert("Ошибка сети", $"Проблема с сетью: {httpEx.Message}", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+                }
             }
         }
-
 
         private async Task RefreshEventsFromServer()
         {
@@ -829,12 +967,19 @@ namespace SLON
         private void RefreshEventsUI()
         {
             EventsContainer.Children.Clear();
-            var filtered = _showMyEvents ? events.Where(ev => ev.IsMyEvent).ToList() : events.Where(ev => !ev.IsMyEvent).ToList();
-            var displayList = filtered.Take(3).ToList();
-            foreach (var ev in displayList)
+
+            var filtered = _showMyEvents
+                ? events.Where(ev => ev.IsMyEvent)
+                : events.Where(ev => !ev.IsMyEvent);
+
+            var sorted = filtered
+                .OrderBy(ev => ev.StartDate)
+                .ToList();
+
+            foreach (var ev in sorted.Take(3))
                 AddEventCard(ev.Hash, ev.Name, ev.IsMyEvent);
-            ShowAllEventsButton.IsVisible = true;
         }
+
 
         private void AddEventCard(string eventHash, string eventName, bool isMyEvent)
         {
@@ -845,7 +990,7 @@ namespace SLON
                 CornerRadius = 10,
                 Padding = 10,
                 Margin = 5,
-                HeightRequest = 40
+                HeightRequest = 50
             };
             var grid = new Grid();
             var label = new Label
@@ -968,7 +1113,6 @@ namespace SLON
             EventPopup.IsVisible = true;
         }
 
-
         private bool IsCurrentEventMine()
         {
             var ev = events.FirstOrDefault(e => e.Hash == _originalEventHash);
@@ -997,6 +1141,7 @@ namespace SLON
 
         private void UpdateEventPopupUI()
         {
+            EventPopupHeaderLabel.Text = _isCreatingEvent ? "Create event card" : (_isEditingEvent ? "Edit event card" : "Event card");
             SaveEventButton.Source = _isEditingEvent ? "save_icon.png" : "edit_icon.png";
             EventNameInput.IsReadOnly = !_isEditingEvent;
             EventDescriptionInput.IsReadOnly = !_isEditingEvent;
@@ -1197,8 +1342,8 @@ namespace SLON
                     BackgroundColor = Color.FromArgb("#353535"),
                     CornerRadius = 10,
                     Padding = 10,
-                    Margin = 5,
-                    HeightRequest = 40
+                    Margin = 3,
+                    HeightRequest = 50
                 };
                 var grid = new Grid();
                 var label = new Label

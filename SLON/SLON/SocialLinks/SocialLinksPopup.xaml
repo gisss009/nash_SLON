@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SLON.SocialLinks.SocialLinksPopup">
+
+
+    <!-- Social Links Popup overlay -->
+    <Grid x:Name="PART_Popup" IsVisible="False" BackgroundColor="#99000000">
+        <Frame
+            BackgroundColor="#1E1E1E"
+            Padding="20"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            CornerRadius="12"
+            WidthRequest="320"
+            BorderColor="#915AC5">
+            <StackLayout Spacing="15">
+                <Label Text="Social Links"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       TextColor="White"
+                       HorizontalOptions="Center" />
+
+                <Entry x:Name="NewLinkEntry"
+                       Placeholder="https://..."
+                       PlaceholderColor="#888"
+                       TextColor="White"
+                       BackgroundColor="#2E2E2E" />
+
+                <Button x:Name="AddLinkButton"
+                        Text="Add Link"
+                        TextColor="White"
+                        BackgroundColor="#915AC5"
+                        CornerRadius="8"
+                        Clicked="OnAddSocialLinkClicked" />
+
+                <Label Text="Ссылок нет"
+                       TextColor="White"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Start"
+                            IsVisible="False">           
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ItemsSource.Count, Source={x:Reference LinksCollectionView}}"
+                                     Value="0">
+                            <Setter Property="IsVisible" Value="True"/>
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+
+                <CollectionView x:Name="LinksCollectionView"
+                                HeightRequest="180"
+                                ItemsLayout="VerticalList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="5" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image Source="{Binding IconSource}"
+                                           WidthRequest="20"
+                                           HeightRequest="20"
+                                           VerticalOptions="Center"
+                                           Grid.Column="0" />
+
+                                <Label Text="{Binding Url}"
+                                           TextColor="#A7C7FF"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           Grid.Column="1">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            CommandParameter="{Binding Url}"
+                                            Tapped="OnSocialLinkTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+
+                                <ImageButton Source="delete_icon.png"
+                                             IsVisible="{Binding IsVisible}"
+                                             BackgroundColor="Transparent"
+                                             WidthRequest="24"
+                                             HeightRequest="24"
+                                             Grid.Column="2"
+                                             CommandParameter="{Binding Url}"
+                                             Clicked="OnDeleteSocialLinkClicked" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                
+                <Button Text="Close"
+                        BackgroundColor="#444"
+                        TextColor="White"
+                        Clicked="OnCloseLinksPopup" />
+            </StackLayout>
+        </Frame>
+    </Grid>
+</ContentView>

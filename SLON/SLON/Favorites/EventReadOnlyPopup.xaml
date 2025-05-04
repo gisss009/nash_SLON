@@ -84,18 +84,29 @@
                            FontAttributes="Bold"
                            TextColor="White"
                            HorizontalOptions="Center"/>
+
                     <Frame BackgroundColor="#3D3D3D"
                            CornerRadius="10"
                            Padding="10"
                            BorderColor="Transparent"
                            HorizontalOptions="FillAndExpand"
                            HeightRequest="45">
-                        <Label x:Name="CategoriesLabel"
-                               TextColor="White"
-                               HorizontalOptions="Start"
-                               FontSize="16"/>
+
+                        <!-- Оборачиваем Label в ScrollView для горизонтальной прокрутки -->
+                        <ScrollView Orientation="Horizontal"
+                                    BackgroundColor="Transparent"
+                                    HorizontalScrollBarVisibility="Never">
+                            <Label x:Name="CategoriesLabel"
+                                   TextColor="White"
+                                   FontSize="16"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Start"
+                                   LineBreakMode="NoWrap"/>
+                        </ScrollView>
                     </Frame>
                 </VerticalStackLayout>
+
+
 
                 <!-- Описание -->
                 <Label Text="Short description"
