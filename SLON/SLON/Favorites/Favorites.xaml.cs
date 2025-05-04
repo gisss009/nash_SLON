@@ -118,34 +118,40 @@ namespace SLON
         private void OnPublicClicked(object sender, EventArgs e)
         {
             showingPublic = true;
-            PublicButton.BackgroundColor = Color.FromArgb("#915AC5");
-            PrivateButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors();
         }
 
         private void OnPrivateClicked(object sender, EventArgs e)
         {
             showingPublic = false;
-            PrivateButton.BackgroundColor = Color.FromArgb("#915AC5");
-            PublicButton.BackgroundColor = Colors.DarkGray;
             RefreshLikes();
+            UpdateButtonColors();
         }
 
         #region Обработчики переключения
         private void UpdateButtonColors()
         {
-            // Для кнопок All/Mutual
+            // All / Mutual
             AllButton.SetDynamicResource(Button.BackgroundColorProperty,
                 showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
             MutualButton.SetDynamicResource(Button.BackgroundColorProperty,
                 !showingAll ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
 
-            // Для кнопок Events/Profiles
+            // Events / Profiles
             EventsButton.SetDynamicResource(Button.BackgroundColorProperty,
                 showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
             ProfilesButton.SetDynamicResource(Button.BackgroundColorProperty,
                 !showingEvents ? "BackGroundColorButtonPurple" : "BackGroundColorButtonGray");
+
+            // Public / Private
+            var purple = (Color)Application.Current.Resources["BackGroundColorButtonPurple"];
+            var gray = (Color)Application.Current.Resources["BackGroundColorButtonGray"];
+
+            PublicButton.BackgroundColor = showingPublic ? purple : gray;
+            PrivateButton.BackgroundColor = showingPublic ? gray : purple;
         }
+
         private void OnAllClicked(object sender, EventArgs e)
         {
             showingAll = true;
@@ -156,8 +162,6 @@ namespace SLON
         private async void OnMutualClicked(object sender, EventArgs e)
         {
             showingAll = false;
-            MutualButton.BackgroundColor = Color.FromArgb("#915AC5");
-            AllButton.BackgroundColor = Colors.DarkGray;
             try
             {
                 var username = AuthService.GetUsernameAsync();
@@ -176,9 +180,6 @@ namespace SLON
         private void OnEventsClicked(object sender, EventArgs e)
         {
             showingEvents = true;
-            EventsButton.BackgroundColor = Color.FromArgb("#915AC5");
-            ProfilesButton.BackgroundColor = Colors.DarkGray;
-            // оставляем previous public/private выбор, просто обновляем список
             RefreshLikes();
             UpdateButtonColors();
         }

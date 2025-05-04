@@ -96,21 +96,14 @@
                                         </Label.GestureRecognizers>
                                     </Label>
 
-                                    <!-- Delete Button -->
                                     <ImageButton Source="delete_icon.png"
-                                                 BackgroundColor="Transparent"
-                                                 WidthRequest="24"
-                                                 HeightRequest="24"
-                                                 Grid.Column="2"
-                                                 CommandParameter="{Binding Url}"
-                                                 Clicked="OnDeleteSocialLinkClicked">
-                                        <ImageButton.HeightRequest>
-                                            <OnPlatform x:TypeArguments="x:Double">
-                                                <On Platform="Android, iOS">24</On>
-                                                <On Platform="WinUI">20</On>
-                                            </OnPlatform>
-                                        </ImageButton.HeightRequest>
-                                    </ImageButton>
+                                             IsVisible="{Binding IsVisible}"
+                                             BackgroundColor="Transparent"
+                                             WidthRequest="24"
+                                             HeightRequest="24"
+                                             Grid.Column="2"
+                                             CommandParameter="{Binding Url}"
+                                             Clicked="OnDeleteSocialLinkClicked" />
                                 </Grid>
 
                                 <!-- Разделитель -->

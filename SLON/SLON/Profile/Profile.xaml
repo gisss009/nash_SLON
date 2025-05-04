@@ -93,6 +93,7 @@
                         <ImageButton x:Name="UrlIcon"
                                      Source="url.png"
                                      BackgroundColor="Transparent"
+                                     
                                      WidthRequest="32"
                                      HeightRequest="32"
                                      HorizontalOptions="End"
@@ -633,7 +634,7 @@
                                     </ScrollView>
                                 </Frame>
                                 <HorizontalStackLayout HorizontalOptions="End">
-                                    <Border Padding="-20" Margin="0,0,0,92" Stroke="{DynamicResource ButtonBorderProfile}">
+                                    <Border Padding="-10" Margin="0,0,0,90" Stroke="{DynamicResource ButtonBorderProfile}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="15,0,15,0"/>
                                         </Border.StrokeShape>

@@ -75,7 +75,7 @@
                                 <RoundRectangle CornerRadius="0,15,0,15"/>
                             </Border.StrokeShape>
                             <Button x:Name="ProfilesButton"
-                            Text="Profile"
+                            Text="Profiles"
                             FontSize="12"
                             TextColor="White"
                             BackgroundColor="{DynamicResource BackGroundColorButtonGray}"

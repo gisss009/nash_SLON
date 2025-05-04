@@ -81,6 +81,7 @@ namespace SLON
             Console.WriteLine(_fromPage);
             bool isForeign = _fromPage == "FavoritesPage";
             Shell.SetTabBarIsVisible(this, !isForeign);
+
         }
 
 
