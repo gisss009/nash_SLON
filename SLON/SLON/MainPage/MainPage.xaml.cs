@@ -91,6 +91,7 @@ namespace SLON
         }
         protected override async void OnAppearing()
         {
+            await Favourites.LoadRejectedFromStorage();
             base.OnAppearing();
 
             // 1) Определяем своего пользователя
@@ -147,6 +148,9 @@ namespace SLON
                 var filteredProfiles = allUsers
                     .Where(u =>
                         u.username != currentUsername &&
+        !Favourites.favorites.Any(f => f.Username == u.username) &&
+        !Favourites.RejectedUsers.Contains(u.username) &&
+        !Favourites.mutual.Any(m => m.Username == u.username) &&
                         !string.IsNullOrWhiteSpace(u.description) &&
                         !string.IsNullOrWhiteSpace(u.username) &&
                         !string.IsNullOrWhiteSpace(u.surname) &&
@@ -279,6 +283,7 @@ namespace SLON
 
         public async Task FillEventsCardsAsync()
         {
+            _allEventsCache = new List<Event>();
             var allEventsData = await AuthService.GetAllEventsAsync();
             if (allEventsData == null) return;
 
@@ -290,6 +295,13 @@ namespace SLON
             foreach (var ed in allEventsData)
             {
                 // 1) Никогда не показываем СВОИ ивенты
+
+                if (Favourites.favoriteEvents.Any(e => e.Hash == ed.hash) ||
+    Favourites.RejectedEvents.Contains(ed.hash))
+                {
+                    continue;
+                }
+
                 if (ed.owner == currentUser)
                     continue;
 
@@ -425,7 +437,8 @@ namespace SLON
                 }
                 else if (e.Direction == SwipeCardDirection.Right)
                 {
-                    Debug.WriteLine($"Skipped: {swipedUser.Name}");
+                    Favourites.RejectedUsers.Add(swipedUser.Username);
+                    await Favourites.SaveRejectedToStorage();
                 }
             }
             else if (e.Item is Event swipedEvent)
@@ -453,6 +466,15 @@ namespace SLON
                         }
                     }
                 }
+                else if (e.Direction == SwipeCardDirection.Right)
+                {
+                    Favourites.RejectedEvents.Add(swipedEvent.Hash);
+                    await Favourites.SaveRejectedToStorage();
+                }
+                Events.Remove(swipedEvent);
+                _allEventsCache.RemoveAll(ev => ev.Hash == swipedEvent.Hash);
+                await FillEventsCardsAsync();
+                // await FilterCards(); 
             }
         }
 
