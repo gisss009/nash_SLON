@@ -11,10 +11,6 @@ using System.Runtime.CompilerServices;
 
 namespace SLON
 {
-    static public class Theme
-    {
-        public static bool theme;
-    }
     public partial class MainPage : ContentPage
     {
         public ObservableCollection<User> Users { get; set; } = new();
@@ -463,22 +459,20 @@ namespace SLON
             Application.Current.MainPage.DisplayAlert("Info", "you have clicked on the search button", "OK");
         }
 
+        private bool theme = true;
         public void OnImageButtonClicked(object sender, EventArgs e)
         {
-            var fav = new Favorites();
             ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
-            if (mergedDictionaries != null)
-            {
-                mergedDictionaries.Clear();
-                if (Theme.theme)
+                
+                if (theme)
                 {
                     mergedDictionaries.Add(new LightTheme());
-                    Theme.theme = false;
+                    theme = false;
                 }
                 else
                 {
                     mergedDictionaries.Add(new DarkTheme());
-                    Theme.theme = true;
+                    theme = true;
                 }
 
                 // Принудительно обновляем цвета кнопок
@@ -496,7 +490,7 @@ namespace SLON
                         ev.UpdateCardColor();
                     }
                 });
-            }
+            
         } 
 
         private void UpdateButtonColors()
