@@ -463,7 +463,9 @@ namespace SLON
         public void OnImageButtonClicked(object sender, EventArgs e)
         {
             ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
-                
+            if (mergedDictionaries != null)
+            {
+                mergedDictionaries.Clear();
                 if (theme)
                 {
                     mergedDictionaries.Add(new LightTheme());
@@ -490,7 +492,7 @@ namespace SLON
                         ev.UpdateCardColor();
                     }
                 });
-            
+            }
         } 
 
         private void UpdateButtonColors()
