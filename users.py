@@ -238,7 +238,7 @@ def add_profile_swiped_user_handler():
     return jsonify({"ok": True}), 200
 
 
-@bp1.route("/users/delete_profile_swiped_user")
+@bp1.route("/users/delete_profile_swiped_user", methods=['POST'])
 def delete_profile_swiped_user_handler():
     username = request.args.get('username')
     username_to = request.args.get('username_to')
@@ -361,3 +361,56 @@ def update_profile_handler():
         db.rollback()
         return jsonify({"ok": False, "response": "internal server error"}), 500
 
+@bp1.route("/users/add_swiped_event", methods=['POST', 'GET'])
+def add_profile_swiped_event_handler():
+    username = request.args.get('username') or request.json.get('username')
+    event_hash = request.args.get('event_hash') or request.json.get('event_hash')
+
+    if not username or not event_hash:
+        return jsonify({"ok": False, "response": "Missing username or event_hash"}), 400
+    if not find_profile(username):
+        return jsonify({"ok": False, "response": "User not found"}), 404
+
+    # Сохраняем свайпнутое событие в профиле
+    add_profile_swiped_event(username, event_hash)
+    return jsonify({"ok": True}), 200
+
+
+@bp1.route("/users/get_swiped_events", methods=['GET'])
+def get_swiped_events_handler():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({"ok": False, "response": "Missing username"}), 400
+    if not find_profile(username):
+        return jsonify({"ok": False, "response": "User not found"}), 404
+
+    # Получаем хеши свайпнутых событий
+    hashes = get_profile_swiped_events(username)
+    events_list = []
+    for h in hashes:
+        ev = get_event(h)
+        if ev:
+            events_list.append({
+                "hash":        ev[0],
+                "name":        ev[3],
+                "categories":  json.loads(ev[4] or '[]'),
+                "description": ev[5],
+                "location":    ev[6],
+                "date_from":   ev[7],
+                "date_to":     ev[8],
+                "public":      ev[9],
+                "online":      ev[10]
+            })
+    return jsonify({"ok": True, "response": events_list}), 200
+
+@bp1.route("/users/delete_swiped_event", methods=['GET'])
+def delete_swiped_event_handler():
+    username   = request.args.get('username')
+    event_hash = request.args.get('event_hash')
+    if not username or not event_hash:
+        return jsonify(ok=False, response="parameter username or event_hash is missing."), 400
+    if not find_profile(username):
+        return jsonify(ok=False, response="username not found."), 404
+
+    success = remove_swiped_event(username, event_hash)
+    return jsonify(ok=success), (200 if success else 500)

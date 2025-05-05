@@ -18,7 +18,8 @@ c.execute('''CREATE TABLE IF NOT EXISTS profiles (
     swiped_users TEXT,
     swiped_events TEXT,
     mail TEXT,
-    vocation TEXT
+    vocation TEXT,
+    url TEXT
 )''')
 db.commit()
 
@@ -55,13 +56,91 @@ c.execute('''CREATE TABLE IF NOT EXISTS mutual (
 )''')
 db.commit()
 
+def create_notification(username: str, username_from: str):
+    existing = c.execute(
+        "SELECT 1 FROM notifications WHERE username = ? AND username_from = ? AND is_request_or_accepted = 0",
+        (username, username_from)
+    ).fetchone()
+
+    if not existing:
+        c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 0))
+        db.commit()
+
+
+def delete_notification(username: str, username_from: str):
+    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ? AND is_request_or_accepted = 0", (username, username_from))
+    db.commit()
+
+def get_requests(username: str):
+    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 0", (username,)).fetchall()
+    
+    result = []
+    for req in data:
+        result.append(get_profile(req[1]))
+
+    return result
+
+def create_accepted_request(username_who: str, username_to: str):
+    existing = c.execute(
+        "SELECT 1 FROM notifications WHERE username = ? AND username_from = ? AND is_request_or_accepted = 1",
+        (username_who, username_to)
+    ).fetchone()
+
+    if not existing:
+        c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username_who, username_to, 1))
+        db.commit()
+
+
+def delete_accepted_request(username: str, username_from: str):
+    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ? AND is_request_or_accepted = 1", (username, username_from))
+    db.commit()
+
+def get_accepted(username: str):
+    data = c.execute("SELECT * FROM notifications WHERE username = ? AND is_request_or_accepted = 1", (username,)).fetchall()
+    accepted_usernames = [acc[1] for acc in data]
+
+    return [get_profile(username) for username in accepted_usernames if get_profile(username)]
+
+
+def add_mutual_user(username_one: str, username_two: str):
+    pair1 = f"{username_one},{username_two}"
+    pair2 = f"{username_two},{username_one}"
+
+    existing = c.execute("SELECT 1 FROM mutual WHERE pair = ? OR pair = ?", (pair1, pair2)).fetchone()
+
+    if not existing:
+        c.execute("INSERT INTO mutual VALUES (?)", (pair1,))
+        db.commit()
+
+
+def delete_mutual_user(username_one: str, username_two: str):
+    c.execute("DELETE FROM mutual WHERE pair = ? OR pair = ?", (username_one + "," + username_two, username_two + "," + username_one))
+    db.commit()
+
+def get_mutuals():
+    data = c.execute("SELECT * FROM mutual").fetchall()
+    mutual_usernames = []
+
+    for pair in data:
+        usernames = pair[0].split(',')
+        if len(usernames) == 2:
+            mutual_usernames.extend(usernames)
+
+    # Удаляем дубликаты
+    mutual_usernames = list(set(mutual_usernames))
+
+    # Возвращаем полные профили
+    return [get_profile(username) for username in mutual_usernames if get_profile(username)]
+
 
 def find_profile(username: str):
     user = c.execute("SELECT username FROM profiles WHERE username = (?)", (username,)).fetchone()
     return user != None
 
 def get_profile(username: str):
-    user = c.execute("SELECT * FROM profiles WHERE username = (?)", (username,)).fetchone()
+    with db:  # открываем транзакцию безопасно
+        cur = db.cursor()
+        user = cur.execute("SELECT * FROM profiles WHERE username = ?", (username,)).fetchone()
     if user:
         return {
             "username": user[0],
@@ -75,7 +154,8 @@ def get_profile(username: str):
             "swiped_users": safe_json_loads(user[8]),
             "swiped_events": safe_json_loads(user[9]),
             "mail": user[10],
-            "vocation": user[11]
+            "vocation": user[11],
+            "urls": safe_json_loads(user[12])
         }
     return None
 
@@ -112,11 +192,11 @@ def safe_json_loads(json_str):
 
 def add_profile(username: str, name="", surname="", categories="[]", tags="{}", 
                 skills="{}", events="[]", description="", swiped_users="[]", 
-                swiped_events="[]", mail="", vocation=""):
+                swiped_events="[]", mail="", vocation="", urls="[]"):
     if not find_profile(username):
-        c.execute("INSERT INTO profiles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+        c.execute("INSERT INTO profiles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
                   (username, name, surname, categories, tags, skills, events, 
-                   description, swiped_users, swiped_events, mail, vocation))
+                   description, swiped_users, swiped_events, mail, vocation, urls))
         db.commit()
 
 def edit_profile_name(username: str, name: str):
@@ -285,7 +365,7 @@ def delete_profile_event(username: str, hash: string):
     events_str = c.execute("SELECT events FROM profiles WHERE username = ?", (username,)).fetchone()[0]
     events_list = json.loads(events_str) if events_str else []
     
-    if id in events_list:
+    if hash in events_list:
         events_list.remove(hash)
     
     c.execute("UPDATE profiles SET events = ? WHERE username = ?", (json.dumps(events_list), username))
@@ -329,11 +409,14 @@ def edit_profile_vocation(username: str, vocation: str):
     db.commit()
 
 
-def add_profile_swiped_user(username: str, user_name_to: str):
+def add_profile_swiped_user(username: str, user_name_to: str):    
     if not find_profile(username):
         return
     
-    users_str = c.execute("SELECT swiped_users FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+    with db:  # открываем транзакцию безопасно
+        cur = db.cursor()
+        users_str = cur.execute("SELECT swiped_users FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+
     users_list = json.loads(users_str) if users_str else []
 
     if user_name_to not in users_list:
@@ -341,6 +424,10 @@ def add_profile_swiped_user(username: str, user_name_to: str):
     
     c.execute("UPDATE profiles SET swiped_users = ? WHERE username = ?", (json.dumps(users_list), username))
     db.commit()
+
+    profile = get_profile(username)
+    if profile["name"] != "" and profile["surname"] != "":
+        create_notification(user_name_to, username)
 
 
 def add_profile_swiped_event(username: str, hash: str):
@@ -504,18 +591,32 @@ def add_event_member(hash: str, member_id: int):
     db.commit()
 
 
-def delete_event_member(hash: str, member: int):
-    if not find_event(hash):
-        return
-    
-    member_str = c.execute("SELECT member FROM events WHERE hash = ?", (hash,)).fetchone()[0]
-    member_list = json.loads(member_str) if member_str else []
-    
-    if member in member_list:
-        member_list.remove(member)
-    
-    c.execute("UPDATE events SET member = ? WHERE hash = ?", (json.dumps(member_list), hash))
-    db.commit()
+def delete_event_member(event_hash: str, username: str) -> bool:
+    """
+    Убирает заданного пользователя (по username) из поля members у события.
+    """
+    if not find_event(event_hash):
+        return False
+
+    # Читаем текущее JSON-поле members
+    members_str = c.execute(
+        "SELECT members FROM events WHERE hash = ?", 
+        (event_hash,)
+    ).fetchone()[0]
+    try:
+        members_list = json.loads(members_str) if members_str else []
+    except json.JSONDecodeError:
+        members_list = []
+
+    # Удаляем, если есть
+    if username in members_list:
+        members_list.remove(username)
+        c.execute(
+            "UPDATE events SET members = ? WHERE hash = ?",
+            (json.dumps(members_list), event_hash)
+        )
+        db.commit()
+    return True
 
 
 def edit_event_name(hash: str, name: str):
@@ -703,21 +804,29 @@ def add_swiped_event(username: str, event_hash: str):
     return True
 
 
-def remove_swiped_event(username: str, event_hash: str):
-    """Удаляет событие из списка свайпнутых событий пользователя"""
+def remove_swiped_event(username: str, event_hash: str) -> bool:
+    """
+    Убирает хеш события из поля swiped_events профиля.
+    """
     if not find_profile(username):
         return False
-    
-    swiped_events_str = c.execute("SELECT swiped_events FROM profiles WHERE username = ?", 
-                                 (username,)).fetchone()[0]
-    swiped_events = json.loads(swiped_events_str) if swiped_events_str else []
-    
-    if event_hash in swiped_events:
-        swiped_events.remove(event_hash)
-    
-    c.execute("UPDATE profiles SET swiped_events = ? WHERE username = ?", 
-              (json.dumps(swiped_events), username))
-    db.commit()
+
+    swiped = c.execute(
+        "SELECT swiped_events FROM profiles WHERE username = ?", 
+        (username,)
+    ).fetchone()[0]
+    try:
+        arr = json.loads(swiped) if swiped else []
+    except json.JSONDecodeError:
+        arr = []
+
+    if event_hash in arr:
+        arr.remove(event_hash)
+        c.execute(
+            "UPDATE profiles SET swiped_events = ? WHERE username = ?",
+            (json.dumps(arr), username)
+        )
+        db.commit()
     return True
 
 
@@ -730,27 +839,62 @@ def get_swiped_events(username: str):
                                  (username,)).fetchone()[0]
     return json.loads(swiped_events_str) if swiped_events_str else []
 
+def add_profile_url(username: str, url: str):    
+    if not find_profile(username):
+        return
+    
+    urls_str = c.execute("SELECT url FROM profiles WHERE username = ?", (username,)).fetchone()[0]
 
-add_profile("test")
-edit_profile_surname("test", "surrr")
-print(get_profile("test"))
-# add_profile("ne_test")
-# hash = add_event("test_event", "ne_test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
-# add_event_member(hash, "test")
-# add_event("test_event", "test", "IT", "test_desc", "test_loc", date_from="28.03.2025", date_to="28.03.2025", public=1, online=1)
-# print(get_all_user_events("test"))
-# print(get_profile("test"))
-# add_profile_category("test", "IT")
-# edit_profile_description("test", "test_desc")
-# edit_profile_name("test", "хуесос")
-# edit_profile_surname("test", "петрович")
+    urls = json.loads(urls_str) if urls_str else []
+
+    if url not in urls:
+        urls.append(url)
+    
+    c.execute("UPDATE profiles SET url = ? WHERE username = ?", (json.dumps(urls), username))
+    db.commit()
+
+def delete_profile_url(username: str, url: string):
+    if not find_profile(username):
+        return
+    
+    urls_str = c.execute("SELECT url FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+    urls_list = json.loads(urls_str) if urls_str else []
+    
+    if url in urls_list:
+        urls_list.remove(url)
+    
+    c.execute("UPDATE profiles SET url = ? WHERE username = ?", (json.dumps(urls_list), username))
+    db.commit()
+
+def get_profile_urls(username: str):
+    if not find_profile(username):
+        return []
+    
+    urls = c.execute("SELECT url FROM profiles WHERE username = ?", (username,)).fetchone()[0]
+    return json.loads(urls) if urls else []
+
+def set_profile_urls(username: str, urls: list) -> bool:
+    """Обновляет список URL в профиле; возвращает False, если профиля нет."""
+    if not find_profile(username):
+        return False
+
+    with db:
+        cur = db.cursor()
+        cur.execute(
+            "UPDATE profiles SET url = ? WHERE username = ?",
+            (json.dumps(urls), username)
+        )
+        db.commit()
+    return True
+
+
 # def migrate_add_skills_column():
 #     try:
 #         # Добавляем столбец skills с default значением '{}'
-#         c.execute("ALTER TABLE profiles ADD COLUMN skills TEXT DEFAULT '{}'")
+#         c.execute("ALTER TABLE profiles ADD COLUMN url TEXT DEFAULT '[]'")
         
 #         # Обновляем существующие записи, где значение NULL
-#         c.execute("UPDATE profiles SET skills = '{}' WHERE skills IS NULL")
+#         c.execute("UPDATE profiles SET skills = '[]' WHERE skills IS NULL")
         
 #         db.commit()
 #         print("Migration successful: added and initialized skills column")
@@ -763,27 +907,25 @@ print(get_profile("test"))
 # # Выполнить миграцию при запуске
 # migrate_add_skills_column()
 
+# add_profile("test1")
+# add_profile_url("test1", "https://vk.com/skdjlkajdskljadg")
+# print(get_profile_urls("test1"))
+# delete_profile_url("test1", "https://vk.com/skdjlkajdskljadg")
+# print(get_profile_urls("test1"))
+# add_profile("test2")
+# add_mutual_user("test1", "test2")
+# create_accepted_request("test1", "test2")
+# add_profile_swiped_user("test1", "test2")
+# print(get_requests("test2"))
+# print(get_accepted("test1"))
 
-def create_notification(username: str, username_from: str):
-    c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 0))
-    db.commit()
+# add_profile("ivanpetrov")
+# add_profile("annakim")
+# add_profile("zoecarter")
 
-def delete_notification(username: str, username_from: str):
-    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
-    db.commit()
+# add_profile("test1")
+# add_profile("test2")
 
-def create_accepted_request(username: str, username_from: str):
-    c.execute("INSERT INTO notifications VALUES (?, ?, ?)", (username, username_from, 1))
-    db.commit()
+# create_accepted_request("test1", "test2")
 
-def delete_accepted_request(username: str, username_from: str):
-    c.execute("DELETE FROM notifications WHERE username = ? AND username_from = ?", (username, username_from))
-    db.commit()
-
-def add_mutual_user(username_one: str, username_two: str):
-    c.execute("INSERT INTO mutual VALUES (?,)", (username_one + "," + username_two,))
-    db.commit()
-
-def delete_mutual_user(username_one: str, username_two: str):
-    c.execute("DELETE FROM mutual WHERE pair = ?", (username_one + "," + username_two,))
-    db.commit()
+# print(get_accepted("test1"))

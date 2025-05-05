@@ -7,9 +7,9 @@ from PIL import Image
 
 bp4 = Blueprint('photos', __name__,)
 
-UPLOAD_FOLDER = 'uploads'
+# UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Функция: проверка расширения
 def allowed_file(filename):

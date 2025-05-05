@@ -15,6 +15,8 @@ def get_event_handler():
     event = get_event(hash)
     ans = {
         "hash":        event[0],
+        "owner":       event[1],
+        "members":     json.loads(event[2] or "[]"),
         "name":        event[3],
         "categories":  json.loads(event[4]) if event[4] else [],
         "description": event[5],
@@ -186,6 +188,7 @@ def add_event_member_handler():
     if not find_profile(username):
         return jsonify({"ok": False, "response": "username not found."}), 404
     add_event_member(hash, username)
+    add_profile_event(username, hash)
     return jsonify({"ok": True}), 200
 
 @bp2.route("/events/delete_event")
@@ -198,24 +201,27 @@ def delete_event_handler():
 
 @bp2.route("/events/get_all_events")
 def get_all_events_handler():
-    events = get_all_events()
-    for e in events:
-        if isinstance(e.get("categories"), str):
-            try:
-                e["categories"] = json.loads(e["categories"])
-            except json.JSONDecodeError:
-                e["categories"] = []
-        else:
-            e["categories"] = e.get("categories", [])
-        if isinstance(e.get("members"), str):
-            try:
-                e["members"] = json.loads(e["members"])
-            except json.JSONDecodeError:
-                e["members"] = []
-        else:
-            e["members"] = e.get("members", [])
+    rows = c.execute("SELECT * FROM events").fetchall()
+    events = []
+
+    for row in rows:
+        event_dict = {
+            "hash":       row[0],
+            "owner":      row[1],
+            "members":    json.loads(row[2] or "[]"),
+            "name":       row[3],
+            "categories": json.loads(row[4] or "[]"),
+            "description":row[5],
+            "location":   row[6],
+            "date_from":  row[7],
+            "date_to":    row[8],
+            "public":     row[9],
+            "online":     row[10]
+        }
+        events.append(event_dict)
 
     return jsonify({"ok": True, "response": events}), 200
+
 
 
 @bp2.route("/events/<event_hash>", methods=["PUT"])
@@ -312,4 +318,18 @@ def update_event_handler(event_hash):
         "online":      row[10]
     }
     return jsonify(ok=True, response=event_obj), 200
+
+@bp2.route("/events/remove_event_member", methods=['GET'])
+def remove_event_member_handler():
+    event_hash = request.args.get('hash')
+    username   = request.args.get('username')
+    if not event_hash or not username:
+        return jsonify(ok=False, response="parameter hash or username is missing."), 400
+    if not find_event(event_hash):
+        return jsonify(ok=False, response="event not found."), 404
+    if not find_profile(username):
+        return jsonify(ok=False, response="username not found."), 404
+
+    success = delete_event_member(event_hash, username)
+    return jsonify(ok=success), (200 if success else 500)
 
